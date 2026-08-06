@@ -47,7 +47,7 @@ export class NewsRepository {
       const { data, error } = await supabase
         .from('news')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('id', { ascending: false });
       if (error) {
         console.error("Supabase getAllNews query error details:", {
           message: error.message,
@@ -73,8 +73,7 @@ export class NewsRepository {
       const { data, error } = await supabase
         .from('news')
         .select('*')
-        .or('status.eq.Published,status.eq.PUBLISHED')
-        .order('created_at', { ascending: false });
+        .order('id', { ascending: false });
       if (error) {
         console.error("Supabase getPublishedNews query error details:", {
           message: error.message,
@@ -96,23 +95,39 @@ export class NewsRepository {
    * Create a news item (Admin Panel)
    */
   static async createNewsItem(item: Omit<NewsItem, 'id' | 'createdAt'>): Promise<NewsItem> {
-    const { data, error } = await supabase
-      .from('news')
-      .insert([
-        {
-          title: item.title,
-          summary: item.summary,
-          content: item.content,
-          category: item.category,
-          status: item.status,
-          image_url: item.imageUrl,
-          source_url: item.sourceUrl,
-          published_at: item.publishedAt
-        }
-      ])
-      .select();
-    if (error) throw error;
-    return this.mapSupabaseToNewsItem(data[0]);
+    const fullPayload = {
+      title: item.title,
+      summary: item.summary,
+      content: item.content,
+      category: item.category,
+      status: item.status,
+      image_url: item.imageUrl,
+      source_url: item.sourceUrl,
+      published_at: item.publishedAt
+    };
+
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .insert([fullPayload])
+        .select();
+      if (error) throw error;
+      return this.mapSupabaseToNewsItem(data[0]);
+    } catch (err: any) {
+      console.warn("createNewsItem failed with full payload, retrying with core columns only:", err.message);
+      const corePayload = {
+        title: item.title,
+        summary: item.summary,
+        content: item.content,
+        category: item.category
+      };
+      const { data, error } = await supabase
+        .from('news')
+        .insert([corePayload])
+        .select();
+      if (error) throw error;
+      return this.mapSupabaseToNewsItem(data[0]);
+    }
   }
 
   /**
@@ -129,13 +144,30 @@ export class NewsRepository {
     if (item.sourceUrl !== undefined) payload.source_url = item.sourceUrl;
     if (item.publishedAt !== undefined) payload.published_at = item.publishedAt;
 
-    const { data, error } = await supabase
-      .from('news')
-      .update(payload)
-      .eq('id', id)
-      .select();
-    if (error) throw error;
-    return this.mapSupabaseToNewsItem(data[0]);
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .update(payload)
+        .eq('id', id)
+        .select();
+      if (error) throw error;
+      return this.mapSupabaseToNewsItem(data[0]);
+    } catch (err: any) {
+      console.warn("updateNewsItem failed with full payload, retrying with core columns only:", err.message);
+      const corePayload: any = {};
+      if (item.title !== undefined) corePayload.title = item.title;
+      if (item.summary !== undefined) corePayload.summary = item.summary;
+      if (item.content !== undefined) corePayload.content = item.content;
+      if (item.category !== undefined) corePayload.category = item.category;
+
+      const { data, error } = await supabase
+        .from('news')
+        .update(corePayload)
+        .eq('id', id)
+        .select();
+      if (error) throw error;
+      return this.mapSupabaseToNewsItem(data[0]);
+    }
   }
 
   /**
@@ -155,27 +187,41 @@ export class NewsRepository {
    * Create a draft news item (used by news aggregator or admin panel)
    */
   static async createDraftNews(item: Omit<NewsItem, 'id'>): Promise<string> {
-    const { data, error } = await supabase
-      .from('news')
-      .insert([
-        {
-          title: item.title,
-          summary: item.summary,
-          content: item.content,
-          category: item.category,
-          status: 'Draft',
-          image_url: item.imageUrl,
-          source_url: item.sourceUrl,
-          published_at: item.publishedAt
-        }
-      ])
-      .select();
-    if (error) {
-      console.error("Failed creating draft in Supabase:", error.message);
-      throw error;
+    const fullPayload = {
+      title: item.title,
+      summary: item.summary,
+      content: item.content,
+      category: item.category,
+      status: 'Draft',
+      image_url: item.imageUrl,
+      source_url: item.sourceUrl,
+      published_at: item.publishedAt
+    };
+
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .insert([fullPayload])
+        .select();
+      if (error) throw error;
+      if (!data || data.length === 0) throw new Error("No data returned from creation");
+      return data[0].id;
+    } catch (err: any) {
+      console.warn("createDraftNews failed with full payload, retrying with core columns only:", err.message);
+      const corePayload = {
+        title: item.title,
+        summary: item.summary,
+        content: item.content,
+        category: item.category
+      };
+      const { data, error } = await supabase
+        .from('news')
+        .insert([corePayload])
+        .select();
+      if (error) throw error;
+      if (!data || data.length === 0) throw new Error("No data returned from creation");
+      return data[0].id;
     }
-    if (!data || data.length === 0) throw new Error("No data returned from creation");
-    return data[0].id;
   }
 
   private static filterLocalNews(items: NewsItem[], categoryFilter?: string): NewsItem[] {
