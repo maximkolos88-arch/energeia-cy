@@ -1,0 +1,6 @@
+{
+  "name": "Energeia",
+  "description": "Cyprus All-Energy Network application with News, Directory, Academy, Magazine, and Membership management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

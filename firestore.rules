@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // News collection rules
+    match /news/{newsId} {
+      allow read: if resource.data.status == 'Published' || isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // Participants/Directory members collection
+    match /participants/{participantId} {
+      allow read: if true; // Public directory
+      allow write: if isSignedIn();
+    }
+
+    // Academy courses
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Magazine issues
+    match /magazine_issues/{issueId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Membership Applications
+    match /applications/{applicationId} {
+      // Anyone can submit a new application with status 'Pending'
+      allow create: if request.resource.data.name is string 
+                    && request.resource.data.name.size() >= 2
+                    && request.resource.data.email is string
+                    && request.resource.data.status == 'Pending';
+      
+      // Admins or signed-in users can list or manage applications
+      allow read, update, delete: if isSignedIn();
+    }
+  }
+}

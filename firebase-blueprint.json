@@ -1,0 +1,105 @@
+{
+  "entities": {
+    "NewsItem": {
+      "title": "News Item",
+      "description": "Energy regulatory updates, tariffs, and news articles in Cyprus",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "minLength": 3, "maxLength": 300 },
+        "summary": { "type": "string", "maxLength": 1000 },
+        "content": { "type": "string", "maxLength": 10000 },
+        "category": { "type": "string" },
+        "badge": { "type": "string" },
+        "sourceUrl": { "type": "string" },
+        "publishedAt": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "status": { "type": "string", "enum": ["Published", "Draft", "Archived"] },
+        "readTimeMinutes": { "type": "number" }
+      },
+      "required": ["title", "summary", "category", "publishedAt", "status"]
+    },
+    "DirectoryMember": {
+      "title": "Directory Member",
+      "description": "Registered participant, auditor, or installer in the Energeia network",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 150 },
+        "type": { "type": "string", "enum": ["Individual", "Company"] },
+        "roleOrCategory": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "location": { "type": "string" },
+        "expertiseTags": { "type": "array" },
+        "imageUrl": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name", "type", "roleOrCategory", "email", "expertiseTags"]
+    },
+    "AcademyCourse": {
+      "title": "Academy Course",
+      "description": "Certification training course for Cyprus energy professionals",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "minLength": 3, "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "priceEur": { "type": "number" },
+        "durationHours": { "type": "number" },
+        "level": { "type": "string", "enum": ["Level 1", "Level 2", "Level 3"] },
+        "imageUrl": { "type": "string" },
+        "tags": { "type": "array" }
+      },
+      "required": ["title", "description", "priceEur", "durationHours", "level"]
+    },
+    "MagazineIssue": {
+      "title": "Magazine Issue",
+      "description": "Quarterly digital library publication issue",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "quarter": { "type": "string" },
+        "issueNumber": { "type": "number" },
+        "year": { "type": "number" },
+        "summary": { "type": "string" },
+        "coverImageUrl": { "type": "string" },
+        "pdfUrl": { "type": "string" }
+      },
+      "required": ["title", "quarter", "issueNumber", "coverImageUrl", "pdfUrl"]
+    },
+    "MembershipApplication": {
+      "title": "Membership Application",
+      "description": "Application form submitted by citizens or companies to join Energeia",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "email": { "type": "string", "format": "email" },
+        "company": { "type": "string", "maxLength": 150 },
+        "role": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "submittedAt": { "type": "string" }
+      },
+      "required": ["name", "email", "status", "submittedAt"]
+    }
+  },
+  "firestore": {
+    "/news/{newsId}": {
+      "schema": "NewsItem",
+      "description": "Collection storing public energy updates and drafted aggregated headlines"
+    },
+    "/participants/{participantId}": {
+      "schema": "DirectoryMember",
+      "description": "Collection storing verified energy network members and companies"
+    },
+    "/courses/{courseId}": {
+      "schema": "AcademyCourse",
+      "description": "Collection storing available certification courses"
+    },
+    "/magazine_issues/{issueId}": {
+      "schema": "MagazineIssue",
+      "description": "Collection storing publication issues and PDF links"
+    },
+    "/applications/{applicationId}": {
+      "schema": "MembershipApplication",
+      "description": "Collection storing incoming membership requests"
+    }
+  }
+}
