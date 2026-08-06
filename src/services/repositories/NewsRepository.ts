@@ -43,15 +43,25 @@ export class NewsRepository {
    * Fetch all news items (for Admin CRUD, both Published and Drafts)
    */
   static async getAllNews(): Promise<NewsItem[]> {
-    const { data, error } = await supabase
-      .from('news')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) {
-      console.error("Failed fetching all news from Supabase:", error.message);
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error("Supabase getAllNews query error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
+      return (data || []).map(item => this.mapSupabaseToNewsItem(item));
+    } catch (err) {
+      console.error("getallNews catch block exception:", err);
+      throw err;
     }
-    return (data || []).map(item => this.mapSupabaseToNewsItem(item));
   }
 
   /**
@@ -59,17 +69,27 @@ export class NewsRepository {
    * Ordered by publishedAt descending, with category filtering support
    */
   static async getPublishedNews(categoryFilter?: NewsCategory | string): Promise<NewsItem[]> {
-    const { data, error } = await supabase
-      .from('news')
-      .select('*')
-      .or('status.eq.Published,status.eq.PUBLISHED')
-      .order('created_at', { ascending: false });
-    if (error) {
-      console.error("Failed fetching published news from Supabase:", error.message);
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .or('status.eq.Published,status.eq.PUBLISHED')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error("Supabase getPublishedNews query error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
+      const published = (data || []).map(item => this.mapSupabaseToNewsItem(item));
+      return this.filterLocalNews(published, categoryFilter);
+    } catch (err) {
+      console.error("getPublishedNews catch block exception:", err);
+      throw err;
     }
-    const published = (data || []).map(item => this.mapSupabaseToNewsItem(item));
-    return this.filterLocalNews(published, categoryFilter);
   }
 
   /**
