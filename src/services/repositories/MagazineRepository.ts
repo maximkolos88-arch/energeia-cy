@@ -3,70 +3,99 @@
  * Interacts with backend Express server /api/magazines endpoints
  */
 
+import { supabase } from '../../lib/supabase';
 import { MagazineIssue } from '../../models/types';
 
-const SEED_MAGAZINES: MagazineIssue[] = [
-  {
-    id: 'issue-1',
-    title: 'Summer 2026',
-    issueNumber: 1,
-    publishDate: '2026-07-01',
-    coverImageUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    description: 'Exclusive interview with the Minister of Energy, special focus on East Med gas exploration, and solar battery storage incentives.',
-    isPublished: true
-  }
-];
-
 export class MagazineRepository {
+  private static mapSupabaseToMagazine(item: any): MagazineIssue {
+    return {
+      id: item.id,
+      title: item.title || '',
+      issueNumber: item.issue_number || 1,
+      publishDate: item.publish_date || '',
+      coverImageUrl: item.cover_image_url || '',
+      pdfUrl: item.pdf_url || '',
+      description: item.description || '',
+      isPublished: item.is_published || false
+    };
+  }
+
+  private static mapMagazineToSupabase(issue: Partial<MagazineIssue>): any {
+    const mapped: any = {};
+    if (issue.title !== undefined) mapped.title = issue.title;
+    if (issue.issueNumber !== undefined) mapped.issue_number = issue.issueNumber;
+    if (issue.publishDate !== undefined) mapped.publish_date = issue.publishDate;
+    if (issue.coverImageUrl !== undefined) mapped.cover_image_url = issue.coverImageUrl;
+    if (issue.pdfUrl !== undefined) mapped.pdf_url = issue.pdfUrl;
+    if (issue.description !== undefined) mapped.description = issue.description;
+    if (issue.isPublished !== undefined) mapped.is_published = issue.isPublished;
+    return mapped;
+  }
+
   /**
    * Fetch all magazine issues
    */
   static async getMagazineIssues(): Promise<MagazineIssue[]> {
-    try {
-      const res = await fetch('/api/magazines');
-      if (!res.ok) throw new Error('API failed');
-      return await res.json();
-    } catch (err) {
-      console.warn("Express magazines fetch error, returning seed list:", err);
-      return SEED_MAGAZINES;
+    const { data, error } = await supabase
+      .from('magazines')
+      .select('*')
+      .order('issue_number', { ascending: false });
+    if (error) {
+      console.error("Failed to fetch magazines from Supabase:", error.message);
+      throw error;
     }
+    return (data || []).map(item => this.mapSupabaseToMagazine(item));
   }
 
   /**
    * Create a magazine issue (Admin Panel CRUD)
    */
   static async createIssue(issue: Omit<MagazineIssue, 'id'>): Promise<MagazineIssue> {
-    const res = await fetch('/api/magazines', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(issue)
-    });
-    if (!res.ok) throw new Error('Failed to create magazine issue');
-    return await res.json();
+    const mapped = this.mapMagazineToSupabase(issue);
+    const { data, error } = await supabase
+      .from('magazines')
+      .insert([mapped])
+      .select();
+    if (error) {
+      console.error("Failed to create magazine in Supabase:", error.message);
+      throw error;
+    }
+    if (!data || data.length === 0) throw new Error("No data returned from creation");
+    return this.mapSupabaseToMagazine(data[0]);
   }
 
   /**
    * Update a magazine issue (Admin Panel CRUD)
    */
   static async updateIssue(id: string, issue: Partial<MagazineIssue>): Promise<MagazineIssue> {
-    const res = await fetch(`/api/magazines/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(issue)
-    });
-    if (!res.ok) throw new Error('Failed to update magazine issue');
-    return await res.json();
+    const mapped = this.mapMagazineToSupabase(issue);
+    const { data, error } = await supabase
+      .from('magazines')
+      .update(mapped)
+      .eq('id', id)
+      .select();
+    if (error) {
+      console.error("Failed to update magazine in Supabase:", error.message);
+      throw error;
+    }
+    if (!data || data.length === 0) throw new Error("No data returned from update");
+    return this.mapSupabaseToMagazine(data[0]);
   }
 
   /**
    * Delete a magazine issue (Admin Panel CRUD)
    */
   static async deleteIssue(id: string): Promise<MagazineIssue> {
-    const res = await fetch(`/api/magazines/${id}`, {
-      method: 'DELETE'
-    });
-    if (!res.ok) throw new Error('Failed to delete magazine issue');
-    return await res.json();
+    const { data, error } = await supabase
+      .from('magazines')
+      .delete()
+      .eq('id', id)
+      .select();
+    if (error) {
+      console.error("Failed to delete magazine from Supabase:", error.message);
+      throw error;
+    }
+    if (!data || data.length === 0) throw new Error("No data returned from delete");
+    return this.mapSupabaseToMagazine(data[0]);
   }
 }

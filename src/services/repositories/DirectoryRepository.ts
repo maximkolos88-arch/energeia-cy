@@ -3,8 +3,7 @@
  * Interacts with Firestore 'participants' collection
  */
 
-import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { supabase } from '../../lib/supabase';
 import { DirectoryMember } from '../../models/types';
 
 export const ALL_EXPERTISE_TAGS = [
@@ -16,89 +15,53 @@ export const ALL_EXPERTISE_TAGS = [
   "ESG & Environmental", "Policy & Regulatory"
 ];
 
-let IN_MEMORY_DIRECTORY: DirectoryMember[] = [
-  {
-    id: 'member-1',
-    name: 'Elena Vasiliou',
-    type: 'Individual',
-    roleOrCategory: 'Independent Energy & ESG Auditor',
-    email: 'elena.vasiliou@energeia.cy',
-    phone: '+357 99 123456',
-    location: 'Nicosia',
-    expertiseTags: ['ESG & Environmental', 'Policy & Regulatory', 'Energy Efficiency'],
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtdU_pDIVMIMs3jGXRG5Xd4kzByVAdYcOYt40VlE9dJFiQk_cDtChYsTcqBGNdpBnUjMq5FCQ8_EXTqaupV74Jo0MkITWRvqthgS7bosXHk4HnB0IGPqfueUayRglXCWJ5WahqohB2YmlcElxg1jP1QCMw8xnZ_vJ27gpo8ByKlOTLt82aPlrF7Cg7QqZ2TzXT77eVx8KPZ59Y2LzIO_CDaMgQguK4REiFJ9FSXox-QbEmaNthEvKEuA',
-    description: 'Certified European Energy Manager & Senior ESG Consultant for commercial PV and policy compliance.',
-    isVerified: true
-  },
-  {
-    id: 'member-2',
-    name: 'Helios Dynamics Ltd',
-    type: 'Company',
-    roleOrCategory: 'Solar & Battery Storage Contractor',
-    email: 'contact@heliosdynamics.com.cy',
-    phone: '+357 25 876543',
-    location: 'Limassol',
-    expertiseTags: ['Solar PV', 'Energy Storage', 'Wind Power'],
-    imageUrl: '',
-    description: 'Premier turnkey solar photovoltaics installation, wind energy integration, and industrial storage contractor in Cyprus.',
-    isVerified: true
-  },
-  {
-    id: 'member-3',
-    name: 'Andreas Kyriakou',
-    type: 'Individual',
-    roleOrCategory: 'Grid & Microgrid Specialist',
-    email: 'andreas.k@energeia.cy',
-    phone: '+357 99 334455',
-    location: 'Larnaca',
-    expertiseTags: ['Smart Grids', 'Energy Storage', 'EV Infrastructure', 'Microgrids'],
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC2TyQev0dIPG45d2E4DOVj3skqHeOnipirzYXfH7wejZJ1dvLCtzU2-R1CtB8TaFVw4fDCPj6xkGEfZRtoqTBHBrSIZVdqJCspiXheu16m2S3Pkmp0cmlZeXJFRY2mjwz1uVYcWeNTP7lCqaic8BZoZbH1T4c3qSIeYyS4DBkew16Xl9sk0_R8SrIZcAnPVw_CFWTqoSOBcJO5Brf5z_ltLF5p51kPNR2hXQ783kouFLGvdegrEy_Pew',
-    description: 'Electrical engineer specializing in transmission grid connection protocols, storage synchronization, and EV hubs.',
-    isVerified: true
-  },
-  {
-    id: 'member-4',
-    name: 'EcoAudit Partners',
-    type: 'Company',
-    roleOrCategory: 'ESG Advisory & Sustainability Agency',
-    email: 'info@ecoauditpartners.cy',
-    phone: '+357 22 554433',
-    location: 'Nicosia',
-    expertiseTags: ['ESG & Environmental', 'Policy & Regulatory', 'Energy Efficiency'],
-    imageUrl: '',
-    description: 'Institutional ESG reporting, GHG emissions auditing, EU taxonomy advisory, and CSRD compliance advisory firm.',
-    isVerified: true
-  },
-  {
-    id: 'member-5',
-    name: 'Kypros Wind Power Ltd',
-    type: 'Company',
-    roleOrCategory: 'Wind Farm Operator',
-    email: 'operations@kypros-wind.cy',
-    phone: '+357 26 910200',
-    location: 'Paphos',
-    expertiseTags: ['Wind Power', 'Energy Storage', 'Policy & Regulatory'],
-    imageUrl: '',
-    description: 'Commercial onshore wind turbine array developer and grid balancing market provider.',
-    isVerified: true
-  }
-];
-
 export class DirectoryRepository {
+  private static mapSupabaseToMember(item: any): DirectoryMember {
+    return {
+      id: item.id,
+      name: item.name || '',
+      type: item.type || 'Individual',
+      roleOrCategory: item.role_or_category || '',
+      email: item.email || '',
+      phone: item.phone || '',
+      location: item.location || '',
+      category: item.category || '',
+      expertiseTags: item.expertise_tags || [],
+      imageUrl: item.image_url || '',
+      description: item.description || '',
+      isVerified: item.is_verified || false
+    };
+  }
+
+  private static mapMemberToSupabase(member: Partial<DirectoryMember>): any {
+    const mapped: any = {};
+    if (member.name !== undefined) mapped.name = member.name;
+    if (member.type !== undefined) mapped.type = member.type;
+    if (member.roleOrCategory !== undefined) mapped.role_or_category = member.roleOrCategory;
+    if (member.email !== undefined) mapped.email = member.email;
+    if (member.phone !== undefined) mapped.phone = member.phone;
+    if (member.location !== undefined) mapped.location = member.location;
+    if (member.category !== undefined) mapped.category = member.category;
+    if (member.expertiseTags !== undefined) mapped.expertise_tags = member.expertiseTags;
+    if (member.imageUrl !== undefined) mapped.image_url = member.imageUrl;
+    if (member.description !== undefined) mapped.description = member.description;
+    if (member.isVerified !== undefined) mapped.is_verified = member.isVerified;
+    return mapped;
+  }
+
   /**
    * Fetch all participants (unfiltered, for admin dashboard)
    */
   static async getAllParticipants(): Promise<DirectoryMember[]> {
-    try {
-      const res = await fetch('/api/participants');
-      if (!res.ok) throw new Error('API failed');
-      const data = await res.json();
-      IN_MEMORY_DIRECTORY = data;
-      return data;
-    } catch (err) {
-      console.warn("Failed to fetch all participants from Express server:", err);
-      return IN_MEMORY_DIRECTORY;
+    const { data, error } = await supabase
+      .from('participants')
+      .select('*')
+      .order('name', { ascending: true });
+    if (error) {
+      console.error("Failed to fetch participants from Supabase:", error.message);
+      throw error;
     }
+    return (data || []).map(item => this.mapSupabaseToMember(item));
   }
 
   /**
@@ -112,16 +75,11 @@ export class DirectoryRepository {
     activeTags: string[] = [],
     tagMatchMode: 'ALL' | 'ANY' = 'ANY'
   ): Promise<DirectoryMember[]> {
-    let results = IN_MEMORY_DIRECTORY;
-
+    let results: DirectoryMember[] = [];
     try {
-      const res = await fetch('/api/participants');
-      if (res.ok) {
-        results = await res.json();
-        IN_MEMORY_DIRECTORY = results;
-      }
+      results = await this.getAllParticipants();
     } catch (err) {
-      console.warn("Express directory fetch failed, using local seed members:", err);
+      console.error("Supabase directory fetch failed, returning empty list:", err);
     }
 
     const trimmedQuery = searchQuery.trim().toLowerCase();
@@ -161,42 +119,56 @@ export class DirectoryRepository {
     });
   }
 
-
   /**
    * Create a member (Admin Panel CRUD)
    */
   static async createMember(member: Omit<DirectoryMember, 'id'>): Promise<DirectoryMember> {
-    const res = await fetch('/api/participants', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(member)
-    });
-    if (!res.ok) throw new Error('Failed to create member');
-    return await res.json();
+    const mapped = this.mapMemberToSupabase(member);
+    const { data, error } = await supabase
+      .from('participants')
+      .insert([mapped])
+      .select();
+    if (error) {
+      console.error("Failed to create participant in Supabase:", error.message);
+      throw error;
+    }
+    if (!data || data.length === 0) throw new Error('Failed to create member');
+    return this.mapSupabaseToMember(data[0]);
   }
 
   /**
    * Update a member (Admin Panel CRUD)
    */
   static async updateMember(id: string, member: Partial<DirectoryMember>): Promise<DirectoryMember> {
-    const res = await fetch(`/api/participants/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(member)
-    });
-    if (!res.ok) throw new Error('Failed to update member');
-    return await res.json();
+    const mapped = this.mapMemberToSupabase(member);
+    const { data, error } = await supabase
+      .from('participants')
+      .update(mapped)
+      .eq('id', id)
+      .select();
+    if (error) {
+      console.error("Failed to update participant in Supabase:", error.message);
+      throw error;
+    }
+    if (!data || data.length === 0) throw new Error('Failed to update member');
+    return this.mapSupabaseToMember(data[0]);
   }
 
   /**
    * Delete a member (Admin Panel CRUD)
    */
   static async deleteMember(id: string): Promise<DirectoryMember> {
-    const res = await fetch(`/api/participants/${id}`, {
-      method: 'DELETE'
-    });
-    if (!res.ok) throw new Error('Failed to delete member');
-    return await res.json();
+    const { data, error } = await supabase
+      .from('participants')
+      .delete()
+      .eq('id', id)
+      .select();
+    if (error) {
+      console.error("Failed to delete participant from Supabase:", error.message);
+      throw error;
+    }
+    if (!data || data.length === 0) throw new Error('Failed to delete member');
+    return this.mapSupabaseToMember(data[0]);
   }
 }
 
