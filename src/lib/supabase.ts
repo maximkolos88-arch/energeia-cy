@@ -14,11 +14,23 @@ try {
   // Safe fallback if import.meta.env is unavailable in non-browser contexts
 }
 
-// Fallback to defaults if variables are missing or empty
-if (!supabaseUrl || supabaseUrl.trim() === '') {
+// Fallback to defaults if variables are missing, empty, or evaluate to "undefined"/"null" string literals
+if (
+  !supabaseUrl || 
+  supabaseUrl.trim() === '' || 
+  supabaseUrl === 'undefined' || 
+  supabaseUrl === 'null' || 
+  !supabaseUrl.startsWith('http')
+) {
   supabaseUrl = defaultUrl;
 }
-if (!supabaseKey || supabaseKey.trim() === '') {
+
+if (
+  !supabaseKey || 
+  supabaseKey.trim() === '' || 
+  supabaseKey === 'undefined' || 
+  supabaseKey === 'null'
+) {
   supabaseKey = defaultKey;
 }
 
