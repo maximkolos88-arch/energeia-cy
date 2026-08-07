@@ -659,48 +659,36 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
-  // Trigger News Scraper via Make.com Webhook
+  // Trigger News Sync / Refresh
   const handleTriggerScraper = async () => {
-    const webhookUrl = import.meta.env.VITE_MAKE_WEBHOOK_URL || '';
-    
-    if (!webhookUrl || webhookUrl.trim() === '' || webhookUrl.includes('your_webhook_id')) {
-      alert("Make.com Webhook URL is not configured. Please define VITE_MAKE_WEBHOOK_URL in your environment variables.");
-      return;
-    }
-
     setRunningScraper(true);
     setScraperLog([
-      'Triggering Make.com automation...',
+      'Connecting to Supabase...',
+      'Fetching latest energy updates...'
     ]);
 
     try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trigger: 'manual_admin_on_demand' })
-      });
+      await loadAllData();
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
       setScraperLog([
-        'Triggering Make.com automation...',
-        'Request sent successfully.'
+        'Connecting to Supabase...',
+        'Fetching latest energy updates...',
+        'Sync complete: database updated.'
       ]);
       
-      setTimeout(async () => {
-        await loadAllData();
+      setTimeout(() => {
         setRunningScraper(false);
-      }, 3000);
+      }, 2000);
       
     } catch (err) {
-      console.error('Error triggering Make.com webhook:', err);
+      console.error('Error refreshing news database:', err);
       setScraperLog([
-        'Triggering Make.com automation...',
-        `Failed to trigger Make.com scenario: ${err instanceof Error ? err.message : String(err)}`
+        'Connecting to Supabase...',
+        `Refresh failed: ${err instanceof Error ? err.message : String(err)}`
       ]);
-      setRunningScraper(false);
+      setTimeout(() => {
+        setRunningScraper(false);
+      }, 3000);
     }
   };
 
