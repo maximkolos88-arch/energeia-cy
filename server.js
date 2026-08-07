@@ -520,7 +520,7 @@ async function triggerRssAggregator() {
 
         console.log(`[Aggregator Worker] Scraping: ${targetUrl}`);
         let articleText = '';
-        let imageUrl = 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=80&w=800&auto=format&fit=crop';
+        let imageUrl = '';
         
         const page = await browser.newPage();
         try {
@@ -1069,7 +1069,7 @@ app.post('/api/crawler/fetch', async (req, res) => {
     // Extract image
     const ogImg = document.querySelector('meta[property="og:image"]')?.getAttribute('content') ||
                   document.querySelector('meta[name="twitter:image"]')?.getAttribute('content') ||
-                  'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=80&w=800&auto=format&fit=crop';
+                  '';
 
     // Extract description/summary
     let description = (article?.excerpt || '').trim();

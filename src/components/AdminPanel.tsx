@@ -81,17 +81,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const handleEnrichDraft = (item: NewsItem) => {
     const lowerTitle = (item.title || '').toLowerCase();
     let fallbackCategory = item.category || 'Government & Policy';
-    let fallbackImage = 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&auto=format&fit=crop';
+    let fallbackImage = item.imageUrl || item.image_url || '';
 
     if (lowerTitle.includes('solar') || lowerTitle.includes('pv') || lowerTitle.includes('wind') || lowerTitle.includes('renew') || lowerTitle.includes('battery')) {
       fallbackCategory = 'Renewables';
-      fallbackImage = 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop';
     } else if (lowerTitle.includes('gas') || lowerTitle.includes('oil') || lowerTitle.includes('block') || lowerTitle.includes('offshore') || lowerTitle.includes('drill')) {
       fallbackCategory = 'Oil & Gas';
-      fallbackImage = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop';
     } else if (lowerTitle.includes('subsidy') || lowerTitle.includes('grant') || lowerTitle.includes('fund') || lowerTitle.includes('support')) {
       fallbackCategory = 'Grants & Subsidies';
-      fallbackImage = 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop';
     }
 
     const fallbackSummary = `The implementation of ${item.title || 'this energy project'} is set to drive significant advancements in Cyprus's energy market. This initiative introduces critical infrastructure updates designed to enhance capacity and align with long-term transition goals.`;
@@ -154,17 +151,14 @@ Financing and regulatory clearance remain key priorities, with project developer
 
         const lowerTitle = parsedTitle.toLowerCase();
         let fallbackCategory = 'Government & Policy';
-        let fallbackImage = 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&auto=format&fit=crop';
+        let fallbackImage = '';
 
         if (lowerTitle.includes('solar') || lowerTitle.includes('pv') || lowerTitle.includes('wind') || lowerTitle.includes('renew') || lowerTitle.includes('battery')) {
           fallbackCategory = 'Renewables';
-          fallbackImage = 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop';
         } else if (lowerTitle.includes('gas') || lowerTitle.includes('oil') || lowerTitle.includes('block') || lowerTitle.includes('offshore') || lowerTitle.includes('drill')) {
           fallbackCategory = 'Oil & Gas';
-          fallbackImage = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop';
         } else if (lowerTitle.includes('subsidy') || lowerTitle.includes('grant') || lowerTitle.includes('fund') || lowerTitle.includes('support')) {
           fallbackCategory = 'Grants & Subsidies';
-          fallbackImage = 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop';
         }
 
         const fallbackSummary = `The implementation of ${parsedTitle} is set to drive significant advancements in Cyprus's energy market. This initiative introduces critical infrastructure updates designed to enhance capacity and align with long-term transition goals.`;
