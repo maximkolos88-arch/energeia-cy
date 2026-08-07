@@ -127,6 +127,18 @@ export class NewsRepository {
    * Create a news item (Admin Panel)
    */
   static async createNewsItem(item: Omit<NewsItem, 'id' | 'createdAt'>): Promise<NewsItem> {
+    if (item.sourceUrl) {
+      const { data: existing } = await supabase
+        .from('news')
+        .select('*')
+        .eq('source_url', item.sourceUrl)
+        .maybeSingle();
+      if (existing) {
+        console.log(`[NewsRepository] Skip insertion: Article with source_url ${item.sourceUrl} already exists (ID: ${existing.id}).`);
+        return this.mapSupabaseToNewsItem(existing);
+      }
+    }
+
     const fullPayload = {
       title: item.title,
       summary: item.summary,
@@ -219,6 +231,18 @@ export class NewsRepository {
    * Create a draft news item (used by news aggregator or admin panel)
    */
   static async createDraftNews(item: Omit<NewsItem, 'id'>): Promise<string> {
+    if (item.sourceUrl) {
+      const { data: existing } = await supabase
+        .from('news')
+        .select('id')
+        .eq('source_url', item.sourceUrl)
+        .maybeSingle();
+      if (existing) {
+        console.log(`[NewsRepository] Skip insertion: Article with source_url ${item.sourceUrl} already exists (ID: ${existing.id}).`);
+        return existing.id;
+      }
+    }
+
     const fullPayload = {
       title: item.title,
       summary: item.summary,

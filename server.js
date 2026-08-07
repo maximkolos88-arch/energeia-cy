@@ -520,7 +520,19 @@ async function triggerRssAggregator() {
 
         console.log(`[Aggregator Worker] Scraping: ${targetUrl}`);
         let articleText = '';
-        let imageUrl = '';
+        
+        let rssImageUrl = '';
+        if (item.enclosure && item.enclosure.url) {
+          rssImageUrl = item.enclosure.url;
+        } else if (item['media:content'] && item['media:content'].$ && item['media:content'].$.url) {
+          rssImageUrl = item['media:content'].$.url;
+        } else if (item['media:thumbnail'] && item['media:thumbnail'].$ && item['media:thumbnail'].$.url) {
+          rssImageUrl = item['media:thumbnail'].$.url;
+        } else if (item.thumbnail) {
+          rssImageUrl = typeof item.thumbnail === 'string' ? item.thumbnail : (item.thumbnail.url || '');
+        }
+        
+        let imageUrl = rssImageUrl || '';
         
         const page = await browser.newPage();
         try {
