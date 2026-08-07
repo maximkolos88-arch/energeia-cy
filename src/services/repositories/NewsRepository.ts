@@ -95,7 +95,17 @@ export class NewsRepository {
         });
         throw error;
       }
-      const published = (data || []).map(item => this.mapSupabaseToNewsItem(item));
+      const mapped = (data || []).map(item => this.mapSupabaseToNewsItem(item));
+      
+      // Filter out drafts: must have status !== 'Draft' and must have non-empty core fields
+      const published = mapped.filter(item => {
+        const isDraftStatus = item.status && item.status.toLowerCase() === 'draft';
+        const hasCoreFields = item.title && item.title.trim() !== '' &&
+                             item.summary && item.summary.trim() !== '' &&
+                             item.content && item.content.trim() !== '';
+        return !isDraftStatus && hasCoreFields;
+      });
+
       const sorted = this.sortByIdDescending(published);
       return this.filterLocalNews(sorted, categoryFilter);
     } catch (err) {

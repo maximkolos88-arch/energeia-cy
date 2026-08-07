@@ -62,7 +62,17 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
               );
             })}
           </nav>
+        </div>
 
+        {/* Right side: Admin Access link */}
+        <div className="shrink-0 flex items-center">
+          <a
+            href="/admin"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#5f6368] dark:text-gray-400 hover:text-[#202124] dark:hover:text-white hover:bg-[#f8f9fa] dark:hover:bg-[#2d2e30] rounded-lg transition-all"
+          >
+            <Shield className="w-3.5 h-3.5 text-[#1CA350]" />
+            <span>Admin</span>
+          </a>
         </div>
 
       </div>

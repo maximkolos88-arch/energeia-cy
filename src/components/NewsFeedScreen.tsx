@@ -42,11 +42,7 @@ export const NewsFeedScreen: React.FC = () => {
   } = useNewsController();
 
   const getProxyImageUrl = (url: string) => {
-    if (!url) return '';
-    if (url.startsWith('data:') || url.startsWith('/') || url.startsWith(window.location.origin)) {
-      return url;
-    }
-    return `/api/proxy-image?url=${encodeURIComponent(url)}`;
+    return url || '';
   };
 
   const formatDate = (dateStr?: string) => {
