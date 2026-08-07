@@ -304,6 +304,36 @@ Financing and regulatory clearance remain key priorities, with project developer
     }
   }, [isAuthenticated]);
 
+  // Background polling to automatically refresh news and database counters every 60 seconds
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    const intervalId = setInterval(async () => {
+      try {
+        const n = await NewsRepository.getAllNews();
+        setNewsList(n);
+        
+        const d = await DirectoryRepository.getAllParticipants();
+        setDirectoryList(d);
+        
+        const m = await MagazineRepository.getMagazineIssues();
+        setMagazineList(m);
+        
+        const c = await CourseRepository.getAllCourses();
+        setCoursesList(c);
+        
+        const { data } = await supabase.from('applications').select('*');
+        if (data) {
+          setApplications(data as LeadApplication[]);
+        }
+      } catch (err) {
+        console.warn("Background auto-refresh failed:", err);
+      }
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [isAuthenticated]);
+
   // Auth Handlers
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
