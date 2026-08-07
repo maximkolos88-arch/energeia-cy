@@ -113,18 +113,23 @@ export const NewsFeedScreen: React.FC = () => {
 
 
   const getBadgeStyle = (categoryOrBadge?: string) => {
-    switch (categoryOrBadge?.toLowerCase()) {
-      case 'urgent':
-        return 'bg-[#fce8e6] text-[#c5221f] font-semibold';
-      case 'cera':
-        return 'bg-[#fef7e0] text-[#b06000] font-semibold';
-      case 'grants':
-        return 'bg-[#e6f4ea] text-[#137333] font-semibold';
-      case 'eac':
-        return 'bg-[#e8f5e9] text-[#1CA350] font-semibold';
-      default:
-        return 'bg-[#f1f3f4] text-[#5f6368] font-medium';
+    const c = categoryOrBadge?.toLowerCase() || '';
+    if (c.includes('renew') || c.includes('solar') || c.includes('wind')) {
+      return 'bg-[#e8f5e9] text-[#1CA350] font-semibold dark:bg-[#1b4332] dark:text-[#8fdfab]';
     }
+    if (c.includes('oil') || c.includes('gas') || c.includes('fossil')) {
+      return 'bg-[#fffbeb] text-[#d97706] font-semibold dark:bg-[#451a03] dark:text-[#fcd34d]';
+    }
+    if (c.includes('policy') || c.includes('govern') || c.includes('cera') || c.includes('regula')) {
+      return 'bg-[#eff6ff] text-[#2563eb] font-semibold dark:bg-[#172554] dark:text-[#93c5fd]';
+    }
+    if (c.includes('grant') || c.includes('subsidy')) {
+      return 'bg-[#faf5ff] text-[#9333ea] font-semibold dark:bg-[#3b0764] dark:text-[#d8b4fe]';
+    }
+    if (c === 'urgent') {
+      return 'bg-[#fce8e6] text-[#c5221f] font-semibold dark:bg-[#7f1d1d] dark:text-[#fca5a5]';
+    }
+    return 'bg-[#f1f3f4] text-[#5f6368] font-medium dark:bg-[#3c4043] dark:text-gray-300';
   };
 
   return (
@@ -230,7 +235,7 @@ export const NewsFeedScreen: React.FC = () => {
 
                         <div className="flex items-center gap-1.5">
                           <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(item.category)}`}>
-                            {item.category || 'Uncategorized'}
+                            {item.category}
                           </span>
                         </div>
                       </div>
@@ -316,7 +321,7 @@ export const NewsFeedScreen: React.FC = () => {
             <div className="mt-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(selectedArticle.category)}`}>
-                  {selectedArticle.category || 'Uncategorized'}
+                  {selectedArticle.category}
                 </span>
                 <span className="text-xs text-[#5f6368]">
                   {formatDate(selectedArticle.publishedAt)}

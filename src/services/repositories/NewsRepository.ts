@@ -29,7 +29,7 @@ export class NewsRepository {
       title: this.cleanTitle(item.title || ''),
       summary: this.cleanSummary(item.summary || ''),
       content: item.content || '',
-      category: item.category || 'Uncategorized',
+      category: item.category || '',
       imageUrl: item.image_url || item.imageUrl || '',
       sourceUrl: item.source_url || '',
       publishedAt: item.published_at || item.created_at || '',
