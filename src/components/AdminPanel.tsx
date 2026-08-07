@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { supabase } from '../lib/supabase';
@@ -658,70 +659,48 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
-  // Trigger News Scraper
+  // Trigger News Scraper via Make.com Webhook
   const handleTriggerScraper = async () => {
-    setRunningScraper(true);
-    setScraperLog('Starting news aggregator agent in the background...');
+    const webhookUrl = import.meta.env.VITE_MAKE_WEBHOOK_URL || '';
     
-    const runSimulation = () => {
-      setTimeout(async () => {
-        setRunningScraper(false);
-        setScraperLog([
-          "News crawler completed successfully (Vercel Cloud Simulation).",
-          "Supabase Database News Connection: ACTIVE",
-          "Scraped 0 new articles (all recent feeds up to date)."
-        ]);
-        await loadAllData();
-      }, 2000);
-    };
-
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    if (!isLocalhost) {
-      runSimulation();
+    if (!webhookUrl || webhookUrl.trim() === '' || webhookUrl.includes('your_webhook_id')) {
+      alert("Make.com Webhook URL is not configured. Please define VITE_MAKE_WEBHOOK_URL in your environment variables.");
       return;
     }
 
+    setRunningScraper(true);
+    setScraperLog([
+      'Triggering Make.com automation...',
+    ]);
+
     try {
-      const res = await fetch('/api/scraper/trigger', { method: 'POST' });
-      if (!res.ok) throw new Error('Local scraper endpoint failed');
-      const contentType = res.headers.get("content-type") || "";
-      if (!contentType.includes("application/json")) {
-        throw new Error('Endpoint did not return JSON');
-      }
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger: 'manual_admin_on_demand' })
+      });
       
-      const intervalId = setInterval(async () => {
-        try {
-          const statusRes = await fetch('/api/scraper/status');
-          if (statusRes.ok) {
-            const statusData = await statusRes.json();
-            if (!statusData.running) {
-              clearInterval(intervalId);
-              setRunningScraper(false);
-              if (statusData.lastRun) {
-                setLastRunTimestamp(statusData.lastRun);
-              }
-              const result = statusData.lastResult || {};
-              setScrapedDrafts(result.drafts || []);
-              if (result.logs && Array.isArray(result.logs)) {
-                setScraperLog([
-                  `News crawler completed. Total new draft items inserted: ${result.insertedCount || 0}`,
-                  ...result.logs
-                ]);
-              } else {
-                setScraperLog(`News crawler completed. Total new draft items inserted: ${result.insertedCount || 0}`);
-              }
-              await loadAllData();
-            }
-          }
-        } catch (pollErr) {
-          console.error('Error polling scraper status:', pollErr);
-          clearInterval(intervalId);
-          runSimulation();
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      setScraperLog([
+        'Triggering Make.com automation...',
+        'Request sent successfully.'
+      ]);
+      
+      setTimeout(async () => {
+        await loadAllData();
+        setRunningScraper(false);
       }, 3000);
+      
     } catch (err) {
-      console.warn("Local scraper endpoint failed or unavailable. Falling back to simulation:", err);
-      runSimulation();
+      console.error('Error triggering Make.com webhook:', err);
+      setScraperLog([
+        'Triggering Make.com automation...',
+        `Failed to trigger Make.com scenario: ${err instanceof Error ? err.message : String(err)}`
+      ]);
+      setRunningScraper(false);
     }
   };
 
