@@ -77,89 +77,40 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [successToast, setSuccessToast] = useState<string | null>(null);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState<boolean>(false);
 
-  const handleEnrichDraft = async (item: NewsItem) => {
-    if (!item.sourceUrl) return;
-    setEnrichingId(item.id);
-    try {
-      let scraped: any = null;
-      try {
-        const response = await fetch('/api/fetch-article', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: item.sourceUrl })
-        });
-        if (!response.ok) throw new Error('Enrichment scraping failed');
-        const contentType = response.headers.get("content-type") || "";
-        if (!contentType.includes("application/json")) {
-          throw new Error('Endpoint did not return JSON');
-        }
-        scraped = await response.json();
-      } catch (scrapErr) {
-        console.warn("Direct article scraping failed, using smart metadata generator fallback:", scrapErr);
-        
-        const lowerTitle = (item.title || '').toLowerCase();
-        let fallbackCategory = item.category || 'Government & Policy';
-        let fallbackImage = 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&auto=format&fit=crop';
+  const handleEnrichDraft = (item: NewsItem) => {
+    const lowerTitle = (item.title || '').toLowerCase();
+    let fallbackCategory = item.category || 'Government & Policy';
+    let fallbackImage = 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&auto=format&fit=crop';
 
-        if (lowerTitle.includes('solar') || lowerTitle.includes('pv') || lowerTitle.includes('wind') || lowerTitle.includes('renew') || lowerTitle.includes('battery')) {
-          fallbackCategory = 'Renewables';
-          fallbackImage = 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop';
-        } else if (lowerTitle.includes('gas') || lowerTitle.includes('oil') || lowerTitle.includes('block') || lowerTitle.includes('offshore') || lowerTitle.includes('drill')) {
-          fallbackCategory = 'Oil & Gas';
-          fallbackImage = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop';
-        } else if (lowerTitle.includes('subsidy') || lowerTitle.includes('grant') || lowerTitle.includes('fund') || lowerTitle.includes('support')) {
-          fallbackCategory = 'Grants & Subsidies';
-          fallbackImage = 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop';
-        }
-
-        const fallbackSummary = `Key analysis and operational updates regarding "${item.title}". This reporting outlines recent policy discussions, strategic commercial timelines, and grid integration requirements in Cyprus.`;
-        const fallbackContent = `## Executive Summary\n\nDevelopments surrounding **${item.title}** are attracting interest from key stakeholders in the Cyprus energy sector.\n\n### Core Implications\n1. **Policy Integration:** Aligning project execution timelines with Cyprus National Energy & Climate Plan (NECP) targets.\n2. **Infrastructure Impact:** Reviewing capacity limitations and telemetry connection protocols.\n3. **Financial Funding:** Assessing potential subsidy qualification or private venture capital capital structures.\n\n*Source URL: [Read full coverage on original site](${item.sourceUrl})*`;
-
-        scraped = {
-          imageUrl: fallbackImage,
-          description: fallbackSummary,
-          content: fallbackContent,
-          category: fallbackCategory
-        };
-      }
-
-      // Update Supabase with self-healing fallback
-      try {
-        const { error } = await supabase
-          .from('news')
-          .update({
-            image_url: scraped.imageUrl || null,
-            summary: scraped.description || null,
-            content: scraped.content || null,
-            category: scraped.category && scraped.category !== 'Uncategorized' ? scraped.category : (item.category || 'Uncategorized')
-          })
-          .eq('id', item.id);
-        if (error) throw error;
-      } catch (err: any) {
-        console.warn("Failed updating news with image_url in AdminPanel, retrying with core columns only:", err.message);
-        const { error } = await supabase
-          .from('news')
-          .update({
-            summary: scraped.description || null,
-            content: scraped.content || null,
-            category: scraped.category && scraped.category !== 'Uncategorized' ? scraped.category : (item.category || 'Uncategorized')
-          })
-          .eq('id', item.id);
-        if (error) throw error;
-      }
-
-      // Show success toast
-      setSuccessToast(`Successfully enriched: ${item.title}`);
-      setTimeout(() => setSuccessToast(null), 4000);
-
-      // Refresh news list
-      loadAllData();
-    } catch (err) {
-      console.error('Error enriching draft:', err);
-      alert('Failed to enrich draft metadata: ' + (err instanceof Error ? err.message : 'Unknown error'));
-    } finally {
-      setEnrichingId(null);
+    if (lowerTitle.includes('solar') || lowerTitle.includes('pv') || lowerTitle.includes('wind') || lowerTitle.includes('renew') || lowerTitle.includes('battery')) {
+      fallbackCategory = 'Renewables';
+      fallbackImage = 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop';
+    } else if (lowerTitle.includes('gas') || lowerTitle.includes('oil') || lowerTitle.includes('block') || lowerTitle.includes('offshore') || lowerTitle.includes('drill')) {
+      fallbackCategory = 'Oil & Gas';
+      fallbackImage = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop';
+    } else if (lowerTitle.includes('subsidy') || lowerTitle.includes('grant') || lowerTitle.includes('fund') || lowerTitle.includes('support')) {
+      fallbackCategory = 'Grants & Subsidies';
+      fallbackImage = 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop';
     }
+
+    const fallbackSummary = `Key analysis and operational updates regarding "${item.title}". This reporting outlines recent policy discussions, strategic commercial timelines, and grid integration requirements in Cyprus.`;
+    const fallbackContent = `## Executive Summary\n\nDevelopments surrounding **${item.title}** are attracting interest from key stakeholders in the Cyprus energy sector.\n\n### Core Implications\n1. **Policy Integration:** Aligning project execution timelines with Cyprus National Energy & Climate Plan (NECP) targets.\n2. **Infrastructure Impact:** Reviewing capacity limitations and telemetry connection protocols.\n3. **Financial Funding:** Assessing potential subsidy qualification or private venture capital capital structures.\n\n*Source URL: [Read full coverage on original site](${item.sourceUrl || '#'})*`;
+
+    // Populate editor fields locally in the browser
+    setEditingNews({
+      ...item,
+      title: item.title || '',
+      summary: fallbackSummary,
+      content: fallbackContent,
+      imageUrl: fallbackImage,
+      category: fallbackCategory,
+      readTimeMinutes: 3,
+      status: 'Published'
+    });
+
+    // Show success toast
+    setSuccessToast(`Mockup data generated for: ${item.title}`);
+    setTimeout(() => setSuccessToast(null), 4000);
   };
 
   const handleFetchArticle = async () => {
