@@ -39,16 +39,14 @@ export class NewsRepository {
     };
   }
 
-  private static sortByIdDescending(items: NewsItem[]): NewsItem[] {
+  private static sortByDateDescending(items: NewsItem[]): NewsItem[] {
     return items.sort((a, b) => {
-      const idA = String(a.id || '');
-      const idB = String(b.id || '');
-      const numA = Number(idA);
-      const numB = Number(idB);
-      if (!isNaN(numA) && !isNaN(numB)) {
-        return numB - numA;
-      }
-      return idB.localeCompare(idA);
+      const dateA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+      const dateB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+      if (isNaN(dateA) && isNaN(dateB)) return 0;
+      if (isNaN(dateA)) return 1;
+      if (isNaN(dateB)) return -1;
+      return dateB - dateA;
     });
   }
 
@@ -59,18 +57,19 @@ export class NewsRepository {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select('*');
+        .select('*')
+        .order('published_at', { ascending: false });
+        
       if (error) {
-        console.error("Supabase getAllNews query error details:", {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
-        throw error;
+        console.warn("Supabase ordering by published_at failed, retrying without ordering:", error.message);
+        const fallbackRes = await supabase.from('news').select('*');
+        if (fallbackRes.error) throw fallbackRes.error;
+        const mapped = (fallbackRes.data || []).map(item => this.mapSupabaseToNewsItem(item));
+        return this.sortByDateDescending(mapped);
       }
+      
       const mapped = (data || []).map(item => this.mapSupabaseToNewsItem(item));
-      return this.sortByIdDescending(mapped);
+      return this.sortByDateDescending(mapped);
     } catch (err) {
       console.error("getallNews catch block exception:", err);
       throw err;
@@ -85,16 +84,26 @@ export class NewsRepository {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select('*');
+        .select('*')
+        .order('published_at', { ascending: false });
+      
       if (error) {
-        console.error("Supabase getPublishedNews query error details:", {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
+        console.warn("Supabase ordering by published_at failed, retrying without ordering:", error.message);
+        const fallbackRes = await supabase.from('news').select('*');
+        if (fallbackRes.error) throw fallbackRes.error;
+        
+        const mapped = (fallbackRes.data || []).map(item => this.mapSupabaseToNewsItem(item));
+        const published = mapped.filter(item => {
+          const isDraftStatus = item.status && item.status.toLowerCase() === 'draft';
+          const hasCoreFields = item.title && item.title.trim() !== '' &&
+                               item.summary && item.summary.trim() !== '' &&
+                               item.content && item.content.trim() !== '';
+          return !isDraftStatus && hasCoreFields;
         });
-        throw error;
+        const sorted = this.sortByDateDescending(published);
+        return this.filterLocalNews(sorted, categoryFilter);
       }
+      
       const mapped = (data || []).map(item => this.mapSupabaseToNewsItem(item));
       
       // Filter out drafts: must have status !== 'Draft' and must have non-empty core fields
@@ -106,7 +115,7 @@ export class NewsRepository {
         return !isDraftStatus && hasCoreFields;
       });
 
-      const sorted = this.sortByIdDescending(published);
+      const sorted = this.sortByDateDescending(published);
       return this.filterLocalNews(sorted, categoryFilter);
     } catch (err) {
       console.error("getPublishedNews catch block exception:", err);
