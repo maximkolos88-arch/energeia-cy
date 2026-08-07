@@ -94,10 +94,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       fallbackImage = 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop';
     }
 
-    const fallbackSummary = `A comprehensive report on the latest policy and market changes regarding ${item.title} in Cyprus, examining structural integration timelines and strategic regulatory alignments.`;
-    const fallbackContent = `The unfolding situation surrounding ${item.title} marks a significant turning point for the Cypriot energy sector as policymakers and private sector stakeholders seek to align local infrastructure with broader European energy transition mandates. This initiative has drawn intense focus from the Cyprus Energy Regulatory Authority (CERA) and the Ministry of Energy, Commerce and Industry, as they evaluate the grid-level feasibility of newly proposed capacity additions. Observers note that the integration process will require substantial upgrades to transmission infrastructure to handle the increased load and maintain frequency stability.
+    const fallbackSummary = `The implementation of ${item.title || 'this energy project'} is set to drive significant advancements in Cyprus's energy market. This initiative introduces critical infrastructure updates designed to enhance capacity and align with long-term transition goals.`;
+    const fallbackContent = `The ongoing rollout of ${item.title || 'this energy project'} represents a major step forward for stakeholders across the Cypriot energy landscape. As the island seeks to modernize its transmission infrastructure and align with European Union energy objectives, this project introduces crucial technical upgrades designed to balance grid capacity and prevent supply bottlenecks. Regulatory bodies and ministry officials have fast-tracked discussions to ensure telemetry systems and local substation connections are fully prepared.
 
-Strategic funding and capital allocation remain central themes of the ongoing debates, with developers lobbying for simplified licensing processes and enhanced state grant accessibility. Over the coming quarters, industry groups anticipate a series of public consultations aimed at establishing a structured roadmap for implementation. Achieving commercial feasibility will ultimately depend on establishing reliable power purchase agreements and securing backing from institutional lenders committed to the Mediterranean region's clean energy corridors.`;
+Financing and regulatory clearance remain key priorities, with project developers working closely with local councils to address administrative hurdles. Over the coming months, a series of workshops will establish the operational timeline and licensing protocols. Long-term commercial success will depend on securing power distribution agreements and stabilizing integration costs for consumers.`;
 
     // Populate editor fields locally in the browser
     setEditingNews({
@@ -167,10 +167,10 @@ Strategic funding and capital allocation remain central themes of the ongoing de
           fallbackImage = 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop';
         }
 
-        const fallbackSummary = `A comprehensive report on the latest policy and market changes regarding ${parsedTitle} in Cyprus, examining structural integration timelines and strategic regulatory alignments.`;
-        const fallbackContent = `The unfolding situation surrounding ${parsedTitle} marks a significant turning point for the Cypriot energy sector as policymakers and private sector stakeholders seek to align local infrastructure with broader European energy transition mandates. This initiative has drawn intense focus from the Cyprus Energy Regulatory Authority (CERA) and the Ministry of Energy, Commerce and Industry, as they evaluate the grid-level feasibility of newly proposed capacity additions. Observers note that the integration process will require substantial upgrades to transmission infrastructure to handle the increased load and maintain frequency stability.
+        const fallbackSummary = `The implementation of ${parsedTitle} is set to drive significant advancements in Cyprus's energy market. This initiative introduces critical infrastructure updates designed to enhance capacity and align with long-term transition goals.`;
+        const fallbackContent = `The ongoing rollout of ${parsedTitle} represents a major step forward for stakeholders across the Cypriot energy landscape. As the island seeks to modernize its transmission infrastructure and align with European Union energy objectives, this project introduces crucial technical upgrades designed to balance grid capacity and prevent supply bottlenecks. Regulatory bodies and ministry officials have fast-tracked discussions to ensure telemetry systems and local substation connections are fully prepared.
 
-Strategic funding and capital allocation remain central themes of the ongoing debates, with developers lobbying for simplified licensing processes and enhanced state grant accessibility. Over the coming quarters, industry groups anticipate a series of public consultations aimed at establishing a structured roadmap for implementation. Achieving commercial feasibility will ultimately depend on establishing reliable power purchase agreements and securing backing from institutional lenders committed to the Mediterranean region's clean energy corridors.`;
+Financing and regulatory clearance remain key priorities, with project developers working closely with local councils to address administrative hurdles. Over the coming months, a series of workshops will establish the operational timeline and licensing protocols. Long-term commercial success will depend on securing power distribution agreements and stabilizing integration costs for consumers.`;
 
         parsedData = {
           title: parsedTitle,
@@ -439,7 +439,7 @@ Strategic funding and capital allocation remain central themes of the ongoing de
   const handleAiGenerateSummary = () => {
     if (!editingNews) return;
     const title = editingNews.title || "Cyprus Energy Sector Expansion Update";
-    const fallbackSummary = `A comprehensive report on the latest policy and market changes regarding ${title} in Cyprus, examining structural integration timelines and strategic regulatory alignments.`;
+    const fallbackSummary = `The implementation of ${title} is set to drive significant advancements in Cyprus's energy market. This initiative introduces critical infrastructure updates designed to enhance capacity and align with long-term transition goals.`;
     
     setEditingNews(prev => prev ? { ...prev, summary: fallbackSummary } : null);
     
