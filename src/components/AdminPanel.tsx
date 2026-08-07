@@ -184,27 +184,53 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const loadAllData = async () => {
     if (!isAuthenticated) return;
     setLoadingData(true);
+    
+    // Load News
     try {
-      const [n, d, m, c, supabaseAppsResult] = await Promise.all([
-        NewsRepository.getAllNews(),
-        DirectoryRepository.getAllParticipants(),
-        MagazineRepository.getMagazineIssues(),
-        CourseRepository.getAllCourses(),
-        supabase.from('applications').select('*').order('created_at', { ascending: false })
-      ]);
+      const n = await NewsRepository.getAllNews();
       setNewsList(n);
+    } catch (err) {
+      console.error("Failed to load news in Admin Panel:", err);
+    }
+
+    // Load Directory/Participants
+    try {
+      const d = await DirectoryRepository.getAllParticipants();
       setDirectoryList(d);
+    } catch (err) {
+      console.error("Failed to load directory in Admin Panel:", err);
+    }
+
+    // Load Magazines
+    try {
+      const m = await MagazineRepository.getMagazineIssues();
       setMagazineList(m);
+    } catch (err) {
+      console.error("Failed to load magazines in Admin Panel:", err);
+    }
+
+    // Load Courses
+    try {
+      const c = await CourseRepository.getAllCourses();
       setCoursesList(c);
-      
-      if (!supabaseAppsResult.error && supabaseAppsResult.data) {
-        setApplications(supabaseAppsResult.data as LeadApplication[]);
+    } catch (err) {
+      console.error("Failed to load courses in Admin Panel:", err);
+    }
+
+    // Load Lead Applications
+    try {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*');
+      if (error) throw error;
+      if (data) {
+        setApplications(data as LeadApplication[]);
       }
     } catch (err) {
-      console.error("Failed loading data in Admin Panel:", err);
-    } finally {
-      setLoadingData(false);
+      console.error("Failed to load lead applications in Admin Panel:", err);
     }
+
+    setLoadingData(false);
   };
 
   const handleDeleteApplication = async (id: string) => {
