@@ -503,7 +503,7 @@ Financing and regulatory clearance remain key priorities, with project developer
         title: cleanTitle(editingNews.title),
         summary: cleanSummary(editingNews.summary),
         content: editingNews.content || '',
-        category: editingNews.category || 'Uncategorized',
+        category: editingNews.category || 'Renewables',
         imageUrl: editingNews.imageUrl || '',
         sourceUrl: editingNews.sourceUrl || '',
         status: editingNews.status || 'Published',

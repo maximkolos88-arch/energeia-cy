@@ -233,11 +233,13 @@ export const NewsFeedScreen: React.FC = () => {
                           {formatDate(item.publishedAt)}
                         </span>
 
-                        <div className="flex items-center gap-1.5">
-                          <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(item.category)}`}>
-                            {item.category}
-                          </span>
-                        </div>
+                        {item.category && item.category.trim() !== '' && item.category.toLowerCase() !== 'uncategorized' ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(item.category)}`}>
+                              {item.category}
+                            </span>
+                          </div>
+                        ) : null}
                       </div>
 
                       {/* Headline */}
@@ -320,9 +322,11 @@ export const NewsFeedScreen: React.FC = () => {
             {/* Article Meta */}
             <div className="mt-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(selectedArticle.category)}`}>
-                  {selectedArticle.category}
-                </span>
+                {selectedArticle.category && selectedArticle.category.trim() !== '' && selectedArticle.category.toLowerCase() !== 'uncategorized' ? (
+                  <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(selectedArticle.category)}`}>
+                    {selectedArticle.category}
+                  </span>
+                ) : null}
                 <span className="text-xs text-[#5f6368]">
                   {formatDate(selectedArticle.publishedAt)}
                 </span>
