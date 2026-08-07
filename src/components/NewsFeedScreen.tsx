@@ -112,6 +112,20 @@ export const NewsFeedScreen: React.FC = () => {
   ]);
 
 
+  const formatCategoryDisplay = (cat?: string): string => {
+    if (!cat) return '';
+    const trimmed = cat.trim();
+    if (trimmed.toLowerCase() === 'uncategorized') return '';
+    
+    const lower = trimmed.toLowerCase();
+    if (lower === 'renewables') return 'Renewables';
+    if (lower === 'oil & gas') return 'Oil & Gas';
+    if (lower === 'government & policy') return 'Government & Policy';
+    if (lower === 'grants & subsidies') return 'Grants & Subsidies';
+    
+    return trimmed.replace(/\b\w/g, c => c.toUpperCase());
+  };
+
   const getBadgeStyle = (categoryOrBadge?: string) => {
     const c = categoryOrBadge?.toLowerCase() || '';
     if (c.includes('renew') || c.includes('solar') || c.includes('wind')) {
@@ -233,10 +247,10 @@ export const NewsFeedScreen: React.FC = () => {
                           {formatDate(item.publishedAt)}
                         </span>
 
-                        {item.category && item.category.trim() !== '' && item.category.toLowerCase() !== 'uncategorized' ? (
+                        {formatCategoryDisplay(item.category) ? (
                           <div className="flex items-center gap-1.5">
                             <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(item.category)}`}>
-                              {item.category}
+                              {formatCategoryDisplay(item.category)}
                             </span>
                           </div>
                         ) : null}
@@ -322,9 +336,9 @@ export const NewsFeedScreen: React.FC = () => {
             {/* Article Meta */}
             <div className="mt-4">
               <div className="flex items-center gap-2 mb-3">
-                {selectedArticle.category && selectedArticle.category.trim() !== '' && selectedArticle.category.toLowerCase() !== 'uncategorized' ? (
+                {formatCategoryDisplay(selectedArticle.category) ? (
                   <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(selectedArticle.category)}`}>
-                    {selectedArticle.category}
+                    {formatCategoryDisplay(selectedArticle.category)}
                   </span>
                 ) : null}
                 <span className="text-xs text-[#5f6368]">

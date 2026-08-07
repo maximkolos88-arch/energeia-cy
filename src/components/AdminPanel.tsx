@@ -493,11 +493,17 @@ Financing and regulatory clearance remain key priorities, with project developer
     if (!editingNews?.title || !editingNews?.summary) return;
 
     try {
+      const validCategories = ['Renewables', 'Oil & Gas', 'Government & Policy', 'Grants & Subsidies'];
+      let normalizedCategory = editingNews.category || 'Renewables';
+      if (!validCategories.includes(normalizedCategory)) {
+        normalizedCategory = 'Renewables';
+      }
+
       const payload = {
         title: cleanTitle(editingNews.title),
         summary: cleanSummary(editingNews.summary),
         content: editingNews.content || '',
-        category: editingNews.category || 'Renewables',
+        category: normalizedCategory,
         imageUrl: editingNews.imageUrl || '',
         sourceUrl: editingNews.sourceUrl || '',
         status: editingNews.status || 'Published',
