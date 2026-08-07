@@ -89,18 +89,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       if (!response.ok) throw new Error('Enrichment scraping failed');
       const scraped = await response.json();
 
-      // Update Supabase
-      const { error } = await supabase
-        .from('news')
-        .update({
-          image_url: scraped.imageUrl || null,
-          summary: scraped.description || null,
-          content: scraped.content || null,
-          category: scraped.category && scraped.category !== 'Uncategorized' ? scraped.category : (item.category || 'Uncategorized')
-        })
-        .eq('id', item.id);
-
-      if (error) throw error;
+      // Update Supabase with self-healing fallback
+      try {
+        const { error } = await supabase
+          .from('news')
+          .update({
+            image_url: scraped.imageUrl || null,
+            summary: scraped.description || null,
+            content: scraped.content || null,
+            category: scraped.category && scraped.category !== 'Uncategorized' ? scraped.category : (item.category || 'Uncategorized')
+          })
+          .eq('id', item.id);
+        if (error) throw error;
+      } catch (err: any) {
+        console.warn("Failed updating news with image_url in AdminPanel, retrying with core columns only:", err.message);
+        const { error } = await supabase
+          .from('news')
+          .update({
+            summary: scraped.description || null,
+            content: scraped.content || null,
+            category: scraped.category && scraped.category !== 'Uncategorized' ? scraped.category : (item.category || 'Uncategorized')
+          })
+          .eq('id', item.id);
+        if (error) throw error;
+      }
 
       // Show success toast
       setSuccessToast(`Successfully enriched: ${item.title}`);

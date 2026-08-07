@@ -39,6 +39,19 @@ export class NewsRepository {
     };
   }
 
+  private static sortByIdDescending(items: NewsItem[]): NewsItem[] {
+    return items.sort((a, b) => {
+      const idA = String(a.id || '');
+      const idB = String(b.id || '');
+      const numA = Number(idA);
+      const numB = Number(idB);
+      if (!isNaN(numA) && !isNaN(numB)) {
+        return numB - numA;
+      }
+      return idB.localeCompare(idA);
+    });
+  }
+
   /**
    * Fetch all news items (for Admin CRUD, both Published and Drafts)
    */
@@ -46,8 +59,7 @@ export class NewsRepository {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select('*')
-        .order('id', { ascending: false });
+        .select('*');
       if (error) {
         console.error("Supabase getAllNews query error details:", {
           message: error.message,
@@ -57,7 +69,8 @@ export class NewsRepository {
         });
         throw error;
       }
-      return (data || []).map(item => this.mapSupabaseToNewsItem(item));
+      const mapped = (data || []).map(item => this.mapSupabaseToNewsItem(item));
+      return this.sortByIdDescending(mapped);
     } catch (err) {
       console.error("getallNews catch block exception:", err);
       throw err;
@@ -72,8 +85,7 @@ export class NewsRepository {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select('*')
-        .order('id', { ascending: false });
+        .select('*');
       if (error) {
         console.error("Supabase getPublishedNews query error details:", {
           message: error.message,
@@ -84,7 +96,8 @@ export class NewsRepository {
         throw error;
       }
       const published = (data || []).map(item => this.mapSupabaseToNewsItem(item));
-      return this.filterLocalNews(published, categoryFilter);
+      const sorted = this.sortByIdDescending(published);
+      return this.filterLocalNews(sorted, categoryFilter);
     } catch (err) {
       console.error("getPublishedNews catch block exception:", err);
       throw err;
