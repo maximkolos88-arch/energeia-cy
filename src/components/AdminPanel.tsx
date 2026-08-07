@@ -94,8 +94,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       fallbackImage = 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop';
     }
 
-    const fallbackSummary = `Key analysis and operational updates regarding "${item.title}". This reporting outlines recent policy discussions, strategic commercial timelines, and grid integration requirements in Cyprus.`;
-    const fallbackContent = `## Executive Summary\n\nDevelopments surrounding **${item.title}** are attracting interest from key stakeholders in the Cyprus energy sector.\n\n### Core Implications\n1. **Policy Integration:** Aligning project execution timelines with Cyprus National Energy & Climate Plan (NECP) targets.\n2. **Infrastructure Impact:** Reviewing capacity limitations and telemetry connection protocols.\n3. **Financial Funding:** Assessing potential subsidy qualification or private venture capital capital structures.\n\n*Source URL: [Read full coverage on original site](${item.sourceUrl || '#'})*`;
+    const fallbackSummary = `A comprehensive report on the latest policy and market changes regarding ${item.title} in Cyprus, examining structural integration timelines and strategic regulatory alignments.`;
+    const fallbackContent = `The unfolding situation surrounding ${item.title} marks a significant turning point for the Cypriot energy sector as policymakers and private sector stakeholders seek to align local infrastructure with broader European energy transition mandates. This initiative has drawn intense focus from the Cyprus Energy Regulatory Authority (CERA) and the Ministry of Energy, Commerce and Industry, as they evaluate the grid-level feasibility of newly proposed capacity additions. Observers note that the integration process will require substantial upgrades to transmission infrastructure to handle the increased load and maintain frequency stability.
+
+Strategic funding and capital allocation remain central themes of the ongoing debates, with developers lobbying for simplified licensing processes and enhanced state grant accessibility. Over the coming quarters, industry groups anticipate a series of public consultations aimed at establishing a structured roadmap for implementation. Achieving commercial feasibility will ultimately depend on establishing reliable power purchase agreements and securing backing from institutional lenders committed to the Mediterranean region's clean energy corridors.
+
+*Source URL: [Read full coverage on original site](${item.sourceUrl || '#'})*`;
 
     // Populate editor fields locally in the browser
     setEditingNews({
@@ -165,8 +169,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           fallbackImage = 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&auto=format&fit=crop';
         }
 
-        const fallbackSummary = `Key analysis and operational updates regarding "${parsedTitle}". This reporting outlines recent policy discussions, strategic commercial timelines, and grid integration requirements in Cyprus.`;
-        const fallbackContent = `## Executive Summary\n\nDevelopments surrounding **${parsedTitle}** are attracting interest from key stakeholders in the Cyprus energy sector.\n\n### Core Implications\n1. **Policy Integration:** Aligning project execution timelines with Cyprus National Energy & Climate Plan (NECP) targets.\n2. **Infrastructure Impact:** Reviewing capacity limitations and telemetry connection protocols.\n3. **Financial Funding:** Assessing potential subsidy qualification or private venture capital capital structures.\n\n*Source URL: [Read full coverage on original site](${customUrl})*`;
+        const fallbackSummary = `A comprehensive report on the latest policy and market changes regarding ${parsedTitle} in Cyprus, examining structural integration timelines and strategic regulatory alignments.`;
+        const fallbackContent = `The unfolding situation surrounding ${parsedTitle} marks a significant turning point for the Cypriot energy sector as policymakers and private sector stakeholders seek to align local infrastructure with broader European energy transition mandates. This initiative has drawn intense focus from the Cyprus Energy Regulatory Authority (CERA) and the Ministry of Energy, Commerce and Industry, as they evaluate the grid-level feasibility of newly proposed capacity additions. Observers note that the integration process will require substantial upgrades to transmission infrastructure to handle the increased load and maintain frequency stability.
+
+Strategic funding and capital allocation remain central themes of the ongoing debates, with developers lobbying for simplified licensing processes and enhanced state grant accessibility. Over the coming quarters, industry groups anticipate a series of public consultations aimed at establishing a structured roadmap for implementation. Achieving commercial feasibility will ultimately depend on establishing reliable power purchase agreements and securing backing from institutional lenders committed to the Mediterranean region's clean energy corridors.
+
+*Source URL: [Read full coverage on original site](${customUrl})*`;
 
         parsedData = {
           title: parsedTitle,
