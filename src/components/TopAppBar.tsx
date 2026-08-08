@@ -25,7 +25,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-6">
         
         {/* Left & Center-Left: Logo & Inline Navigation Tabs */}
-        <div className="flex items-center gap-8 flex-1 overflow-x-auto hide-scrollbar">
+        <div className="flex items-center gap-8 flex-1">
           
           {/* Logo (Static, Black & White) */}
           <div 
@@ -43,8 +43,8 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
             </div>
           </div>
 
-          {/* Navigation Tabs (Relocated inline next to logo) */}
-          <nav className="flex items-center gap-1.5 h-full">
+          {/* Navigation Tabs (Relocated inline next to logo - desktop only) */}
+          <nav className="hidden md:flex items-center gap-1.5 h-full">
             {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (

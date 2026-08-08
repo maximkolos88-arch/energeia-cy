@@ -168,7 +168,7 @@ export const NewsFeedScreen: React.FC = () => {
             <button
               key={cat}
               onClick={() => selectCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-4 py-2 md:px-3.5 md:py-1.5 min-h-[40px] md:min-h-[32px] rounded-full text-xs font-semibold transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                 isActive
                   ? 'bg-[#1CA350] text-white shadow-xs'
                   : 'bg-white dark:bg-[#2d2e30] text-[#5f6368] dark:text-gray-300 border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043]'
@@ -238,31 +238,33 @@ export const NewsFeedScreen: React.FC = () => {
                   <article
                     key={item.id}
                     onClick={() => setSelectedArticle(item)}
-                    className="bg-white dark:bg-[#2d2e30] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 hover:shadow-2xl hover:-translate-y-1 hover:border-[#1CA350]/35 transition-all duration-300 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-5"
+                    className="bg-white dark:bg-[#2d2e30] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 md:p-5 hover:shadow-2xl hover:-translate-y-0.5 hover:border-[#1CA350]/35 transition-all duration-300 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-4 md:gap-5 justify-between items-stretch"
                   >
-                    <div className="flex-1">
-                      {/* Header Row */}
-                      <div className="flex items-center justify-between mb-2 text-xs">
-                        <span className="text-[#5f6368] dark:text-gray-400 font-normal">
-                          {formatDate(item.publishedAt)}
-                        </span>
+                    <div className="flex-1 flex flex-col justify-between order-2 md:order-1">
+                      <div>
+                        {/* Header Row */}
+                        <div className="flex items-center justify-between mb-2 text-xs">
+                          <span className="text-[#5f6368] dark:text-gray-400 font-normal">
+                            {formatDate(item.publishedAt)}
+                          </span>
 
-                        {formatCategoryDisplay(item.category) ? (
-                          <div className="flex items-center gap-1.5">
-                            <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(item.category)}`}>
-                              {formatCategoryDisplay(item.category)}
-                            </span>
-                          </div>
-                        ) : null}
+                          {formatCategoryDisplay(item.category) ? (
+                            <div className="flex items-center gap-1.5">
+                              <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(item.category)}`}>
+                                {formatCategoryDisplay(item.category)}
+                              </span>
+                            </div>
+                          ) : null}
+                        </div>
+
+                        {/* Headline */}
+                        <h2 className="text-base md:text-lg font-semibold md:font-medium text-[#202124] dark:text-white leading-snug group-hover:text-[#1CA350] transition-colors mb-2">
+                          {item.title}
+                        </h2>
                       </div>
 
-                      {/* Headline */}
-                      <h2 className="text-base md:text-lg font-medium text-[#202124] dark:text-white leading-snug group-hover:text-[#1CA350] transition-colors mb-2">
-                        {item.title}
-                      </h2>
-
                       {/* Article Summary Snippet */}
-                      <p className="text-xs md:text-sm text-[#5f6368] dark:text-gray-300 line-clamp-2 leading-relaxed">
+                      <p className="text-xs md:text-sm text-[#5f6368] dark:text-gray-300 line-clamp-2 md:line-clamp-3 leading-relaxed mt-1">
                         {item.summary || 'No summary generated yet'}
                       </p>
                     </div>
@@ -270,13 +272,14 @@ export const NewsFeedScreen: React.FC = () => {
                     {(() => {
                       const imgUrl = item.imageUrl || item.image_url;
                       return imgUrl ? (
-                        <div className="w-full md:w-32 h-24 md:h-auto rounded-xl overflow-hidden shrink-0 border border-[#dadce0]/50 dark:border-[#3c4043]/50">
+                        <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-[#dadce0]/50 dark:border-[#3c4043]/50">
                           <img
                             src={getProxyImageUrl(imgUrl)}
                             alt={item.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
                             onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
+                              const parent = (e.target as HTMLElement).parentElement;
+                              if (parent) parent.style.display = 'none';
                             }}
                           />
                         </div>
@@ -308,10 +311,10 @@ export const NewsFeedScreen: React.FC = () => {
           onClick={(e) => { if (e.target === e.currentTarget) setSelectedArticle(null); }}
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
-          <div className="bg-white dark:bg-[#202124] rounded-3xl border border-[#dadce0] dark:border-[#3c4043] max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative shadow-2xl space-y-6">
+          <div className="bg-white dark:bg-[#202124] rounded-2xl md:rounded-3xl border border-[#dadce0] dark:border-[#3c4043] max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 md:p-6 relative shadow-2xl space-y-5 md:space-y-6">
             <button
               onClick={() => setSelectedArticle(null)}
-              className="sticky top-0 z-50 float-right p-2 text-[#5f6368] hover:bg-[#f1f3f4]/90 dark:hover:bg-[#3c4043]/90 bg-white/90 dark:bg-[#202124]/90 backdrop-blur-xs rounded-full border border-[#dadce0]/50 dark:border-[#3c4043]/50 shadow-xs"
+              className="sticky top-0 z-50 float-right p-3 md:p-2 text-[#5f6368] hover:bg-[#f1f3f4]/90 dark:hover:bg-[#3c4043]/90 bg-white/90 dark:bg-[#202124]/90 backdrop-blur-xs rounded-full border border-[#dadce0]/50 dark:border-[#3c4043]/50 shadow-xs"
               style={{ position: 'sticky', top: '0px', float: 'right', zIndex: 50 }}
             >
               <X className="w-5 h-5" />
@@ -320,13 +323,14 @@ export const NewsFeedScreen: React.FC = () => {
             {(() => {
               const imgUrl = selectedArticle.imageUrl || selectedArticle.image_url;
               return imgUrl ? (
-                <div className="w-full h-48 md:h-64 rounded-2xl overflow-hidden border border-[#dadce0]/50 dark:border-[#3c4043]/50">
+                <div className="w-full h-48 md:h-64 rounded-xl md:rounded-2xl overflow-hidden border border-[#dadce0]/50 dark:border-[#3c4043]/50">
                   <img
                     src={getProxyImageUrl(imgUrl)}
                     alt={selectedArticle.title}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
+                      const parent = (e.target as HTMLElement).parentElement;
+                      if (parent) parent.style.display = 'none';
                     }}
                   />
                 </div>
@@ -346,7 +350,7 @@ export const NewsFeedScreen: React.FC = () => {
                 </span>
               </div>
 
-              <h2 className="text-2xl font-medium text-[#202124] dark:text-white leading-snug mb-3">
+              <h2 className="text-xl md:text-2xl font-bold md:font-medium text-[#202124] dark:text-white leading-snug mb-3">
                 {selectedArticle.title}
               </h2>
             </div>
