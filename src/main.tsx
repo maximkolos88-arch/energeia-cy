@@ -5,6 +5,7 @@ import './index.css';
 
 document.documentElement.classList.remove('dark');
 document.documentElement.classList.add('light');
+document.documentElement.setAttribute('data-theme', 'light');
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
