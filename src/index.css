@@ -32,3 +32,17 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Force light mode scheme under any preferences */
+@media (prefers-color-scheme: dark) {
+  :root, body {
+    color-scheme: light !important;
+    background-color: #f8f9fa !important;
+    color: #202124 !important;
+  }
+}
+
+/* Hide public admin link from public viewports */
+a[href="/admin"] {
+  display: none !important;
+}
