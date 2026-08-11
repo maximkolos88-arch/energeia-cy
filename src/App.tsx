@@ -11,6 +11,7 @@ import { MagazineScreen } from './components/MagazineScreen';
 import { AcademyScreen } from './components/AcademyScreen';
 import { RegisterScreen } from './components/RegisterScreen';
 import { LoginScreen } from './components/LoginScreen';
+import './index.css';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
