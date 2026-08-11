@@ -269,22 +269,18 @@ export const NewsFeedScreen: React.FC = () => {
                       </p>
                     </div>
 
-                    {(() => {
-                      const imgUrl = item.image_url;
-                      return imgUrl ? (
-                        <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-[#dadce0]/50 dark:border-[#3c4043]/50">
-                          <img
-                            src={getProxyImageUrl(imgUrl)}
-                            alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
-                            onError={(e) => {
-                              const parent = (e.target as HTMLElement).parentElement;
-                              if (parent) parent.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      ) : null;
-                    })()}
+                    {item.image_url ? (
+                      <div className="w-full md:w-32 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-[#dadce0]/50 dark:border-[#3c4043]/50">
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    ) : null}
                   </article>
                 );
               })}
@@ -320,22 +316,18 @@ export const NewsFeedScreen: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            {(() => {
-              const imgUrl = selectedArticle.image_url;
-              return imgUrl ? (
-                <div className="w-full h-48 md:h-64 rounded-xl md:rounded-2xl overflow-hidden border border-[#dadce0]/50 dark:border-[#3c4043]/50">
-                  <img
-                    src={getProxyImageUrl(imgUrl)}
-                    alt={selectedArticle.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const parent = (e.target as HTMLElement).parentElement;
-                      if (parent) parent.style.display = 'none';
-                    }}
-                  />
-                </div>
-              ) : null;
-            })()}
+            {selectedArticle.image_url ? (
+              <div className="w-full h-48 md:h-64 rounded-xl md:rounded-2xl overflow-hidden border border-[#dadce0]/50 dark:border-[#3c4043]/50">
+                <img
+                  src={selectedArticle.image_url}
+                  alt={selectedArticle.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+              </div>
+            ) : null}
 
             {/* Article Meta */}
             <div className="mt-4">
