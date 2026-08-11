@@ -41,9 +41,3 @@
     color: #202124 !important;
   }
 }
-
-/* Hide public admin link from public viewports */
-a[href="/admin"] {
-  display: none !important;
-}
-/* Force Vercel deployment refresh */
