@@ -6,7 +6,7 @@ import {
   X, Bot, ShieldCheck, Database, RefreshCw, CheckCircle, 
   Plus, Edit, Trash2, BookOpen, Users, GraduationCap, 
   FileText, Check, AlertCircle, Inbox, BarChart2, LogOut, Lock,
-  Sparkles, Loader2
+  Sparkles, Loader2, Menu
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { NewsRepository } from '../services/repositories/NewsRepository';
@@ -49,6 +49,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   // Active module tab
   const [activeModule, setActiveModule] = useState<AdminModule>('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Database Data States
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
@@ -830,10 +831,24 @@ Financing and regulatory clearance remain key priorities, with project developer
   }
 
   return (
-    <div className="w-full h-screen bg-background text-on-background flex flex-col md:flex-row overflow-hidden font-body-md">
+    <div className="w-full h-screen bg-background text-on-background flex flex-col md:flex-row overflow-hidden font-body-md relative">
       
+      {/* Mobile Top Header (only visible on mobile) */}
+      <div className="md:hidden w-full h-14 bg-surface-container-low border-b border-outline-variant flex items-center justify-between px-4 shrink-0 z-50">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-5 h-5 text-primary" />
+          <span className="font-bold text-sm text-on-surface">Energeia Admin</span>
+        </div>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 text-on-surface hover:bg-surface-container-high rounded-lg"
+        >
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
       {/* Side Navigation Bar (Material Design 3 Navigation Drawer) */}
-      <aside className="w-full md:w-64 bg-surface-container-low border-b md:border-b-0 md:border-r border-outline-variant flex flex-col shrink-0">
+      <aside className={`w-full md:w-64 bg-surface-container-low border-b md:border-b-0 md:border-r border-outline-variant flex-col shrink-0 md:flex ${isMobileMenuOpen ? 'flex absolute inset-x-0 top-14 bottom-0 z-40' : 'hidden'}`}>
         
         {/* Drawer Header */}
         <div className="p-6 flex items-center justify-between border-b border-outline-variant/60">
@@ -870,6 +885,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                   setEditingMember(null);
                   setEditingMagazine(null);
                   setEditingCourse(null);
+                  setIsMobileMenuOpen(false);
                 }}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-full text-left font-label-lg text-label-lg transition-all group ${
                   isActive 
@@ -1328,10 +1344,10 @@ Financing and regulatory clearance remain key priorities, with project developer
                       </div>
 
                       <div className="border border-outline-variant rounded-2xl bg-surface-container-low overflow-hidden">
-                        <table className="w-full text-left border-collapse text-xs">
-                          <thead>
-                            <tr className="bg-surface-container-high border-b border-outline-variant text-on-surface font-semibold">
-                              <th className="p-4 w-10">
+                        <table className="w-full text-left border-collapse text-xs block md:table">
+                          <thead className="hidden md:table-header-group">
+                            <tr className="bg-surface-container-high border-b border-outline-variant text-on-surface font-semibold md:table-row">
+                              <th className="p-4 w-10 md:table-cell">
                                 <input
                                   type="checkbox"
                                   checked={displayedNews.length > 0 && displayedNews.every(n => selectedIds.includes(n.id))}
@@ -1339,16 +1355,16 @@ Financing and regulatory clearance remain key priorities, with project developer
                                   className="rounded border-outline text-primary focus:ring-primary cursor-pointer"
                                 />
                               </th>
-                              <th className="p-4">Title / Category</th>
-                              <th className="p-4">Status</th>
-                              <th className="p-4">Created</th>
-                              <th className="p-4 text-right">Actions</th>
+                              <th className="p-4 md:table-cell">Title / Category</th>
+                              <th className="p-4 md:table-cell">Status</th>
+                              <th className="p-4 md:table-cell">Created</th>
+                              <th className="p-4 text-right md:table-cell">Actions</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-outline-variant/65">
+                          <tbody className="divide-y divide-outline-variant/65 block md:table-row-group">
                             {displayedNews.map((item) => (
-                              <tr key={item.id} className="hover:bg-surface-container-lowest transition-colors">
-                                <td className="p-4">
+                              <tr key={item.id} className="hover:bg-surface-container-lowest transition-colors block md:table-row border-b border-outline-variant/40 md:border-b-0 p-4 md:p-0">
+                                <td className="p-1 md:p-4 block md:table-cell">
                                   <input
                                     type="checkbox"
                                     checked={selectedIds.includes(item.id)}
@@ -1356,7 +1372,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                                     className="rounded border-outline text-primary focus:ring-primary cursor-pointer"
                                   />
                                 </td>
-                                <td className="p-4">
+                                <td className="p-1 md:p-4 block md:table-cell">
                                   <div className="flex items-center gap-2">
                                     <span className="font-bold text-sm block text-on-surface truncate max-w-sm">{item.title}</span>
                                     {item.status?.toUpperCase() === 'DRAFT' && (
@@ -1365,7 +1381,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                                   </div>
                                   <span className="text-on-surface-variant font-medium mt-0.5 inline-block px-2 py-0.5 bg-surface-variant rounded text-[10px]">{item.category || 'Uncategorized'}</span>
                                 </td>
-                                <td className="p-4">
+                                <td className="p-1 md:p-4 block md:table-cell">
                                   <span className={`px-2.5 py-0.5 rounded-full font-bold uppercase text-[9px] ${
                                     item.status?.toUpperCase() === 'PUBLISHED' 
                                       ? 'bg-success/15 text-success' 
@@ -1376,10 +1392,10 @@ Financing and regulatory clearance remain key priorities, with project developer
                                     {item.status}
                                   </span>
                                 </td>
-                                <td className="p-4 text-on-surface-variant">
+                                <td className="p-1 md:p-4 block md:table-cell text-on-surface-variant">
                                   {formatDate(item.createdAt)}
                                 </td>
-                                <td className="p-4 text-right space-x-1 whitespace-nowrap">
+                                <td className="p-1 md:p-4 block md:table-cell text-left md:text-right space-x-1 whitespace-nowrap mt-2 md:mt-0">
                                   {item.status?.toUpperCase() === 'DRAFT' && item.sourceUrl && (
                                     <button
                                       type="button"
@@ -1858,10 +1874,10 @@ Financing and regulatory clearance remain key priorities, with project developer
                       </div>
 
                       <div className="border border-outline-variant rounded-2xl bg-surface-container-low overflow-hidden">
-                        <table className="w-full text-left border-collapse text-xs">
-                          <thead>
-                            <tr className="bg-surface-container-high border-b border-outline-variant text-on-surface font-semibold">
-                              <th className="p-4 w-10">
+                        <table className="w-full text-left border-collapse text-xs block md:table">
+                          <thead className="hidden md:table-header-group">
+                            <tr className="bg-surface-container-high border-b border-outline-variant text-on-surface font-semibold md:table-row">
+                              <th className="p-4 w-10 md:table-cell">
                                 <input
                                   type="checkbox"
                                   checked={directoryList.length > 0 && directoryList.every(m => selectedIds.includes(m.id))}
@@ -1869,18 +1885,18 @@ Financing and regulatory clearance remain key priorities, with project developer
                                   className="rounded border-outline text-primary focus:ring-primary cursor-pointer"
                                 />
                               </th>
-                              <th className="p-4">Name / Category</th>
-                              <th className="p-4">Type</th>
-                              <th className="p-4">Contact Info</th>
-                              <th className="p-4">Location</th>
-                              <th className="p-4">Verification</th>
-                              <th className="p-4 text-right">Actions</th>
+                              <th className="p-4 md:table-cell">Name / Category</th>
+                              <th className="p-4 md:table-cell">Type</th>
+                              <th className="p-4 md:table-cell">Contact Info</th>
+                              <th className="p-4 md:table-cell">Location</th>
+                              <th className="p-4 md:table-cell">Verification</th>
+                              <th className="p-4 text-right md:table-cell">Actions</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-outline-variant/65">
+                          <tbody className="divide-y divide-outline-variant/65 block md:table-row-group">
                             {directoryList.map((member) => (
-                              <tr key={member.id} className="hover:bg-surface-container-lowest transition-colors">
-                                <td className="p-4">
+                              <tr key={member.id} className="hover:bg-surface-container-lowest transition-colors block md:table-row border-b border-outline-variant/40 md:border-b-0 p-4 md:p-0">
+                                <td className="p-1 md:p-4 block md:table-cell">
                                   <input
                                     type="checkbox"
                                     checked={selectedIds.includes(member.id)}
@@ -1888,25 +1904,25 @@ Financing and regulatory clearance remain key priorities, with project developer
                                     className="rounded border-outline text-primary focus:ring-primary cursor-pointer"
                                   />
                                 </td>
-                                <td className="p-4">
+                                <td className="p-1 md:p-4 block md:table-cell">
                                   <span className="font-bold text-sm block text-on-surface">{member.name}</span>
                                   <span className="text-on-surface-variant font-medium text-[10px] mt-0.5">{member.roleOrCategory}</span>
                                 </td>
-                                <td className="p-4">
+                                <td className="p-1 md:p-4 block md:table-cell">
                                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                                     member.type === 'Company' ? 'bg-secondary/15 text-secondary' : 'bg-tertiary/15 text-tertiary'
                                   }`}>
                                     {member.type}
                                   </span>
                                 </td>
-                                <td className="p-4">
+                                <td className="p-1 md:p-4 block md:table-cell">
                                   <span className="block text-on-surface font-medium">{member.email}</span>
                                   <span className="text-on-surface-variant text-[10px]">{member.phone || 'No phone'}</span>
                                 </td>
-                                <td className="p-4 text-on-surface-variant font-medium">
+                                <td className="p-1 md:p-4 block md:table-cell text-on-surface-variant font-medium">
                                   {member.location}
                                 </td>
-                                <td className="p-4">
+                                <td className="p-1 md:p-4 block md:table-cell">
                                   <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${
                                     member.isVerified ? 'text-success' : 'text-on-surface-variant/70'
                                   }`}>
@@ -1917,7 +1933,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                                     )}
                                   </span>
                                 </td>
-                                <td className="p-4 text-right space-x-1 whitespace-nowrap">
+                                <td className="p-1 md:p-4 block md:table-cell text-left md:text-right space-x-1 whitespace-nowrap mt-2 md:mt-0">
                                   <button
                                     onClick={() => setEditingMember(member)}
                                     className="p-1.5 hover:bg-primary/10 text-primary rounded-lg inline-flex items-center"
@@ -2109,21 +2125,21 @@ Financing and regulatory clearance remain key priorities, with project developer
 
                   {editingMagazine === null && magazineList.length > 0 && (
                     <div className="border border-outline-variant rounded-2xl overflow-hidden">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-surface-container-low border-b border-outline-variant text-left">
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider w-16">Cover</th>
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Title</th>
+                      <table className="w-full text-sm block md:table">
+                        <thead className="hidden md:table-header-group">
+                          <tr className="bg-surface-container-low border-b border-outline-variant text-left md:table-row">
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider w-16 md:table-cell">Cover</th>
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider md:table-cell">Title</th>
                             <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider hidden md:table-cell">#</th>
                             <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider hidden md:table-cell">Date</th>
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Status</th>
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider md:table-cell">Status</th>
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right md:table-cell">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-outline-variant/60">
+                        <tbody className="divide-y divide-outline-variant/60 block md:table-row-group">
                           {magazineList.map(issue => (
-                            <tr key={issue.id} className="hover:bg-surface-container/40 transition-colors group">
-                              <td className="px-4 py-3">
+                            <tr key={issue.id} className="hover:bg-surface-container/40 transition-colors block md:table-row border-b border-outline-variant/40 md:border-b-0 p-4 md:p-0">
+                              <td className="p-1 md:p-4 block md:table-cell">
                                 {issue.coverImageUrl ? (
                                   <img
                                     src={issue.coverImageUrl}
@@ -2136,19 +2152,19 @@ Financing and regulatory clearance remain key priorities, with project developer
                                   </div>
                                 )}
                               </td>
-                              <td className="px-4 py-3">
+                              <td className="p-1 md:p-4 block md:table-cell">
                                 <div className="font-semibold text-on-surface">{issue.title}</div>
                                 {issue.description && (
                                   <div className="text-xs text-on-surface-variant line-clamp-1 mt-0.5">{issue.description}</div>
                                 )}
                               </td>
-                              <td className="px-4 py-3 hidden md:table-cell">
-                                <span className="font-mono text-on-surface-variant">#{issue.issueNumber}</span>
+                              <td className="p-1 md:p-4 block md:table-cell md:hidden">
+                                <span className="font-mono text-on-surface-variant">Issue #{issue.issueNumber}</span>
                               </td>
-                              <td className="px-4 py-3 hidden md:table-cell text-on-surface-variant text-xs">
-                                {issue.publishDate || '—'}
+                              <td className="p-1 md:p-4 block md:table-cell md:hidden text-on-surface-variant text-xs">
+                                Published: {issue.publishDate || '—'}
                               </td>
-                              <td className="px-4 py-3">
+                              <td className="p-1 md:p-4 block md:table-cell">
                                 <span className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
                                   issue.isPublished
                                     ? 'bg-[color:var(--md-sys-color-primary-container)] text-[color:var(--md-sys-color-on-primary-container)]'
@@ -2157,8 +2173,8 @@ Financing and regulatory clearance remain key priorities, with project developer
                                   {issue.isPublished ? 'Published' : 'Draft'}
                                 </span>
                               </td>
-                              <td className="px-4 py-3">
-                                <div className="flex items-center gap-1.5 justify-end">
+                              <td className="p-1 md:p-4 block md:table-cell text-left md:text-right mt-2 md:mt-0">
+                                <div className="flex items-center gap-1.5 justify-start md:justify-end">
                                   {issue.pdfUrl && (
                                     <a
                                       href={issue.pdfUrl}
@@ -2376,22 +2392,22 @@ Financing and regulatory clearance remain key priorities, with project developer
 
                   {editingCourse === null && coursesList.length > 0 && (
                     <div className="border border-outline-variant rounded-2xl overflow-hidden">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-surface-container-low border-b border-outline-variant text-left">
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider w-24">Image</th>
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Title</th>
+                      <table className="w-full text-sm block md:table">
+                        <thead className="hidden md:table-header-group">
+                          <tr className="bg-surface-container-low border-b border-outline-variant text-left md:table-row">
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider w-24 md:table-cell">Image</th>
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider md:table-cell">Title</th>
                             <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider hidden md:table-cell">Level</th>
                             <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider hidden md:table-cell">Duration</th>
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Price</th>
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-wider uppercase tracking-wider">Status</th>
-                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider md:table-cell">Price</th>
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-wider uppercase tracking-wider md:table-cell">Status</th>
+                            <th className="px-4 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right md:table-cell">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-outline-variant/60">
+                        <tbody className="divide-y divide-outline-variant/60 block md:table-row-group">
                           {coursesList.map(course => (
-                            <tr key={course.id} className="hover:bg-surface-container/40 transition-colors group">
-                              <td className="px-4 py-3">
+                            <tr key={course.id} className="hover:bg-surface-container/40 transition-colors block md:table-row border-b border-outline-variant/40 md:border-b-0 p-4 md:p-0">
+                              <td className="p-1 md:p-4 block md:table-cell">
                                 {course.imageUrl ? (
                                   <img
                                     src={course.imageUrl}
@@ -2404,22 +2420,22 @@ Financing and regulatory clearance remain key priorities, with project developer
                                   </div>
                                 )}
                               </td>
-                              <td className="px-4 py-3">
+                              <td className="p-1 md:p-4 block md:table-cell">
                                 <div className="font-semibold text-on-surface">{course.title}</div>
                                 {course.description && (
                                   <div className="text-xs text-on-surface-variant line-clamp-1 mt-0.5">{course.description}</div>
                                 )}
                               </td>
-                              <td className="px-4 py-3 hidden md:table-cell">
+                              <td className="p-1 md:p-4 block md:table-cell md:hidden">
                                 <span className="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-xs font-medium">{course.level}</span>
                               </td>
-                              <td className="px-4 py-3 hidden md:table-cell text-on-surface-variant text-xs font-semibold">
-                                {course.duration}
+                              <td className="p-1 md:p-4 block md:table-cell md:hidden text-on-surface-variant text-xs font-semibold">
+                                Duration: {course.duration}
                               </td>
-                              <td className="px-4 py-3 font-bold text-on-surface">
+                              <td className="p-1 md:p-4 block md:table-cell font-bold text-on-surface">
                                 €{course.price}
                               </td>
-                              <td className="px-4 py-3">
+                              <td className="p-1 md:p-4 block md:table-cell">
                                 <span className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
                                   course.isPublished
                                     ? 'bg-[color:var(--md-sys-color-primary-container)] text-[color:var(--md-sys-color-on-primary-container)]'
@@ -2428,8 +2444,8 @@ Financing and regulatory clearance remain key priorities, with project developer
                                   {course.isPublished ? 'Published' : 'Draft'}
                                 </span>
                               </td>
-                              <td className="px-4 py-3">
-                                <div className="flex items-center gap-1.5 justify-end">
+                              <td className="p-1 md:p-4 block md:table-cell text-left md:text-right mt-2 md:mt-0">
+                                <div className="flex items-center gap-1.5 justify-start md:justify-end">
                                   {course.checkoutUrl && (
                                     <a
                                       href={course.checkoutUrl}
