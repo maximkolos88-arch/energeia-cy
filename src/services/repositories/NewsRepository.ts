@@ -41,8 +41,8 @@ export class NewsRepository {
 
   private static sortByDateDescending(items: NewsItem[]): NewsItem[] {
     return items.sort((a, b) => {
-      const dateA = new Date(a.publishedAt || a.createdAt || 0).getTime();
-      const dateB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+      const dateA = new Date(a.createdAt || a.publishedAt || 0).getTime();
+      const dateB = new Date(b.createdAt || b.publishedAt || 0).getTime();
       if (isNaN(dateA) && isNaN(dateB)) return 0;
       if (isNaN(dateA)) return 1;
       if (isNaN(dateB)) return -1;
@@ -58,10 +58,10 @@ export class NewsRepository {
       const { data, error } = await supabase
         .from('news')
         .select('*')
-        .order('published_at', { ascending: false });
+        .order('created_at', { ascending: false });
         
       if (error) {
-        console.warn("Supabase ordering by published_at failed, retrying without ordering:", error.message);
+        console.warn("Supabase ordering by created_at failed, retrying without ordering:", error.message);
         const fallbackRes = await supabase.from('news').select('*');
         if (fallbackRes.error) throw fallbackRes.error;
         const mapped = (fallbackRes.data || []).map(item => this.mapSupabaseToNewsItem(item));
@@ -85,10 +85,10 @@ export class NewsRepository {
       const { data, error } = await supabase
         .from('news')
         .select('*')
-        .order('published_at', { ascending: false });
+        .order('created_at', { ascending: false });
       
       if (error) {
-        console.warn("Supabase ordering by published_at failed, retrying without ordering:", error.message);
+        console.warn("Supabase ordering by created_at failed, retrying without ordering:", error.message);
         const fallbackRes = await supabase.from('news').select('*');
         if (fallbackRes.error) throw fallbackRes.error;
         
