@@ -1,7 +1,7 @@
 import https from 'https';
 
-export default async function handler(request, response) {
-  return new Promise((resolve) => {
+export default async function handler(request: any, response: any) {
+  return new Promise<void>((resolve) => {
     const data = JSON.stringify({ trigger: 'vercel_cron_scheduler' });
     
     const options = {
@@ -21,10 +21,11 @@ export default async function handler(request, response) {
         responseBody += chunk;
       });
       res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
+        const statusCode = res.statusCode || 500;
+        if (statusCode >= 200 && statusCode < 300) {
           response.status(200).json({ success: true, message: 'Sync triggered successfully.' });
         } else {
-          response.status(res.statusCode).json({ success: false, error: `Make.com returned status: ${res.statusCode}` });
+          response.status(statusCode).json({ success: false, error: `Make.com returned status: ${statusCode}` });
         }
         resolve();
       });
