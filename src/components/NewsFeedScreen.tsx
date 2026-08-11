@@ -270,7 +270,7 @@ export const NewsFeedScreen: React.FC = () => {
                     </div>
 
                     {item.image_url ? (
-                      <div className="w-full md:w-32 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-[#dadce0]/50 dark:border-[#3c4043]/50">
+                      <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-[#dadce0]/50 dark:border-[#3c4043]/50">
                         <img
                           src={item.image_url}
                           alt={item.title}
