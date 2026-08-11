@@ -269,10 +269,10 @@ export const NewsFeedScreen: React.FC = () => {
                       </p>
                     </div>
 
-                    {item.image_url ? (
+                    {(item.image_url || item.imageUrl) ? (
                       <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-[#dadce0]/50 dark:border-[#3c4043]/50">
                         <img
-                          src={item.image_url}
+                          src={item.image_url || item.imageUrl}
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
                           onError={(e) => {
@@ -316,10 +316,10 @@ export const NewsFeedScreen: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            {selectedArticle.image_url ? (
+            {(selectedArticle.image_url || selectedArticle.imageUrl) ? (
               <div className="w-full h-48 md:h-64 rounded-xl md:rounded-2xl overflow-hidden border border-[#dadce0]/50 dark:border-[#3c4043]/50">
                 <img
-                  src={selectedArticle.image_url}
+                  src={selectedArticle.image_url || selectedArticle.imageUrl}
                   alt={selectedArticle.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
