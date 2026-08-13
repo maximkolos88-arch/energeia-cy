@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { EnergeiaLogo } from './EnergeiaLogo';
 
 interface TopAppBarProps {
@@ -14,13 +15,15 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   language,
   onLanguageChange
 }) => {
+  const { t } = useTranslation();
+
   const navItems = [
-    { id: 'news', label: 'News' },
-    { id: 'members', label: 'Members' },
-    { id: 'magazine', label: 'Magazine' },
-    { id: 'academy', label: 'Academy' },
-    { id: 'about', label: 'About' },
-    { id: 'register', label: 'Join Us' },
+    { id: 'news', label: t('nav.news') },
+    { id: 'members', label: t('nav.members') },
+    { id: 'magazine', label: t('nav.magazine') },
+    { id: 'academy', label: t('nav.academy') },
+    { id: 'about', label: t('nav.about') },
+    { id: 'register', label: t('nav.register') },
   ];
 
   return (

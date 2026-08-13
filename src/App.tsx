@@ -11,9 +11,11 @@ import { MagazineScreen } from './components/MagazineScreen';
 import { AcademyScreen } from './components/AcademyScreen';
 import { RegisterScreen } from './components/RegisterScreen';
 import { LoginScreen } from './components/LoginScreen';
+import { useTranslation } from 'react-i18next';
 import './index.css';
 
 export default function App() {
+  const { i18n } = useTranslation();
   const [session, setSession] = useState<Session | null>(null);
   const [activeTab, setActiveTab] = useState<string>(() => {
     const path = window.location.pathname;
@@ -41,6 +43,7 @@ export default function App() {
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
     localStorage.setItem('energeia_language', lang);
+    i18n.changeLanguage(lang);
   };
 
   // Monitor Supabase Auth Session

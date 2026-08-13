@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "news": "News",
+    "members": "Members",
+    "magazine": "Magazine",
+    "academy": "Academy",
+    "about": "About",
+    "register": "Join Us"
+  },
+  "news": {
+    "searchPlaceholder": "Search news updates...",
+    "loadMore": "Load More",
+    "noCoverage": "No coverage available in this section",
+    "noItems": "There are currently no published items for this category.",
+    "backToAll": "Back to All Updates",
+    "viewFiling": "View Official Filing",
+    "noSummary": "No summary generated yet",
+    "noContent": "No content or summary available."
+  },
+  "directory": {
+    "searchPlaceholder": "Search members by name, category, or skills...",
+    "typeAll": "All Types",
+    "typeIndividual": "Individuals",
+    "typeCompany": "Companies",
+    "verifyStatus": "Verified Partner",
+    "noResults": "No members matching your criteria.",
+    "contact": "Contact Member",
+    "email": "Email",
+    "website": "Website",
+    "linkedin": "LinkedIn",
+    "about": "About the Member",
+    "expertise": "Expertise & Areas",
+    "services": "Key Services"
+  },
+  "magazine": {
+    "title": "Digital Magazine",
+    "subtitle": "Energy Library & Market Intelligence Reports",
+    "issue": "Issue",
+    "readPdf": "Download PDF",
+    "noIssues": "No magazine issues published yet."
+  },
+  "academy": {
+    "title": "Academy & Certification",
+    "subtitle": "Professional energy compliance and technical training programs",
+    "level": "Level",
+    "duration": "Duration",
+    "price": "Price",
+    "register": "Register Course",
+    "noCourses": "No academy courses scheduled at this time."
+  },
+  "about": {
+    "title": "About Energeia",
+    "subtitle": "Cyprus All-Energy Network & Collaboration Hub",
+    "text1": "Energeia is the leading professional energy directory and intelligence network in Cyprus, uniting certified auditors, engineers, installation firms, and regulatory specialists under a unified digital collaboration space.",
+    "text2": "We facilitate knowledge sharing, direct contracting, policy mapping, and continuous professional training to accelerate the transition to sustainable energy markets in the Eastern Mediterranean.",
+    "action": "Register as a Member"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "description": "Cyprus All-Energy Network"
+  }
+}

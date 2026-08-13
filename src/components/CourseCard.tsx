@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Clock, BookOpen, ArrowRight } from 'lucide-react';
 
 interface CourseCardProps {
@@ -20,15 +21,17 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   imageUrl,
   checkoutUrl
 }) => {
+  const { t } = useTranslation();
+
   return (
     <a
       href={checkoutUrl || '#'}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block bg-white dark:bg-[#2d2e30] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col h-full"
+      className="group block bg-white dark:bg-[#1b1c1e] border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden transition-all duration-200 hover:border-primary/80 cursor-pointer flex flex-col h-full animate-fade-in"
     >
       {/* Cover Image */}
-      <div className="relative aspect-video overflow-hidden bg-gray-100">
+      <div className="relative aspect-video overflow-hidden bg-neutral-100">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -36,8 +39,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-[#f1f3f4] dark:bg-[#202124] text-gray-400">
-            <BookOpen className="w-12 h-12 mb-2 text-[#1CA350]" />
+          <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-400">
+            <BookOpen className="w-12 h-12 mb-2 text-primary" />
           </div>
         )}
       </div>
@@ -47,36 +50,36 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         <div className="space-y-2">
           {/* Level Badge */}
           <div>
-            <span className="inline-block px-2.5 py-0.5 bg-[#e8f5e9] dark:bg-[#1CA350]/15 text-[#1CA350] text-[10px] font-bold rounded-full uppercase tracking-wider">
+            <span className="inline-block px-2.5 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-md uppercase tracking-wider">
               {level}
             </span>
           </div>
 
           {/* Title & Description */}
-          <h3 className="text-base font-bold text-[#202124] dark:text-white group-hover:text-[#1CA350] transition-colors leading-snug line-clamp-2">
+          <h3 className="text-base font-bold text-neutral-900 dark:text-white group-hover:text-primary transition-colors leading-snug line-clamp-2 tracking-tight">
             {title}
           </h3>
-          <p className="text-xs text-[#5f6368] dark:text-gray-300 line-clamp-3 leading-relaxed">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-3 leading-relaxed">
             {description}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="pt-3 border-t border-[#f1f3f4] dark:border-[#3c4043] flex flex-col space-y-3">
+        <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 flex flex-col space-y-3">
           {/* Price & Duration Row */}
-          <div className="flex items-center justify-between text-xs text-[#5f6368] dark:text-gray-400">
+          <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
             <div className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-[#1CA350]" />
+              <Clock className="w-3.5 h-3.5 text-primary" />
               <span className="font-semibold">{duration}</span>
             </div>
-            <span className="text-base font-extrabold text-[#202124] dark:text-white">
+            <span className="text-base font-extrabold text-neutral-900 dark:text-white">
               {typeof price === 'number' ? `€${price}` : price}
             </span>
           </div>
 
           {/* Action Button */}
-          <div className="w-full bg-[#1CA350] text-white py-2 rounded-full font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-[#15823f] transition-colors shadow-2xs group-hover:bg-[#15823f]">
-            Enroll Now
+          <div className="w-full bg-primary text-white py-2 rounded-full font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-primary-hover transition-colors shadow-2xs group-hover:bg-primary-hover">
+            {t('academy.register')}
             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
           </div>
         </div>

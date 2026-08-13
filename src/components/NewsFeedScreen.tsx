@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useTranslation } from 'react-i18next';
 import { useNewsController } from '../controllers/useNewsController';
 import { NewsItem, NewsCategory } from '../models/types';
 import { 
@@ -32,6 +33,7 @@ interface NewsFeedScreenProps {
 }
 
 export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' }) => {
+  const { t } = useTranslation();
   const {
     category,
     categories,
@@ -230,16 +232,16 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
 
           {/* Empty State */}
           {!loading && empty && (
-            <div className="text-center py-12 bg-white dark:bg-[#2d2e30] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8">
-              <p className="text-lg font-medium text-[#202124] dark:text-white mb-2">No coverage available in this section</p>
-              <p className="text-xs text-[#5f6368] dark:text-gray-400 mb-4">
-                There are currently no published items for "{category}".
+            <div className="text-center py-12 bg-white dark:bg-[#2d2e30] border border-neutral-200 dark:border-neutral-800 rounded-xl p-8">
+              <p className="text-lg font-medium text-neutral-900 dark:text-white mb-2">{t('news.noCoverage')}</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
+                {t('news.noItems')}
               </p>
               <button
                 onClick={() => selectCategory('All News')}
-                className="px-5 py-2 bg-[#1CA350] text-white rounded-full text-xs font-medium hover:bg-[#15823f] transition-colors"
+                className="px-5 py-2 bg-primary text-white rounded-full text-xs font-medium hover:bg-primary-hover transition-colors cursor-pointer"
               >
-                Back to All Updates
+                {t('news.backToAll')}
               </button>
             </div>
           )}
@@ -306,9 +308,9 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
             <div className="mt-8 text-center">
               <button
                 onClick={loadMore}
-                className="px-6 py-2.5 bg-white dark:bg-[#2d2e30] border border-[#dadce0] dark:border-[#3c4043] text-[#1CA350] dark:text-[#8ab4f8] hover:bg-[#f8f9fa] text-xs font-bold rounded-full transition-colors shadow-2xs cursor-pointer"
+                className="px-6 py-2.5 bg-white dark:bg-[#2d2e30] border border-neutral-200 dark:border-neutral-800 text-primary hover:bg-[#f8f9fa] text-xs font-bold rounded-full transition-colors shadow-2xs cursor-pointer"
               >
-                Load More News
+                {t('news.loadMore')}
               </button>
             </div>
           )}
@@ -381,9 +383,9 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                   href={selectedArticle.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 bg-[#1CA350] text-white rounded-full font-medium text-xs inline-flex items-center gap-1.5 hover:bg-[#15823f]"
+                  className="px-4 py-2 bg-primary text-white rounded-full font-medium text-xs inline-flex items-center gap-1.5 hover:bg-primary-hover transition-colors"
                 >
-                  View Official Filing <ExternalLink className="w-3.5 h-3.5" />
+                  {t('news.viewFiling')} <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
             )}
