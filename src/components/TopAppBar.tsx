@@ -71,17 +71,23 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
         <div className="flex items-center gap-0.5 border border-neutral-200 dark:border-neutral-850 rounded-lg p-0.5 bg-neutral-50 dark:bg-neutral-900 shrink-0">
           {(['en', 'el', 'ru', 'he'] as const).map((lang) => {
             const isActive = language === lang;
+            const labelMap: Record<string, string> = {
+              en: 'EN',
+              el: 'ΕΛ',
+              ru: 'РУ',
+              he: 'עב'
+            };
             return (
               <button
                 key={lang}
                 onClick={() => onLanguageChange(lang)}
-                className={`px-2 py-1 text-[10px] font-bold uppercase transition-all rounded-md cursor-pointer ${
+                className={`px-2.5 py-1 text-[10px] font-bold transition-all rounded-md cursor-pointer ${
                   isActive
                     ? 'bg-primary text-white shadow-3xs'
                     : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                 }`}
               >
-                {lang}
+                {labelMap[lang]}
               </button>
             );
           })}
