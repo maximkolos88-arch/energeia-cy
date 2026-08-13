@@ -78,6 +78,27 @@
     "text2": "We facilitate knowledge sharing, direct contracting, policy mapping, and continuous professional training to accelerate the transition to sustainable energy markets in the Eastern Mediterranean.",
     "action": "Register as a Member"
   },
+  "register": {
+    "title": "Join the Network",
+    "subtitle": "Submit your professional details below. Once approved, your profile will be added to our public directory.",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "John Doe",
+    "company": "Company",
+    "companyPlaceholder": "Company Name",
+    "role": "Primary Role / Title",
+    "rolePlaceholder": "e.g. Lead Engineer, CEO, Auditor",
+    "messenger": "WhatsApp / Telegram",
+    "messengerPlaceholder": "+357... or @username",
+    "email": "Work Email (Optional)",
+    "emailPlaceholder": "john@company.com",
+    "bio": "Professional Bio / Company Focus",
+    "bioPlaceholder": "Briefly describe your expertise and focus within the energy sector...",
+    "submit": "Submit for Review",
+    "submitting": "Submitting...",
+    "successTitle": "Application Received",
+    "successText": "Thank you for applying to join the Cyprus All-Energy Network. Our team will review your profile and publish it to the directory shortly.",
+    "browseDirectory": "Browse Directory"
+  },
   "footer": {
     "rights": "All rights reserved.",
     "description": "Cyprus All-Energy Network"
