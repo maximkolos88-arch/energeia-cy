@@ -1,11 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDirectoryController } from '../controllers/useDirectoryController';
 import { DirectoryMember } from '../models/types';
-import { Search, Mail, ArrowRight, Building2, User, Leaf, X, Phone, MapPin, Filter, Tag, CheckCircle2, Globe, Award } from 'lucide-react';
+import { Search, Mail, ArrowRight, Building2, User, Leaf, X, Phone, MapPin, CheckCircle2, Globe, Award } from 'lucide-react';
 import { MemberCard } from './MemberCard';
 import PageHeader from './PageHeader';
 
 export const DirectoryScreen: React.FC = () => {
+  const { t } = useTranslation();
   const {
     searchQuery,
     setSearchQuery,
@@ -19,31 +21,51 @@ export const DirectoryScreen: React.FC = () => {
   const getMemberIcon = (member: DirectoryMember) => {
     if (member.type === 'Company') {
       if (member.roleOrCategory.toLowerCase().includes('esg')) {
-        return <Leaf className="w-6 h-6 text-[#1CA350]" />;
+        return <Leaf className="w-6 h-6 text-primary" />;
       }
-      return <Building2 className="w-6 h-6 text-[#1CA350]" />;
+      return <Building2 className="w-6 h-6 text-primary" />;
     }
-    return <User className="w-6 h-6 text-[#1CA350]" />;
+    return <User className="w-6 h-6 text-primary" />;
+  };
+
+  const getLocalizedCategory = (catName: string): string => {
+    if (!catName) return '';
+    const name = catName.trim().toLowerCase();
+    if (name === 'all news') return t('categories.allNews');
+    if (name.includes('renew') || name.includes('solar')) return t('categories.renewables');
+    if (name.includes('oil') || name.includes('gas')) return t('categories.oilGas');
+    if (name.includes('govern') || name.includes('policy')) return t('categories.govPolicy');
+    if (name.includes('grant') || name.includes('subsidy')) return t('categories.grantsSubsidies');
+    if (name.includes('trading') || name.includes('electric')) return t('categories.electricityTrading');
+    if (name.includes('maritime') || name.includes('offshore')) return t('categories.maritimeOffshore');
+    if (name.includes('engineering') || name.includes('epc')) return t('categories.engineeringEpc');
+    if (name.includes('professional') || name.includes('service')) return t('categories.professionalServices');
+    if (name.includes('association')) return t('categories.govAssociations');
+    return catName;
   };
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-6 pb-24 md:pb-12 animate-fade-in">
-      <PageHeader title="Professional Directory" description="Connect with certified energy engineers, ESG auditors, solar contractors, and suppliers across Cyprus." iconName="group" />
+      <PageHeader 
+        title={t('directory.title')} 
+        description="Connect with certified energy engineers, ESG auditors, solar contractors, and suppliers across Cyprus." 
+        iconName="group" 
+      />
 
       {/* Clean Full-Width Search Bar */}
-      <div className="relative w-full mb-6">
-        <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-[#5f6368]" />
+      <div className="relative w-full mb-6 mt-4">
+        <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by name, role, location, or specialty..."
-          className="w-full bg-[#f1f3f4] dark:bg-[#2d2e30] border border-[#dadce0] dark:border-[#3c4043] focus:border-[#1CA350] focus:bg-white dark:focus:bg-[#202124] focus:outline-none rounded-full py-3 pl-12 pr-12 text-sm font-medium text-[#202124] dark:text-white placeholder:text-[#5f6368] transition-all shadow-2xs"
+          placeholder={t('directory.searchPlaceholder')}
+          className="w-full bg-[#f5f5f5] dark:bg-[#1b1c1e] border border-neutral-200 dark:border-neutral-800 focus:border-primary focus:bg-white dark:focus:bg-neutral-900 focus:outline-none rounded-xl py-3 pl-12 pr-12 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-500 transition-all shadow-3xs"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery('')}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5f6368] hover:text-[#202124]"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -54,20 +76,20 @@ export const DirectoryScreen: React.FC = () => {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-4 border border-[#dadce0] dark:border-[#3c4043] rounded-2xl bg-white dark:bg-[#2d2e30] animate-pulse h-28"></div>
+            <div key={i} className="p-4 border border-neutral-200 dark:border-neutral-850 rounded-xl bg-white dark:bg-[#1b1c1e] animate-pulse h-28"></div>
           ))}
         </div>
       ) : members.length === 0 ? (
-        <div className="text-center py-12 border border-[#dadce0] dark:border-[#3c4043] rounded-2xl bg-white dark:bg-[#2d2e30] p-6">
-          <p className="text-base font-medium text-[#202124] dark:text-white mb-2">No matching energy partners found</p>
-          <p className="text-xs text-[#5f6368] dark:text-gray-400 mb-4 max-w-md mx-auto">
-            Try broadening your search term or resetting the query.
+        <div className="text-center py-12 border border-neutral-200 dark:border-neutral-850 rounded-xl bg-white dark:bg-[#1b1c1e] p-8">
+          <p className="text-base font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">{t('directory.noResults')}</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6 max-w-md mx-auto">
+            {t('directory.broadenSearch')}
           </p>
           <button
             onClick={() => setSearchQuery('')}
-            className="px-5 py-2 bg-[#1CA350] text-white rounded-full text-xs font-medium hover:bg-[#15823f]"
+            className="px-5 py-2.5 bg-primary text-white rounded-full text-xs font-bold hover:bg-primary-hover cursor-pointer transition-colors"
           >
-            Reset Search
+            {t('directory.resetSearch')}
           </button>
         </div>
       ) : (
@@ -85,41 +107,41 @@ export const DirectoryScreen: React.FC = () => {
       {/* Member Profile Modal */}
       {selectedMember && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#202124] rounded-3xl border border-[#dadce0] dark:border-[#3c4043] max-w-3xl w-full p-6 relative shadow-2xl my-8">
+          <div className="bg-white dark:bg-[#1b1c1e] rounded-xl border border-neutral-200 dark:border-neutral-800 max-w-3xl w-full p-6 relative shadow-2xl my-8">
             <button
               onClick={closeMemberContact}
-              className="absolute top-4 right-4 p-2 text-[#5f6368] hover:bg-[#f1f3f4] dark:hover:bg-[#2d2e30] rounded-full transition-colors"
+              className="absolute top-4 right-4 p-2 text-neutral-450 hover:bg-neutral-50 dark:hover:bg-neutral-850 rounded-full transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Header section */}
-            <div className="flex items-center gap-4 pb-4 border-b border-[#dadce0] dark:border-[#3c4043] mb-4">
+            <div className="flex items-center gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-800 mb-4">
               {(selectedMember.logoUrl || selectedMember.imageUrl) ? (
                 <img
                   src={selectedMember.logoUrl || selectedMember.imageUrl}
                   alt={selectedMember.name}
-                  className="w-16 h-16 rounded-2xl object-contain bg-white dark:bg-[#2d2e30] border border-[#dadce0]/50 p-1.5"
+                  className="w-16 h-16 rounded-xl object-contain bg-white dark:bg-neutral-900 border border-neutral-200 p-1.5"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-2xl bg-[#e8f5e9] text-[#1CA350] flex items-center justify-center border border-[#dadce0]/50">
+                <div className="w-16 h-16 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-neutral-200">
                   {getMemberIcon(selectedMember)}
                 </div>
               )}
               <div>
-                <h2 className="text-xl font-bold text-[#202124] dark:text-white flex items-center gap-1.5">
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-white flex items-center gap-1.5 tracking-tight">
                   {selectedMember.name}
-                  {selectedMember.isVerified && <CheckCircle2 className="w-5 h-5 text-[#1CA350]" />}
+                  {selectedMember.isVerified && <CheckCircle2 className="w-5 h-5 text-primary" />}
                 </h2>
-                <p className="text-xs font-semibold text-[#5f6368] dark:text-gray-300">
+                <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
                   {selectedMember.roleOrCategory}
                 </p>
                 <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                  <span className="px-2.5 py-0.5 bg-[#e8f5e9] dark:bg-[#1CA350]/15 text-[#1CA350] text-[10px] font-bold rounded-full">
-                    {selectedMember.category || 'Renewables'}
+                  <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-md">
+                    {getLocalizedCategory(selectedMember.category || 'Renewables')}
                   </span>
                   {selectedMember.expertiseTags && selectedMember.expertiseTags.map((t) => (
-                    <span key={t} className="px-2.5 py-0.5 bg-gray-100 dark:bg-[#2d2e30] text-gray-700 dark:text-gray-300 text-[10px] rounded-full font-semibold">
+                    <span key={t} className="px-2.5 py-0.5 bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-450 text-[10px] rounded-md font-semibold">
                       {t}
                     </span>
                   ))}
@@ -133,8 +155,8 @@ export const DirectoryScreen: React.FC = () => {
               <div className="flex-1 space-y-6 min-w-0">
                 {selectedMember.showDescription === true && selectedMember.description && (
                   <div className="space-y-2">
-                    <h3 className="text-xs font-bold text-[#202124] dark:text-white border-b border-[#dadce0] dark:border-[#3c4043] pb-1.5 uppercase tracking-wider">About Company</h3>
-                    <p className="text-xs text-[#5f6368] dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    <h3 className="text-xs font-bold text-neutral-900 dark:text-white border-b border-neutral-200 dark:border-neutral-800 pb-1.5 uppercase tracking-wider">{t('directory.about')}</h3>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed whitespace-pre-wrap">
                       {selectedMember.description}
                     </p>
                   </div>
@@ -145,11 +167,11 @@ export const DirectoryScreen: React.FC = () => {
                   (selectedMember.showNotableProjects === true && selectedMember.notableProjects) ||
                   (selectedMember.showCertifications === true && selectedMember.certifications)) && (
                   <div className="space-y-4">
-                    <h3 className="text-xs font-bold text-[#202124] dark:text-white border-b border-[#dadce0] dark:border-[#3c4043] pb-1.5 uppercase tracking-wider">Industry Expertise</h3>
+                    <h3 className="text-xs font-bold text-neutral-900 dark:text-white border-b border-neutral-200 dark:border-neutral-800 pb-1.5 uppercase tracking-wider">{t('directory.expertise')}</h3>
                     
                     {selectedMember.showKeyServices === true && selectedMember.keyServices && (
                       <div className="space-y-1">
-                        <span className="font-semibold text-[11px] text-[#5f6368] dark:text-gray-300 block">Key Services</span>
+                        <span className="font-semibold text-[11px] text-neutral-500 dark:text-neutral-400 block">{t('directory.services')}</span>
                         <div className="flex flex-wrap gap-1.5">
                           {(Array.isArray(selectedMember.keyServices)
                             ? selectedMember.keyServices
@@ -159,7 +181,7 @@ export const DirectoryScreen: React.FC = () => {
                           ).map((tag, idx) => (
                             <span
                               key={idx}
-                              className="px-2.5 py-1 rounded bg-[#e8f5e9] dark:bg-[#1CA350]/15 text-[#1CA350] text-[10px] font-bold border border-[#1CA350]/20"
+                              className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-bold border border-primary/20"
                             >
                               {tag}
                             </span>
@@ -169,20 +191,20 @@ export const DirectoryScreen: React.FC = () => {
                     )}
 
                     {selectedMember.showNotableProjects === true && selectedMember.notableProjects && (
-                      <div className="bg-[#f1f3f4]/50 dark:bg-[#2d2e30]/40 rounded-xl p-3 border border-outline-variant/30 space-y-1">
-                        <span className="font-bold text-xs text-[#202124] dark:text-white flex items-center gap-1.5">
-                          <Building2 className="w-3.5 h-3.5 text-[#1CA350]" /> Notable Projects
+                      <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-3.5 border border-neutral-200 dark:border-neutral-850 space-y-1">
+                        <span className="font-bold text-xs text-neutral-900 dark:text-white flex items-center gap-1.5">
+                          <Building2 className="w-3.5 h-3.5 text-primary" /> {t('directory.notableProjects')}
                         </span>
-                        <p className="text-xs text-[#5f6368] dark:text-gray-300 leading-relaxed">{selectedMember.notableProjects}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">{selectedMember.notableProjects}</p>
                       </div>
                     )}
 
                     {selectedMember.showCertifications === true && selectedMember.certifications && (
-                      <div className="bg-[#f1f3f4]/50 dark:bg-[#2d2e30]/40 rounded-xl p-3 border border-outline-variant/30 space-y-1">
-                        <span className="font-bold text-xs text-[#202124] dark:text-white flex items-center gap-1.5">
-                          <Award className="w-3.5 h-3.5 text-[#1CA350]" /> Certifications
+                      <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-3.5 border border-neutral-200 dark:border-neutral-850 space-y-1">
+                        <span className="font-bold text-xs text-neutral-900 dark:text-white flex items-center gap-1.5">
+                          <Award className="w-3.5 h-3.5 text-primary" /> {t('directory.certifications')}
                         </span>
-                        <p className="text-xs text-[#5f6368] dark:text-gray-300 leading-relaxed">{selectedMember.certifications}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">{selectedMember.certifications}</p>
                       </div>
                     )}
                   </div>
@@ -190,15 +212,15 @@ export const DirectoryScreen: React.FC = () => {
               </div>
 
               {/* Right Column: Contact Details (Gated Info) */}
-              <div className="w-full md:w-64 shrink-0 bg-[#f8f9fa] dark:bg-[#2d2e30]/60 border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 self-start space-y-4">
-                <h3 className="text-xs font-bold text-[#202124] dark:text-white uppercase tracking-wider border-b border-[#dadce0] dark:border-[#3c4043] pb-1.5">Contact Details</h3>
+              <div className="w-full md:w-64 shrink-0 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 self-start space-y-4">
+                <h3 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800 pb-1.5">{t('directory.contact')}</h3>
                 
-                <div className="space-y-3.5 text-xs text-[#202124] dark:text-white">
+                <div className="space-y-3.5 text-xs text-neutral-900 dark:text-white">
                   {selectedMember.showKeyContact === true && selectedMember.keyContactName && (
                     <div className="space-y-0.5">
-                      <span className="text-[9px] uppercase font-bold text-[#5f6368] dark:text-gray-400 block">Key Contact</span>
+                      <span className="text-[9px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.keyContact')}</span>
                       <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-[#1CA350] shrink-0" />
+                        <User className="w-4 h-4 text-primary shrink-0" />
                         <span className="font-bold">{selectedMember.keyContactName}</span>
                       </div>
                     </div>
@@ -206,10 +228,10 @@ export const DirectoryScreen: React.FC = () => {
 
                   {selectedMember.showEmail === true && (
                     <div className="space-y-0.5">
-                      <span className="text-[9px] uppercase font-bold text-[#5f6368] dark:text-gray-400 block">Email Address</span>
+                      <span className="text-[9px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.email')}</span>
                       <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-[#1CA350] shrink-0" />
-                        <a href={`mailto:${selectedMember.email}`} className="hover:underline text-[#1CA350] font-bold truncate block max-w-full">
+                        <Mail className="w-4 h-4 text-primary shrink-0" />
+                        <a href={`mailto:${selectedMember.email}`} className="hover:underline text-primary font-bold truncate block max-w-full">
                           {selectedMember.email}
                         </a>
                       </div>
@@ -218,9 +240,9 @@ export const DirectoryScreen: React.FC = () => {
 
                   {selectedMember.showPhone === true && selectedMember.phone && (
                     <div className="space-y-0.5">
-                      <span className="text-[9px] uppercase font-bold text-[#5f6368] dark:text-gray-400 block">Phone Number</span>
+                      <span className="text-[9px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.phone')}</span>
                       <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-[#1CA350] shrink-0" />
+                        <Phone className="w-4 h-4 text-primary shrink-0" />
                         <span className="font-medium">{selectedMember.phone}</span>
                       </div>
                     </div>
@@ -228,9 +250,9 @@ export const DirectoryScreen: React.FC = () => {
 
                   {selectedMember.showLocation === true && selectedMember.location && (
                     <div className="space-y-0.5">
-                      <span className="text-[9px] uppercase font-bold text-[#5f6368] dark:text-gray-400 block">Corporate Office</span>
+                      <span className="text-[9px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.location')}</span>
                       <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-[#1CA350] shrink-0" />
+                        <MapPin className="w-4 h-4 text-primary shrink-0" />
                         <span>{selectedMember.location}, Cyprus</span>
                       </div>
                     </div>
@@ -238,10 +260,10 @@ export const DirectoryScreen: React.FC = () => {
 
                   {selectedMember.showWebsite === true && selectedMember.website && (
                     <div className="space-y-0.5">
-                      <span className="text-[9px] uppercase font-bold text-[#5f6368] dark:text-gray-400 block">Official Website</span>
+                      <span className="text-[9px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.website')}</span>
                       <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-[#1CA350] shrink-0" />
-                        <a href={selectedMember.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-[#1CA350] font-bold truncate block max-w-full">
+                        <Globe className="w-4 h-4 text-primary shrink-0" />
+                        <a href={selectedMember.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary font-bold truncate block max-w-full">
                           {selectedMember.website}
                         </a>
                       </div>
@@ -250,10 +272,10 @@ export const DirectoryScreen: React.FC = () => {
 
                   {selectedMember.showLinkedin === true && selectedMember.linkedin && (
                     <div className="space-y-0.5">
-                      <span className="text-[9px] uppercase font-bold text-[#5f6368] dark:text-gray-400 block">LinkedIn Profile</span>
+                      <span className="text-[9px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.linkedin')}</span>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#1CA350] text-center w-4 shrink-0">in</span>
-                        <a href={selectedMember.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline text-[#1CA350] font-bold truncate block max-w-full">
+                        <span className="font-bold text-primary text-center w-4 shrink-0">in</span>
+                        <a href={selectedMember.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary font-bold truncate block max-w-full">
                           {selectedMember.linkedin}
                         </a>
                       </div>
@@ -264,14 +286,13 @@ export const DirectoryScreen: React.FC = () => {
                 {selectedMember.showEmail === true && (
                   <a
                     href={`mailto:${selectedMember.email}?subject=Energeia%20Network%20Inquiry`}
-                    className="w-full bg-[#1CA350] text-white py-2.5 rounded-full font-bold text-xs flex items-center justify-center gap-2 hover:bg-[#15823f] transition-colors mt-2"
+                    className="w-full bg-primary text-white py-2.5 rounded-full font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary-hover transition-colors mt-2 cursor-pointer"
                   >
-                    <Mail className="w-4 h-4" /> Send Email
+                    <Mail className="w-4 h-4" /> {t('directory.sendEmail')}
                   </a>
                 )}
               </div>
             </div>
-
 
           </div>
         </div>
@@ -279,5 +300,3 @@ export const DirectoryScreen: React.FC = () => {
     </div>
   );
 };
-
-

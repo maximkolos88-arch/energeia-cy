@@ -7,6 +7,18 @@
     "about": "About",
     "register": "Join Us"
   },
+  "categories": {
+    "allNews": "All News",
+    "renewables": "Renewables",
+    "oilGas": "Oil & Gas",
+    "govPolicy": "Government & Policy",
+    "grantsSubsidies": "Grants & Subsidies",
+    "electricityTrading": "Electricity & Trading",
+    "maritimeOffshore": "Maritime & Offshore",
+    "engineeringEpc": "Engineering & EPC",
+    "professionalServices": "Professional Services",
+    "govAssociations": "Government & Associations"
+  },
   "news": {
     "searchPlaceholder": "Search news updates...",
     "loadMore": "Load More",
@@ -18,19 +30,29 @@
     "noContent": "No content or summary available."
   },
   "directory": {
+    "title": "Professional Directory",
     "searchPlaceholder": "Search members by name, category, or skills...",
     "typeAll": "All Types",
     "typeIndividual": "Individuals",
     "typeCompany": "Companies",
     "verifyStatus": "Verified Partner",
-    "noResults": "No members matching your criteria.",
-    "contact": "Contact Member",
-    "email": "Email",
-    "website": "Website",
-    "linkedin": "LinkedIn",
-    "about": "About the Member",
-    "expertise": "Expertise & Areas",
-    "services": "Key Services"
+    "noResults": "No matching energy partners found",
+    "broadenSearch": "Try broadening your search term or resetting the query.",
+    "resetSearch": "Reset Search",
+    "contact": "Contact Details",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "location": "Corporate Office",
+    "website": "Official Website",
+    "linkedin": "LinkedIn Profile",
+    "about": "About Company",
+    "expertise": "Industry Expertise",
+    "services": "Key Services",
+    "notableProjects": "Notable Projects",
+    "certifications": "Certifications",
+    "sendEmail": "Send Email",
+    "viewProfile": "View Profile",
+    "keyContact": "Key Contact"
   },
   "magazine": {
     "title": "Digital Magazine",

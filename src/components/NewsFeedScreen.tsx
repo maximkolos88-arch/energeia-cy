@@ -61,6 +61,22 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     return (translated && translated.trim() !== '') ? translated : ((item[field] as string) || '');
   };
 
+  const getLocalizedCategory = (catName: string): string => {
+    if (!catName) return '';
+    const name = catName.trim().toLowerCase();
+    if (name === 'all news') return t('categories.allNews');
+    if (name.includes('renew') || name.includes('solar')) return t('categories.renewables');
+    if (name.includes('oil') || name.includes('gas')) return t('categories.oilGas');
+    if (name.includes('govern') || name.includes('policy')) return t('categories.govPolicy');
+    if (name.includes('grant') || name.includes('subsidy')) return t('categories.grantsSubsidies');
+    if (name.includes('trading') || name.includes('electric')) return t('categories.electricityTrading');
+    if (name.includes('maritime') || name.includes('offshore')) return t('categories.maritimeOffshore');
+    if (name.includes('engineering') || name.includes('epc')) return t('categories.engineeringEpc');
+    if (name.includes('professional') || name.includes('service')) return t('categories.professionalServices');
+    if (name.includes('association')) return t('categories.govAssociations');
+    return catName;
+  };
+
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
     try {
@@ -191,7 +207,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
               }`}
             >
               {getPillarIcon(cat)}
-              <span>{cat}</span>
+              <span>{getLocalizedCategory(cat)}</span>
             </button>
           );
         })}
@@ -264,10 +280,10 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                             {formatDate(item.publishedAt)}
                           </span>
 
-                          {formatCategoryDisplay(item.category) ? (
+                          {getLocalizedCategory(item.category) ? (
                             <div className="flex items-center gap-2">
                               <span className={`px-2 py-0.5 rounded-md text-[11px] font-medium ${getBadgeStyle(item.category)}`}>
-                                {formatCategoryDisplay(item.category)}
+                                {getLocalizedCategory(item.category)}
                               </span>
                             </div>
                           ) : null}
@@ -348,9 +364,9 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
             {/* Article Meta */}
             <div className="mt-4">
               <div className="flex items-center gap-2 mb-3">
-                {formatCategoryDisplay(selectedArticle.category) ? (
+                {getLocalizedCategory(selectedArticle.category) ? (
                   <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(selectedArticle.category)}`}>
-                    {formatCategoryDisplay(selectedArticle.category)}
+                    {getLocalizedCategory(selectedArticle.category)}
                   </span>
                 ) : null}
                 <span className="text-xs text-[#5f6368]">

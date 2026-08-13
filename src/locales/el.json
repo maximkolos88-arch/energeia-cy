@@ -7,6 +7,18 @@
     "about": "Σχετικά",
     "register": "Εγγραφή"
   },
+  "categories": {
+    "allNews": "Όλες οι Ειδήσεις",
+    "renewables": "Ανανεώσιμες Πηγές",
+    "oilGas": "Πετρέλαιο & Φυσικό Αέριο",
+    "govPolicy": "Κυβέρνηση & Πολιτική",
+    "grantsSubsidies": "Χορηγίες & Επιδοτήσεις",
+    "electricityTrading": "Ηλεκτρισμός & Εμπόριο",
+    "maritimeOffshore": "Ναυτιλία & Υπεράκτια",
+    "engineeringEpc": "Μηχανική & EPC",
+    "professionalServices": "Επαγγελματικές Υπηρεσίες",
+    "govAssociations": "Κυβερνητικοί Σύνδεσμοι"
+  },
   "news": {
     "searchPlaceholder": "Αναζήτηση ειδήσεων...",
     "loadMore": "Φόρτωση Περισσότερων",
@@ -18,19 +30,29 @@
     "noContent": "Δεν υπάρχει διαθέσιμο περιεχόμενο ή περίληψη."
   },
   "directory": {
+    "title": "Επαγγελματικός Κατάλογος",
     "searchPlaceholder": "Αναζήτηση μελών με όνομα, κατηγορία ή δεξιότητες...",
     "typeAll": "Όλοι οι Τύποι",
     "typeIndividual": "Ιδιώτες",
     "typeCompany": "Εταιρείες",
     "verifyStatus": "Πιστοποιημένος Συνεργάτης",
-    "noResults": "Δεν βρέθηκαν μέλη με αυτά τα κριτήρια.",
-    "contact": "Επικοινωνία με Μέλος",
-    "email": "Email",
-    "website": "Ιστοσελίδα",
-    "linkedin": "LinkedIn",
-    "about": "Σχετικά με το Μέλος",
-    "expertise": "Εξειδίκευση & Τομείς",
-    "services": "Βασικές Υπηρεσίες"
+    "noResults": "Δεν βρέθηκαν μέλη με αυτά τα κριτήρια",
+    "broadenSearch": "Δοκιμάστε να διευρύνετε τον όρο αναζήτησης ή να επαναφέρετε το ερώτημα.",
+    "resetSearch": "Επαναφορά Αναζήτησης",
+    "contact": "Στοιχεία Επικοινωνίας",
+    "email": "Διεύθυνση Email",
+    "phone": "Αριθμός Τηλεφώνου",
+    "location": "Έδρα Εταιρείας",
+    "website": "Επίσημη Ιστοσελίδα",
+    "linkedin": "Προφίλ LinkedIn",
+    "about": "Σχετικά με την Εταιρεία",
+    "expertise": "Εμπειρογνωμοσύνη Κλάδου",
+    "services": "Βασικές Υπηρεσίες",
+    "notableProjects": "Σημαντικά Έργα",
+    "certifications": "Πιστοποιήσεις",
+    "sendEmail": "Αποστολή Email",
+    "viewProfile": "Προβολή Προφίλ",
+    "keyContact": "Κύριος Εκπρόσωπος"
   },
   "magazine": {
     "title": "Ψηφιακό Περιοδικό",
