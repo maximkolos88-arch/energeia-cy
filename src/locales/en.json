@@ -31,6 +31,7 @@
   },
   "directory": {
     "title": "Professional Directory",
+    "description": "Connect with certified energy engineers, ESG auditors, solar contractors, and suppliers across Cyprus.",
     "searchPlaceholder": "Search members by name, category, or skills...",
     "typeAll": "All Types",
     "typeIndividual": "Individuals",

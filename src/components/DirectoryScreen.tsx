@@ -48,7 +48,7 @@ export const DirectoryScreen: React.FC = () => {
     <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-6 pb-24 md:pb-12 animate-fade-in">
       <PageHeader 
         title={t('directory.title')} 
-        description="Connect with certified energy engineers, ESG auditors, solar contractors, and suppliers across Cyprus." 
+        description={t('directory.description')} 
         iconName="group" 
       />
 
