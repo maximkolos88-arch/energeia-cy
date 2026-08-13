@@ -27,7 +27,11 @@ import {
   Layers
 } from 'lucide-react';
 
-export const NewsFeedScreen: React.FC = () => {
+interface NewsFeedScreenProps {
+  language?: string;
+}
+
+export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' }) => {
   const {
     category,
     categories,
@@ -43,6 +47,16 @@ export const NewsFeedScreen: React.FC = () => {
 
   const getProxyImageUrl = (url: string) => {
     return url || '';
+  };
+
+  const getLocalizedValue = (item: NewsItem, field: 'title' | 'summary' | 'content', lang: string): string => {
+    const activeLang = (lang || 'en').toLowerCase();
+    if (activeLang === 'en') {
+      return (item[field] as string) || '';
+    }
+    const key = `${field}_${activeLang}` as keyof NewsItem;
+    const translated = item[key] as string;
+    return (translated && translated.trim() !== '') ? translated : ((item[field] as string) || '');
   };
 
   const formatDate = (dateStr?: string) => {
@@ -259,13 +273,13 @@ export const NewsFeedScreen: React.FC = () => {
 
                         {/* Headline */}
                         <h2 className="text-base md:text-lg font-bold text-neutral-900 dark:text-neutral-100 leading-snug group-hover:text-primary transition-colors mb-2 tracking-tight">
-                          {item.title}
+                          {getLocalizedValue(item, 'title', language)}
                         </h2>
                       </div>
 
                       {/* Article Summary Snippet */}
                       <p className="text-xs md:text-sm text-neutral-500 dark:text-neutral-400 font-normal line-clamp-2 md:line-clamp-3 leading-relaxed mt-2">
-                        {item.summary || 'No summary generated yet'}
+                        {getLocalizedValue(item, 'summary', language) || 'No summary generated yet'}
                       </p>
                     </div>
 
@@ -273,7 +287,7 @@ export const NewsFeedScreen: React.FC = () => {
                       <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-neutral-200/60 dark:border-neutral-800/60">
                         <img
                           src={item.image_url || item.imageUrl}
-                          alt={item.title}
+                          alt={getLocalizedValue(item, 'title', language)}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-in-out"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = 'none';
@@ -320,7 +334,7 @@ export const NewsFeedScreen: React.FC = () => {
               <div className="w-full h-48 md:h-64 rounded-xl md:rounded-2xl overflow-hidden border border-[#dadce0]/50 dark:border-[#3c4043]/50">
                 <img
                   src={selectedArticle.image_url || selectedArticle.imageUrl}
-                  alt={selectedArticle.title}
+                  alt={getLocalizedValue(selectedArticle, 'title', language)}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = 'none';
@@ -343,21 +357,21 @@ export const NewsFeedScreen: React.FC = () => {
               </div>
 
               <h2 className="text-xl md:text-2xl font-bold md:font-medium text-[#202124] dark:text-white leading-snug mb-3">
-                {selectedArticle.title}
+                {getLocalizedValue(selectedArticle, 'title', language)}
               </h2>
             </div>
 
             {/* Executive Summary Box */}
             <div className="p-4 bg-[#f8f9fa] dark:bg-[#2d2e30] border-l-4 border-[#1CA350] rounded-r-xl">
               <p className="text-sm text-[#202124] dark:text-gray-200 italic font-medium">
-                "{selectedArticle.summary || 'No summary generated yet'}"
+                "{getLocalizedValue(selectedArticle, 'summary', language) || 'No summary generated yet'}"
               </p>
             </div>
 
             {/* Markdown Content */}
             <div className="prose prose-sm dark:prose-invert max-w-none text-[#202124] dark:text-gray-200 leading-relaxed space-y-3 pt-2">
               <ReactMarkdown>
-                {selectedArticle.content || selectedArticle.summary || 'No content or summary available.'}
+                {getLocalizedValue(selectedArticle, 'content', language) || getLocalizedValue(selectedArticle, 'summary', language) || 'No content or summary available.'}
               </ReactMarkdown>
             </div>
 

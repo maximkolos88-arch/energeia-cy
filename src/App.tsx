@@ -29,6 +29,20 @@ export default function App() {
   );
   const [refreshKey, setRefreshKey] = useState<number>(0);
 
+  // Language state controller (Default to browser language or 'en', save to localStorage)
+  const [language, setLanguage] = useState<string>(() => {
+    const saved = localStorage.getItem('energeia_language');
+    if (saved) return saved;
+    const browserLang = navigator.language.split('-')[0].toLowerCase();
+    const supported = ['en', 'el', 'ru', 'he'];
+    return supported.includes(browserLang) ? browserLang : 'en';
+  });
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    localStorage.setItem('energeia_language', lang);
+  };
+
   // Monitor Supabase Auth Session
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -59,21 +73,21 @@ export default function App() {
         setActiveTab('about');
       } else if (path === '/register') {
         setActiveTab('register');
-      } else if (path === '/' || path === '') {
+      } else {
         setActiveTab('news');
       }
     };
 
     const handleLinkClick = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('a');
-      if (target) {
-        const href = target.getAttribute('href');
-        // Only intercept local relative paths, not external URLs or hashes
-        if (href && href.startsWith('/') && !href.startsWith('//')) {
-          e.preventDefault();
-          window.history.pushState({}, '', href);
-          handleLocationChange();
-        }
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      if (anchor && anchor.getAttribute('href')?.startsWith('/')) {
+        const href = anchor.getAttribute('href') || '/';
+        if (href === '/admin' || href.startsWith('/admin')) return;
+        
+        e.preventDefault();
+        window.history.pushState({}, '', href);
+        handleLocationChange();
       }
     };
 
@@ -118,7 +132,7 @@ export default function App() {
   const renderActiveScreen = () => {
     switch (activeTab) {
       case 'news':
-        return <NewsFeedScreen key={refreshKey} />;
+        return <NewsFeedScreen key={refreshKey} language={language} />;
       case 'members':
         return <DirectoryScreen />;
       case 'magazine':
@@ -130,7 +144,7 @@ export default function App() {
       case 'register':
         return <RegisterScreen />;
       default:
-        return <NewsFeedScreen key={refreshKey} />;
+        return <NewsFeedScreen key={refreshKey} language={language} />;
     }
   };
 
@@ -140,6 +154,8 @@ export default function App() {
       <TopAppBar
         activeTab={activeTab}
         onTabChange={handleTabChange}
+        language={language}
+        onLanguageChange={handleLanguageChange}
       />
 
       {/* Main View Area */}

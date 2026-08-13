@@ -4,11 +4,15 @@ import { EnergeiaLogo } from './EnergeiaLogo';
 interface TopAppBarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  language: string;
+  onLanguageChange: (lang: string) => void;
 }
 
 export const TopAppBar: React.FC<TopAppBarProps> = ({ 
   activeTab, 
-  onTabChange
+  onTabChange,
+  language,
+  onLanguageChange
 }) => {
   const navItems = [
     { id: 'news', label: 'News' },
@@ -20,7 +24,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#1f1f1f] border-b border-[#dadce0] dark:border-[#3c4043] transition-colors shadow-2xs">
+    <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#1b1c1e] border-b border-neutral-200 dark:border-neutral-800 transition-colors shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-6">
         
         {/* Left & Center-Left: Logo & Inline Navigation Tabs */}
@@ -31,14 +35,14 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
             className="flex items-center gap-3 cursor-pointer shrink-0 select-none"
             onClick={() => onTabChange('news')}
           >
-            <div className="p-2 rounded-xl bg-[#202124] dark:bg-white text-white dark:text-[#202124] flex items-center justify-center shadow-xs">
+            <div className="p-2 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center shadow-xs">
               <EnergeiaLogo className="w-6 h-auto" />
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center font-bold text-lg tracking-tight text-[#202124] dark:text-white leading-none">
+              <div className="flex items-center font-bold text-lg tracking-tight text-neutral-900 dark:text-white leading-none">
                 <span className="font-extrabold">Energeia</span>
               </div>
-              <span className="text-[9px] text-[#5f6368] dark:text-gray-400 font-medium tracking-wide">Cyprus All-Energy Network</span>
+              <span className="text-[9px] text-neutral-500 dark:text-neutral-400 font-medium tracking-wide">Cyprus All-Energy Network</span>
             </div>
           </div>
 
@@ -52,8 +56,8 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                   onClick={() => onTabChange(item.id)}
                   className={`px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all rounded-lg ${
                     isActive
-                      ? 'bg-secondary-container text-on-secondary-container font-bold shadow-xs'
-                      : 'text-[#5f6368] dark:text-gray-400 hover:text-[#202124] dark:hover:text-white hover:bg-[#f8f9fa] dark:hover:bg-[#2d2e30]'
+                      ? 'bg-primary/10 text-primary font-bold shadow-xs'
+                      : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800'
                   }`}
                 >
                   {item.label}
@@ -63,7 +67,25 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </nav>
         </div>
 
-
+        {/* Right Section: Language Switcher */}
+        <div className="flex items-center gap-0.5 border border-neutral-200 dark:border-neutral-850 rounded-lg p-0.5 bg-neutral-50 dark:bg-neutral-900 shrink-0">
+          {(['en', 'el', 'ru', 'he'] as const).map((lang) => {
+            const isActive = language === lang;
+            return (
+              <button
+                key={lang}
+                onClick={() => onLanguageChange(lang)}
+                className={`px-2 py-1 text-[10px] font-bold uppercase transition-all rounded-md cursor-pointer ${
+                  isActive
+                    ? 'bg-primary text-white shadow-3xs'
+                    : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                }`}
+              >
+                {lang}
+              </button>
+            );
+          })}
+        </div>
 
       </div>
     </header>

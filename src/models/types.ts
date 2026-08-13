@@ -28,6 +28,15 @@ export interface NewsItem {
   createdAt: string;
   status: NewsStatus;
   readTimeMinutes?: number;
+  title_el?: string;
+  title_ru?: string;
+  title_he?: string;
+  summary_el?: string;
+  summary_ru?: string;
+  summary_he?: string;
+  content_el?: string;
+  content_ru?: string;
+  content_he?: string;
 }
 
 export type MemberType = 'Individual' | 'Company';

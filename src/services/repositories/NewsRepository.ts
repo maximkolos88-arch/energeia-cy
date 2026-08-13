@@ -35,7 +35,16 @@ export class NewsRepository {
       publishedAt: item.published_at || item.created_at || '',
       createdAt: item.created_at || '',
       status: item.status || 'Draft',
-      readTimeMinutes: item.read_time_minutes || 3
+      readTimeMinutes: item.read_time_minutes || 3,
+      title_el: item.title_el || '',
+      title_ru: item.title_ru || '',
+      title_he: item.title_he || '',
+      summary_el: item.summary_el || '',
+      summary_ru: item.summary_ru || '',
+      summary_he: item.summary_he || '',
+      content_el: item.content_el || '',
+      content_ru: item.content_ru || '',
+      content_he: item.content_he || ''
     };
   }
 
