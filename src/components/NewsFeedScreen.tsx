@@ -238,19 +238,19 @@ export const NewsFeedScreen: React.FC = () => {
                   <article
                     key={item.id}
                     onClick={() => setSelectedArticle(item)}
-                    className="bg-white dark:bg-[#2d2e30] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 md:p-5 hover:shadow-2xl hover:-translate-y-0.5 hover:border-[#1CA350]/35 transition-all duration-300 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-4 md:gap-5 justify-between items-stretch"
+                    className="bg-white dark:bg-[#1b1c1e] border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 md:p-6 hover:border-primary/80 transition-all duration-200 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-6 justify-between items-stretch"
                   >
                     <div className="flex-1 flex flex-col justify-between order-2 md:order-1">
                       <div>
                         {/* Header Row */}
-                        <div className="flex items-center justify-between mb-2 text-xs">
-                          <span className="text-[#5f6368] dark:text-gray-400 font-normal">
+                        <div className="flex items-center justify-between mb-3 text-xs">
+                          <span className="text-neutral-500 dark:text-neutral-400 font-medium">
                             {formatDate(item.publishedAt)}
                           </span>
 
                           {formatCategoryDisplay(item.category) ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(item.category)}`}>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 py-0.5 rounded-md text-[11px] font-medium ${getBadgeStyle(item.category)}`}>
                                 {formatCategoryDisplay(item.category)}
                               </span>
                             </div>
@@ -258,23 +258,23 @@ export const NewsFeedScreen: React.FC = () => {
                         </div>
 
                         {/* Headline */}
-                        <h2 className="text-base md:text-lg font-semibold md:font-medium text-[#202124] dark:text-white leading-snug group-hover:text-[#1CA350] transition-colors mb-2">
+                        <h2 className="text-base md:text-lg font-bold text-neutral-900 dark:text-neutral-100 leading-snug group-hover:text-primary transition-colors mb-2 tracking-tight">
                           {item.title}
                         </h2>
                       </div>
 
                       {/* Article Summary Snippet */}
-                      <p className="text-xs md:text-sm text-[#5f6368] dark:text-gray-300 line-clamp-2 md:line-clamp-3 leading-relaxed mt-1">
+                      <p className="text-xs md:text-sm text-neutral-500 dark:text-neutral-400 font-normal line-clamp-2 md:line-clamp-3 leading-relaxed mt-2">
                         {item.summary || 'No summary generated yet'}
                       </p>
                     </div>
 
                     {(item.image_url || item.imageUrl) ? (
-                      <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-[#dadce0]/50 dark:border-[#3c4043]/50">
+                      <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-neutral-200/60 dark:border-neutral-800/60">
                         <img
                           src={item.image_url || item.imageUrl}
                           alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-in-out"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = 'none';
                           }}
