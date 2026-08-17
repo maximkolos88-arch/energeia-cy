@@ -12,6 +12,7 @@ import { AcademyScreen } from './components/AcademyScreen';
 import { RegisterScreen } from './components/RegisterScreen';
 import { LoginScreen } from './components/LoginScreen';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { useTranslation } from 'react-i18next';
 import './index.css';
 
@@ -76,6 +77,11 @@ export default function App() {
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
   }, [language]);
+
+  // Client mount detection log
+  useEffect(() => {
+    console.log('App successfully mounted on client');
+  }, []);
 
   // Monitor Supabase Auth Session
   useEffect(() => {
@@ -194,7 +200,9 @@ export default function App() {
 
       {/* Main View Area */}
       <main className="flex-1 w-full flex flex-col main-content">
-        {renderActiveScreen()}
+        <ErrorBoundary>
+          {renderActiveScreen()}
+        </ErrorBoundary>
       </main>
 
       {/* Mobile Bottom Navigation Bar */}
@@ -204,7 +212,9 @@ export default function App() {
       />
 
       {/* PWA Home Screen Onboarding Prompt */}
-      <PWAInstallPrompt />
+      <ErrorBoundary>
+        <PWAInstallPrompt />
+      </ErrorBoundary>
     </div>
   );
 }
