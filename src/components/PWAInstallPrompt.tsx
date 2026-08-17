@@ -20,11 +20,27 @@ export const PWAInstallPrompt: React.FC = () => {
     return window.innerWidth < 768;
   };
 
-  const isDismissed = (): boolean => {
-    const dismissedTime = localStorage.getItem('pwa_prompt_dismissed');
-    if (!dismissedTime) return false;
-    const cooldown = 7 * 24 * 60 * 60 * 1000; // 7 days cooldown
-    return Date.now() - parseInt(dismissedTime, 10) < cooldown;
+  const isCooldownActive = (): boolean => {
+    try {
+      const dismissCountStr = localStorage.getItem('pwa_dismiss_count');
+      const lastDismissedStr = localStorage.getItem('pwa_last_dismissed');
+      
+      if (!lastDismissedStr) return false;
+      
+      const dismissCount = dismissCountStr ? parseInt(dismissCountStr, 10) : 0;
+      const lastDismissed = parseInt(lastDismissedStr, 10);
+      
+      if (dismissCount === 0) return false;
+      
+      // Cooldown calculation: 1 dismissal = 7 days, >=2 dismissals = 30 days
+      const cooldownMs = dismissCount === 1 
+        ? 7 * 24 * 60 * 60 * 1000 // 7 days
+        : 30 * 24 * 60 * 60 * 1000; // 30 days
+        
+      return Date.now() - lastDismissed < cooldownMs;
+    } catch (e) {
+      return false;
+    }
   };
 
   const isIOS = (): boolean => {
@@ -32,33 +48,70 @@ export const PWAInstallPrompt: React.FC = () => {
     return /iphone|ipad|ipod/.test(userAgent);
   };
 
+  // 1. Tracking page views inside session storage
   useEffect(() => {
-    // 1. Android/Chrome handler
+    try {
+      const views = sessionStorage.getItem('pwa_pages_viewed');
+      const newViews = views ? parseInt(views, 10) + 1 : 1;
+      sessionStorage.setItem('pwa_pages_viewed', newViews.toString());
+    } catch (e) {
+      console.warn('SessionStorage error:', e);
+    }
+  }, []);
+
+  // 2. Setting triggers and event listeners
+  useEffect(() => {
+    if (isStandalone() || !isMobile() || isCooldownActive()) {
+      return;
+    }
+
+    // Check page views count
+    let views = 1;
+    try {
+      const viewsStr = sessionStorage.getItem('pwa_pages_viewed');
+      if (viewsStr) views = parseInt(viewsStr, 10);
+    } catch (e) {}
+
+    // Android/Chrome install event handler
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      // Auto-trigger prompt display if constraints are satisfied
-      if (!isStandalone() && !isDismissed() && isMobile()) {
+      // If we are already on the second page, show immediately
+      if (views > 1) {
         setShowPrompt(true);
       }
     };
-
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // 2. iOS check on initial load
-    if (isIOS() && !isStandalone() && !isDismissed() && isMobile()) {
+    // Initial delay loader
+    let timerId: any = null;
+    if (views > 1) {
       setShowPrompt(true);
+    } else {
+      // 20 seconds delay timer for active user session on first page load
+      timerId = setTimeout(() => {
+        setShowPrompt(true);
+      }, 20000);
     }
+
+    // App installed handler to auto-close prompt
+    const handleAppInstalled = () => {
+      console.log('PWA installed successfully');
+      setShowPrompt(false);
+    };
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+      if (timerId) clearTimeout(timerId);
     };
   }, []);
 
   const handleInstallClick = async () => {
     if (isIOS()) {
-      // Show custom overlay/drawer instructions pointing to Safari share actions
+      // Show instructions modal pointing to Safari share
       setShowIOSInstructions(true);
     } else if (deferredPrompt) {
       // Trigger native browser install prompt for Chrome/Android
@@ -68,7 +121,7 @@ export const PWAInstallPrompt: React.FC = () => {
       setDeferredPrompt(null);
       setShowPrompt(false);
     } else {
-      // Fallback instruction description for general mobile browsers
+      // Fallback instructions for general mobile browsers
       alert(
         "To install, open your browser options/settings and select 'Add to Home Screen' or 'Install app'."
       );
@@ -76,7 +129,15 @@ export const PWAInstallPrompt: React.FC = () => {
   };
 
   const handleSkipClick = () => {
-    localStorage.setItem('pwa_prompt_dismissed', Date.now().toString());
+    try {
+      const dismissCountStr = localStorage.getItem('pwa_dismiss_count');
+      const newCount = dismissCountStr ? parseInt(dismissCountStr, 10) + 1 : 1;
+      localStorage.setItem('pwa_dismiss_count', newCount.toString());
+      localStorage.setItem('pwa_last_dismissed', Date.now().toString());
+    } catch (e) {
+      console.warn('LocalStorage save error:', e);
+    }
+    
     setShowPrompt(false);
     setShowIOSInstructions(false);
   };
@@ -86,6 +147,7 @@ export const PWAInstallPrompt: React.FC = () => {
   return (
     <div className="fixed inset-0 z-[2000] flex items-end md:items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
       
+      {/* Main onboarding container - premium 20px rounding */}
       <div 
         className="bg-white dark:bg-[#1b1c1e] w-full max-w-md p-6 relative shadow-2xl animate-scale-up overflow-hidden border border-neutral-200 dark:border-neutral-800 pb-8 md:pb-6"
         style={{ borderRadius: '20px' }}
@@ -101,7 +163,7 @@ export const PWAInstallPrompt: React.FC = () => {
 
         {/* Minimalist Vector App Icon Graphic with Glow */}
         <div className="relative w-40 h-40 mx-auto flex items-center justify-center mb-2 mt-4">
-          {/* Subtle green ambient glow background */}
+          {/* Ambient glow background */}
           <div className="absolute w-24 h-24 rounded-full bg-emerald-500/20 dark:bg-emerald-500/10 blur-xl animate-pulse" />
           <div className="absolute w-16 h-16 rounded-full bg-primary/30 dark:bg-primary/20 blur-lg" />
           
@@ -119,7 +181,7 @@ export const PWAInstallPrompt: React.FC = () => {
           </div>
         </div>
 
-        {/* Content - No offline mentions */}
+        {/* Content */}
         <div className="text-center space-y-2 px-1">
           <h2 className="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">
             Energeia on Your Home Screen
