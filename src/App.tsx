@@ -11,6 +11,7 @@ import { MagazineScreen } from './components/MagazineScreen';
 import { AcademyScreen } from './components/AcademyScreen';
 import { RegisterScreen } from './components/RegisterScreen';
 import { LoginScreen } from './components/LoginScreen';
+import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { useTranslation } from 'react-i18next';
 import './index.css';
 
@@ -171,6 +172,9 @@ export default function App() {
         activeTab={activeTab}
         onTabChange={handleTabChange}
       />
+
+      {/* PWA Home Screen Onboarding Prompt */}
+      <PWAInstallPrompt />
     </div>
   );
 }
