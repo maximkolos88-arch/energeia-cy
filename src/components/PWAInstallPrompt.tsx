@@ -328,7 +328,7 @@ export const PWAInstallPrompt: React.FC = () => {
         {/* Content */}
         <div className="text-center space-y-2 px-1">
           <h2 className="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">
-            Energeia on Your Home Screen
+            Energeia on your home screen
           </h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-xs mx-auto">
             Get instant one-tap access to Cyprus energy news, real-time market updates, and the verified professional member directory.
@@ -342,7 +342,7 @@ export const PWAInstallPrompt: React.FC = () => {
             className="w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-colors shadow-sm focus:outline-none flex items-center justify-center gap-2 cursor-pointer h-[52px]"
             style={{ borderRadius: '14px' }}
           >
-            Add to Home Screen
+            Add to home screen
           </button>
           
           <button
