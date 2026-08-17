@@ -847,8 +847,22 @@ Financing and regulatory clearance remain key priorities, with project developer
         </button>
       </div>
 
+      {/* Drawer Backdrop Overlay (mobile only) */}
+      {isMobileMenuOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/40 z-[1050] animate-fade-in" 
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Side Navigation Bar (Material Design 3 Navigation Drawer) */}
-      <aside className={`w-full md:w-64 bg-surface-container-low border-b md:border-b-0 md:border-r border-outline-variant flex-col shrink-0 md:flex ${isMobileMenuOpen ? 'flex absolute inset-x-0 top-14 bottom-0 z-40' : 'hidden'}`}>
+      <aside 
+        className={`fixed md:relative inset-y-0 left-0 z-[1100] md:z-auto w-64 h-full bg-white dark:bg-[#1b1c1e] md:bg-surface-container-low border-r border-neutral-200 dark:border-neutral-800 md:border-outline-variant flex flex-col shrink-0 transition-transform duration-300 ${
+          isMobileMenuOpen 
+            ? 'translate-x-0' 
+            : '-translate-x-full md:translate-x-0'
+        }`}
+      >
         
         {/* Drawer Header */}
         <div className="p-6 flex items-center justify-between border-b border-outline-variant/60">
@@ -937,16 +951,16 @@ Financing and regulatory clearance remain key priorities, with project developer
       <main className="flex-1 flex flex-col overflow-hidden bg-surface">
         
         {/* Header bar */}
-        <header className="px-6 py-4 border-b border-outline-variant/60 flex justify-between items-center bg-surface-container-lowest shrink-0">
-          <div className="flex items-center gap-4">
-            <h2 className="font-headline-sm text-headline-sm font-bold text-on-surface capitalize">
+        <header className="px-6 py-4 border-b border-outline-variant/60 flex justify-between items-center bg-surface-container-lowest shrink-0 flex-nowrap gap-3">
+          <div className="flex items-center gap-4 min-w-0">
+            <h2 className="font-headline-sm text-headline-sm font-bold text-on-surface capitalize truncate">
               {activeModule.replace('_', ' ')}
             </h2>
             {loadingData && (
-              <RefreshCw className="w-4 h-4 text-primary animate-spin" />
+              <RefreshCw className="w-4 h-4 text-primary animate-spin shrink-0" />
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button 
               onClick={loadAllData}
               className="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-on-surface transition-colors"
@@ -956,7 +970,7 @@ Financing and regulatory clearance remain key priorities, with project developer
             </button>
             <button
               onClick={onClose}
-              className="bg-primary text-on-primary hover:bg-primary/95 px-4 py-2 rounded-full font-label-lg text-label-lg flex items-center gap-2 transition-all shadow-xs hover:shadow-sm"
+              className="bg-primary text-on-primary hover:bg-primary/95 px-4 py-2 rounded-full font-label-lg text-label-lg flex items-center gap-2 transition-all shadow-xs hover:shadow-sm whitespace-nowrap"
             >
               <Check className="w-4 h-4" /> Go to App
             </button>
@@ -999,7 +1013,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                     ].map((card, idx) => {
                       const CardIcon = card.icon;
                       return (
-                        <div key={idx} className="bg-surface-container-low border border-outline-variant/50 p-5 rounded-2xl flex items-start gap-4">
+                        <div key={idx} className="relative w-full bg-white dark:bg-[#1b1c1e] border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 z-10 flex items-start gap-4 shadow-3xs mb-4 md:mb-0">
                           <div className={`p-3 rounded-xl ${card.color}`}>
                             <CardIcon className="w-6 h-6" />
                           </div>
