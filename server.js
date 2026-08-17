@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import fs from 'fs';
+import webpush from 'web-push';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import * as cheerio from 'cheerio';
@@ -1452,6 +1453,74 @@ app.post('/api/push/subscribe', (req, res) => {
   dbData.push_subscriptions.unshift(newSub);
   writeDb(dbData);
   res.status(201).json({ success: true, message: 'Subscription stored successfully', subscription: newSub });
+});
+
+// Initialize VAPID details
+const vapidPublicKey = process.env.VAPID_PUBLIC_KEY || 'BCkeGmEYasE_LQGpB2NoezzfuMk3-3262UPW0JW6pjgPkBOr9IFisbY4K1tpbGMXb7lgwiDZMhrRgpMWCAlBHg0';
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || 'EGNsv0pnBHsMTEMSfKhsoY2F1XnEyQ8jB_ALGb8jh_Y';
+
+webpush.setVapidDetails(
+  'mailto:info@energeia.cy',
+  vapidPublicKey,
+  vapidPrivateKey
+);
+
+// PUSH NOTIFICATION DISPATCHER
+app.post('/api/push/send', async (req, res) => {
+  const { title, body, url, type } = req.body;
+  
+  if (!title || !body) {
+    return res.status(400).json({ error: 'Title and body are required' });
+  }
+  
+  const dbData = readDb();
+  const subscriptions = dbData.push_subscriptions || [];
+  
+  if (subscriptions.length === 0) {
+    return res.json({ success: true, sentCount: 0, message: 'No subscriptions found' });
+  }
+  
+  const notificationPayload = JSON.stringify({
+    title,
+    body,
+    url: url || '/',
+    type: type || 'news',
+    unread_count: 1
+  });
+  
+  const promises = subscriptions.map((sub, idx) => {
+    const pushSubscription = {
+      endpoint: sub.endpoint,
+      keys: sub.keys
+    };
+    
+    return webpush.sendNotification(pushSubscription, notificationPayload)
+      .then(() => ({ success: true, index: idx }))
+      .catch(err => {
+        console.error(`Error sending push to subscriber ${idx}:`, err);
+        if (err.statusCode === 404 || err.statusCode === 410) {
+          return { success: false, expired: true, endpoint: sub.endpoint, index: idx };
+        }
+        return { success: false, expired: false, index: idx };
+      });
+  });
+  
+  const results = await Promise.all(promises);
+  
+  const expiredEndpoints = results.filter(r => !r.success && r.expired).map(r => r.endpoint);
+  if (expiredEndpoints.length > 0) {
+    dbData.push_subscriptions = dbData.push_subscriptions.filter(sub => !expiredEndpoints.includes(sub.endpoint));
+    writeDb(dbData);
+    console.log(`Cleaned up ${expiredEndpoints.length} expired push subscriptions.`);
+  }
+  
+  const sentCount = results.filter(r => r.success).length;
+  res.json({
+    success: true,
+    sentCount,
+    totalCount: subscriptions.length,
+    cleanedCount: expiredEndpoints.length
+  });
 });
 
 // Setup static file serving for React frontend SPA build files

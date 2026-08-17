@@ -4,7 +4,7 @@ import { X, ArrowDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Standard VAPID Key Placeholder
-const VAPID_PUBLIC_KEY = 'BFg-Zqy3a7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1w';
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BCkeGmEYasE_LQGpB2NoezzfuMk3-3262UPW0JW6pjgPkBOr9IFisbY4K1tpbGMXb7lgwiDZMhrRgpMWCAlBHg0';
 
 export const PWAInstallPrompt: React.FC = () => {
   const { t } = useTranslation();

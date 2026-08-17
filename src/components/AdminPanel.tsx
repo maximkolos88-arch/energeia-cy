@@ -78,6 +78,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [enrichingId, setEnrichingId] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState<boolean>(false);
+  const [sendPush, setSendPush] = useState<boolean>(true);
+
+  const triggerPushNotification = async (payload: { title: string; body: string; url: string; type: 'news' | 'member' | 'magazine' | 'academy' }) => {
+    try {
+      const response = await fetch('/api/push/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) {
+        console.warn('Failed to send push notification:', await response.text());
+      } else {
+        const result = await response.json();
+        console.log('Push notification dispatched:', result);
+      }
+    } catch (err) {
+      console.warn('Push notification trigger error:', err);
+    }
+  };
 
   const handleEnrichDraft = (item: NewsItem) => {
     const lowerTitle = (item.title || '').toLowerCase();
@@ -512,10 +531,20 @@ Financing and regulatory clearance remain key priorities, with project developer
         readTimeMinutes: Number(editingNews.readTimeMinutes) || 3
       };
 
+      let createdNews: any = null;
       if (editingNews.id) {
         await NewsRepository.updateNewsItem(editingNews.id, payload);
       } else {
-        await NewsRepository.createNewsItem(payload);
+        createdNews = await NewsRepository.createNewsItem(payload);
+      }
+
+      if (!editingNews.id && sendPush) {
+        await triggerPushNotification({
+          title: "Breaking Energy News",
+          body: payload.title,
+          url: createdNews?.id ? `/news/${createdNews.id}` : "/news",
+          type: "news"
+        });
       }
       setEditingNews(null);
       await loadAllData();
@@ -557,6 +586,15 @@ Financing and regulatory clearance remain key priorities, with project developer
       } else {
         await MagazineRepository.createIssue(payload);
       }
+
+      if (!editingMagazine.id && sendPush) {
+        await triggerPushNotification({
+          title: "New Magazine Issue Released",
+          body: `"${payload.title}" is now available to read.`,
+          url: "/magazine",
+          type: "magazine"
+        });
+      }
       setEditingMagazine(null);
       await loadAllData();
     } catch (err) {
@@ -596,6 +634,15 @@ Financing and regulatory clearance remain key priorities, with project developer
         await CourseRepository.updateCourse(editingCourse.id, payload);
       } else {
         await CourseRepository.createCourse(payload);
+      }
+
+      if (!editingCourse.id && sendPush) {
+        await triggerPushNotification({
+          title: "New Academy Course",
+          body: `"${payload.title}" is now open for enrollment.`,
+          url: "/academy",
+          type: "academy"
+        });
       }
       setEditingCourse(null);
       await loadAllData();
@@ -666,6 +713,15 @@ Financing and regulatory clearance remain key priorities, with project developer
       } else {
         await DirectoryRepository.createMember(payload);
         setSuccessToast('Member created successfully.');
+      }
+
+      if (!editingMember.id && sendPush) {
+        await triggerPushNotification({
+          title: "New Member Directory Profile",
+          body: `"${payload.name}" has joined the Energeia Network.`,
+          url: "/members",
+          type: "member"
+        });
       }
       setEditingMember(null);
       await loadAllData();
@@ -1247,20 +1303,33 @@ Financing and regulatory clearance remain key priorities, with project developer
                         />
                       </div>
 
-                      <div className="flex justify-end gap-2 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => setEditingNews(null)}
-                          className="px-4 py-2 border border-outline hover:bg-surface-container-high rounded-full font-label-lg text-label-lg transition-colors"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="px-5 py-2 bg-primary text-on-primary hover:bg-primary/95 rounded-full font-label-lg text-label-lg transition-colors shadow-xs"
-                        >
-                          Save Article
-                        </button>
+                      <div className="flex items-center justify-between gap-4 pt-4 border-t border-outline-variant">
+                        {!editingNews.id ? (
+                          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
+                            <input
+                              type="checkbox"
+                              checked={sendPush}
+                              onChange={(e) => setSendPush(e.target.checked)}
+                              className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
+                            />
+                            Send push notification to all subscribers
+                          </label>
+                        ) : <div />}
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setEditingNews(null)}
+                            className="px-4 py-2 border border-outline hover:bg-surface-container-high rounded-full font-label-lg text-label-lg transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-5 py-2 bg-primary text-on-primary hover:bg-primary/95 rounded-full font-label-lg text-label-lg transition-colors shadow-xs"
+                          >
+                            Save Article
+                          </button>
+                        </div>
                       </div>
                     </form>
                   ) : (
@@ -1853,20 +1922,33 @@ Financing and regulatory clearance remain key priorities, with project developer
                         </div>
                       </div>
 
-                      <div className="flex justify-end gap-2 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => setEditingMember(null)}
-                          className="px-4 py-2 border border-outline hover:bg-surface-container-high rounded-full font-label-lg text-label-lg transition-colors"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="px-5 py-2 bg-primary text-on-primary hover:bg-primary/95 rounded-full font-label-lg text-label-lg transition-colors shadow-xs"
-                        >
-                          Save Member
-                        </button>
+                      <div className="flex items-center justify-between gap-4 pt-4 border-t border-outline-variant">
+                        {!editingMember.id ? (
+                          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
+                            <input
+                              type="checkbox"
+                              checked={sendPush}
+                              onChange={(e) => setSendPush(e.target.checked)}
+                              className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
+                            />
+                            Send push notification to all subscribers
+                          </label>
+                        ) : <div />}
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setEditingMember(null)}
+                            className="px-4 py-2 border border-outline hover:bg-surface-container-high rounded-full font-label-lg text-label-lg transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-5 py-2 bg-primary text-on-primary hover:bg-primary/95 rounded-full font-label-lg text-label-lg transition-colors shadow-xs"
+                          >
+                            Save Member
+                          </button>
+                        </div>
                       </div>
                     </form>
                   ) : (
@@ -2098,21 +2180,33 @@ Financing and regulatory clearance remain key priorities, with project developer
                           />
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex justify-end gap-3 pt-2 border-t border-outline-variant">
-                          <button
-                            type="button"
-                            onClick={() => setEditingMagazine(null)}
-                            className="px-5 py-2 text-sm rounded-full border border-outline text-on-surface hover:bg-surface-container transition-colors"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="px-5 py-2 text-sm rounded-full bg-primary text-on-primary hover:bg-primary/90 font-semibold transition-colors shadow-xs"
-                          >
-                            {editingMagazine.id ? 'Save Changes' : 'Publish Issue'}
-                          </button>
+                        <div className="flex items-center justify-between gap-4 pt-4 border-t border-outline-variant">
+                          {!editingMagazine.id ? (
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
+                              <input
+                                type="checkbox"
+                                checked={sendPush}
+                                onChange={(e) => setSendPush(e.target.checked)}
+                                className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
+                              />
+                              Send push notification to all subscribers
+                            </label>
+                          ) : <div />}
+                          <div className="flex gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setEditingMagazine(null)}
+                              className="px-5 py-2 text-sm rounded-full border border-outline text-on-surface hover:bg-surface-container transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="submit"
+                              className="px-5 py-2 text-sm rounded-full bg-primary text-on-primary hover:bg-primary/90 font-semibold transition-colors shadow-xs"
+                            >
+                              {editingMagazine.id ? 'Save Changes' : 'Publish Issue'}
+                            </button>
+                          </div>
                         </div>
                       </form>
                     </div>
@@ -2365,21 +2459,33 @@ Financing and regulatory clearance remain key priorities, with project developer
                           />
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex justify-end gap-3 pt-2 border-t border-outline-variant">
-                          <button
-                            type="button"
-                            onClick={() => setEditingCourse(null)}
-                            className="px-5 py-2 text-sm rounded-full border border-outline text-on-surface hover:bg-surface-container transition-colors"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="px-5 py-2 text-sm rounded-full bg-primary text-on-primary hover:bg-primary/90 font-semibold transition-colors shadow-xs"
-                          >
-                            {editingCourse.id ? 'Save Changes' : 'Create Course'}
-                          </button>
+                        <div className="flex items-center justify-between gap-4 pt-4 border-t border-outline-variant">
+                          {!editingCourse.id ? (
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
+                              <input
+                                type="checkbox"
+                                checked={sendPush}
+                                onChange={(e) => setSendPush(e.target.checked)}
+                                className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
+                              />
+                              Send push notification to all subscribers
+                            </label>
+                          ) : <div />}
+                          <div className="flex gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setEditingCourse(null)}
+                              className="px-5 py-2 text-sm rounded-full border border-outline text-on-surface hover:bg-surface-container transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="submit"
+                              className="px-5 py-2 text-sm rounded-full bg-primary text-on-primary hover:bg-primary/90 font-semibold transition-colors shadow-xs"
+                            >
+                              {editingCourse.id ? 'Save Changes' : 'Create Course'}
+                            </button>
+                          </div>
                         </div>
                       </form>
                     </div>
