@@ -36,24 +36,26 @@ export default function App() {
   const [language, setLanguage] = useState<string>(() => {
     const supportedLangs = ['en', 'el', 'ru', 'he'];
     
-    // Priority 1: Check manual choice in app_lang or fallback energeia_language
-    const saved = localStorage.getItem('app_lang') || localStorage.getItem('energeia_language');
-    if (saved && supportedLangs.includes(saved)) {
-      i18n.changeLanguage(saved);
-      return saved;
-    }
-
-    // Priority 2: Check system languages with iw -> he mappings
-    const userLangs = navigator.languages || [navigator.language || 'en'];
-    for (const lang of userLangs) {
-      const code = lang.toLowerCase().split('-')[0];
-      if (code === 'iw') {
-        i18n.changeLanguage('he');
-        return 'he';
+    if (typeof window !== 'undefined') {
+      // Priority 1: Check manual choice in app_lang or fallback energeia_language
+      const saved = localStorage.getItem('app_lang') || localStorage.getItem('energeia_language');
+      if (saved && supportedLangs.includes(saved)) {
+        i18n.changeLanguage(saved);
+        return saved;
       }
-      if (supportedLangs.includes(code)) {
-        i18n.changeLanguage(code);
-        return code;
+
+      // Priority 2: Check system languages with iw -> he mappings
+      const userLangs = navigator.languages || [navigator.language || 'en'];
+      for (const lang of userLangs) {
+        const code = lang.toLowerCase().split('-')[0];
+        if (code === 'iw') {
+          i18n.changeLanguage('he');
+          return 'he';
+        }
+        if (supportedLangs.includes(code)) {
+          i18n.changeLanguage(code);
+          return code;
+        }
       }
     }
 

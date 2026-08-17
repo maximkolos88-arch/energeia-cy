@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, ArrowDown } from 'lucide-react';
@@ -17,6 +19,7 @@ export const PWAInstallPrompt: React.FC = () => {
 
   // Helper check methods
   const isStandalone = (): boolean => {
+    if (typeof window === 'undefined') return false;
     return (
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true
@@ -24,10 +27,12 @@ export const PWAInstallPrompt: React.FC = () => {
   };
 
   const isMobile = (): boolean => {
+    if (typeof window === 'undefined') return false;
     return window.innerWidth < 768;
   };
 
   const isCooldownActive = (): boolean => {
+    if (typeof window === 'undefined') return false;
     try {
       const dismissCountStr = localStorage.getItem('pwa_dismiss_count');
       const lastDismissedStr = localStorage.getItem('pwa_last_dismissed');
@@ -50,6 +55,7 @@ export const PWAInstallPrompt: React.FC = () => {
   };
 
   const isIOS = (): boolean => {
+    if (typeof window === 'undefined') return false;
     const userAgent = window.navigator.userAgent.toLowerCase();
     return /iphone|ipad|ipod/.test(userAgent);
   };

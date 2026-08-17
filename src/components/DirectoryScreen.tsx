@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { createPortal } from 'react-dom';
+import ClientPortal from './ui/ClientPortal';
 import { useTranslation } from 'react-i18next';
 import { useDirectoryController } from '../controllers/useDirectoryController';
 import { DirectoryMember } from '../models/types';
@@ -137,8 +139,9 @@ export const DirectoryScreen: React.FC = () => {
       )}
 
       {/* Member Profile Modal */}
-      {selectedMember && createPortal(
-        (() => {
+      {selectedMember && (
+        <ClientPortal>
+          {(() => {
           // Collect and merge tags (expertiseTags + keyServices)
           const services = (selectedMember.showKeyServices === true && selectedMember.keyServices)
             ? (Array.isArray(selectedMember.keyServices)
@@ -375,8 +378,8 @@ export const DirectoryScreen: React.FC = () => {
               </div>
             </div>
           );
-        })(),
-        document.body
+        })()}
+        </ClientPortal>
       )}
     </div>
   );
