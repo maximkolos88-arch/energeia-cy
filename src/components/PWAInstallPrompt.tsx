@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, ArrowDown } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+
+// Standard VAPID Key Placeholder
+const VAPID_PUBLIC_KEY = 'BFg-Zqy3a7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1y7WwX0z-1w';
 
 export const PWAInstallPrompt: React.FC = () => {
   const { t } = useTranslation();
   const [showPrompt, setShowPrompt] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showIOSInstructions, setShowIOSInstructions] = useState<boolean>(false);
+  
+  // Standalone Push Notification Prompt State
+  const [showPushPrompt, setShowPushPrompt] = useState<boolean>(false);
 
   // Helper check methods
   const isStandalone = (): boolean => {
@@ -32,7 +39,6 @@ export const PWAInstallPrompt: React.FC = () => {
       
       if (dismissCount === 0) return false;
       
-      // Cooldown calculation: 1 dismissal = 7 days, >=2 dismissals = 30 days
       const cooldownMs = dismissCount === 1 
         ? 7 * 24 * 60 * 60 * 1000 // 7 days
         : 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -48,7 +54,23 @@ export const PWAInstallPrompt: React.FC = () => {
     return /iphone|ipad|ipod/.test(userAgent);
   };
 
-  // 1. Tracking page views inside session storage
+  // Convert VAPID key to Uint8Array helper
+  const urlB64ToUint8Array = (base64String: string) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  };
+
+  // 1. Session Storage page views tracker
   useEffect(() => {
     try {
       const views = sessionStorage.getItem('pwa_pages_viewed');
@@ -59,43 +81,53 @@ export const PWAInstallPrompt: React.FC = () => {
     }
   }, []);
 
-  // 2. Setting triggers and event listeners
+  // 2. Main workflow effects loader
   useEffect(() => {
-    if (isStandalone() || !isMobile() || isCooldownActive()) {
+    // Context: Standalone Mode
+    if (isStandalone()) {
+      const alreadyPrompted = localStorage.getItem('pwa_push_prompted');
+      const hasDefaultPermission = 'Notification' in window && Notification.permission === 'default';
+
+      if (!alreadyPrompted && hasDefaultPermission) {
+        // Trigger push prompt after 2.5 seconds first standalone session load
+        const pushTimer = setTimeout(() => {
+          setShowPushPrompt(true);
+        }, 2500);
+        return () => clearTimeout(pushTimer);
+      }
+      return; // Do not render PWA install prompt in standalone
+    }
+
+    // Context: Mobile Browser Mode (PWA Install Prompt)
+    if (!isMobile() || isCooldownActive()) {
       return;
     }
 
-    // Check page views count
     let views = 1;
     try {
       const viewsStr = sessionStorage.getItem('pwa_pages_viewed');
       if (viewsStr) views = parseInt(viewsStr, 10);
     } catch (e) {}
 
-    // Android/Chrome install event handler
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      // If we are already on the second page, show immediately
       if (views > 1) {
         setShowPrompt(true);
       }
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Initial delay loader
     let timerId: any = null;
     if (views > 1) {
       setShowPrompt(true);
     } else {
-      // 20 seconds delay timer for active user session on first page load
       timerId = setTimeout(() => {
         setShowPrompt(true);
       }, 20000);
     }
 
-    // App installed handler to auto-close prompt
     const handleAppInstalled = () => {
       console.log('PWA installed successfully');
       setShowPrompt(false);
@@ -109,19 +141,17 @@ export const PWAInstallPrompt: React.FC = () => {
     };
   }, []);
 
+  // CTA handler for PWA installation
   const handleInstallClick = async () => {
     if (isIOS()) {
-      // Show instructions modal pointing to Safari share
       setShowIOSInstructions(true);
     } else if (deferredPrompt) {
-      // Trigger native browser install prompt for Chrome/Android
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       console.log(`PWA installation prompt outcome: ${outcome}`);
       setDeferredPrompt(null);
       setShowPrompt(false);
     } else {
-      // Fallback instructions for general mobile browsers
       alert(
         "To install, open your browser options/settings and select 'Add to Home Screen' or 'Install app'."
       );
@@ -142,12 +172,134 @@ export const PWAInstallPrompt: React.FC = () => {
     setShowIOSInstructions(false);
   };
 
+  // CTA handlers for Push notifications
+  const handleEnableNotifications = async () => {
+    try {
+      if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+        alert('Push notifications are not supported by your current browser.');
+        setShowPushPrompt(false);
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        localStorage.setItem('pwa_push_prompted', 'granted');
+        
+        const registration = await navigator.serviceWorker.ready;
+        try {
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
+          
+          // Post subscription to Express API
+          await fetch('/api/push/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(subscription)
+          });
+
+          // Post subscription to Supabase push_subscriptions table
+          try {
+            await supabase
+              .from('push_subscriptions')
+              .insert([{ 
+                subscription: subscription,
+                created_at: new Date().toISOString()
+              }]);
+          } catch (e) {
+            console.warn('Failed saving to Supabase push_subscriptions:', e);
+          }
+        } catch (subErr) {
+          console.warn('SW Push subscription failed (granted, fallback):', subErr);
+        }
+
+        // Clear icon badges on prompt validation
+        if ('clearAppBadge' in navigator) {
+          (navigator as any).clearAppBadge().catch(() => {});
+        }
+      } else {
+        localStorage.setItem('pwa_push_prompted', 'dismissed');
+      }
+    } catch (err) {
+      console.error('Error enabling push notifications:', err);
+    } finally {
+      setShowPushPrompt(false);
+    }
+  };
+
+  const handleMaybeLaterClick = () => {
+    localStorage.setItem('pwa_push_prompted', 'dismissed');
+    setShowPushPrompt(false);
+  };
+
+  // Render Standalone Push Notifications Screen
+  if (showPushPrompt) {
+    return (
+      <div className="fixed inset-0 z-[2000] flex items-end md:items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+        <div 
+          className="bg-white dark:bg-[#1b1c1e] w-full max-w-md p-6 relative shadow-2xl animate-scale-up overflow-hidden border border-neutral-200 dark:border-neutral-800 pb-8 md:pb-6"
+          style={{ borderRadius: '20px' }}
+        >
+          {/* Dismiss Button */}
+          <button
+            onClick={handleMaybeLaterClick}
+            className="absolute top-4 right-4 p-1.5 text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          {/* Pulse bell animation */}
+          <div className="relative w-40 h-40 mx-auto flex items-center justify-center mb-2 mt-4">
+            <div className="absolute w-24 h-24 rounded-full bg-emerald-500/20 dark:bg-emerald-500/10 blur-xl animate-pulse" />
+            <div className="absolute w-16 h-16 rounded-full bg-primary/30 dark:bg-primary/20 blur-lg" />
+            
+            <div className="relative w-16 h-16 bg-gradient-to-br from-[#16a34a] to-[#15823f] rounded-2xl flex items-center justify-center shadow-lg border border-[#14532d]/25 z-10">
+              <span className="material-symbols-outlined text-white text-3xl select-none">
+                notifications
+              </span>
+              <span className="absolute top-1.5 right-1.5 w-3 h-3 bg-red-500 border-2 border-white dark:border-neutral-900 rounded-full" />
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="text-center space-y-2 px-1">
+            <h2 className="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">
+              Never Miss Breaking Energy News
+            </h2>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-xs mx-auto">
+              Get instant push notifications on your lock screen and live updates right on your home screen icon.
+            </p>
+          </div>
+
+          {/* Buttons */}
+          <div className="mt-6 space-y-3">
+            <button
+              onClick={handleEnableNotifications}
+              className="w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-colors shadow-sm focus:outline-none flex items-center justify-center gap-2 cursor-pointer h-[52px]"
+              style={{ borderRadius: '14px' }}
+            >
+              Enable Notifications
+            </button>
+            
+            <button
+              onClick={handleMaybeLaterClick}
+              className="w-full bg-transparent text-[#6b7280] hover:text-neutral-600 font-semibold py-2 text-xs transition-colors cursor-pointer block text-center"
+            >
+              Maybe Later
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render browser PWA installation screen
   if (!showPrompt) return null;
 
   return (
     <div className="fixed inset-0 z-[2000] flex items-end md:items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
       
-      {/* Main onboarding container - premium 20px rounding */}
       <div 
         className="bg-white dark:bg-[#1b1c1e] w-full max-w-md p-6 relative shadow-2xl animate-scale-up overflow-hidden border border-neutral-200 dark:border-neutral-800 pb-8 md:pb-6"
         style={{ borderRadius: '20px' }}
@@ -163,11 +315,9 @@ export const PWAInstallPrompt: React.FC = () => {
 
         {/* Minimalist Vector App Icon Graphic with Glow */}
         <div className="relative w-40 h-40 mx-auto flex items-center justify-center mb-2 mt-4">
-          {/* Ambient glow background */}
           <div className="absolute w-24 h-24 rounded-full bg-emerald-500/20 dark:bg-emerald-500/10 blur-xl animate-pulse" />
           <div className="absolute w-16 h-16 rounded-full bg-primary/30 dark:bg-primary/20 blur-lg" />
           
-          {/* Vector circles surrounding the logo */}
           <svg className="absolute w-full h-full text-emerald-500/15 dark:text-emerald-500/5 animate-spin-slow" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ animationDuration: '20s' }}>
             <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" />
             <circle cx="50" cy="50" r="34" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2 2" />
@@ -191,7 +341,7 @@ export const PWAInstallPrompt: React.FC = () => {
           </p>
         </div>
 
-        {/* CTA Buttons block - 14px rounding */}
+        {/* CTA Buttons block */}
         <div className="mt-6 space-y-3">
           <button
             onClick={handleInstallClick}

@@ -1438,6 +1438,22 @@ app.delete('/api/participants/:id', (req, res) => {
   res.json(deleted);
 });
 
+// PUSH NOTIFICATION SUBSCRIPTIONS
+app.post('/api/push/subscribe', (req, res) => {
+  const dbData = readDb();
+  if (!dbData.push_subscriptions) {
+    dbData.push_subscriptions = [];
+  }
+  const newSub = {
+    ...req.body,
+    id: 'sub-' + Date.now(),
+    created_at: new Date().toISOString()
+  };
+  dbData.push_subscriptions.unshift(newSub);
+  writeDb(dbData);
+  res.status(201).json({ success: true, message: 'Subscription stored successfully', subscription: newSub });
+});
+
 // Setup static file serving for React frontend SPA build files
 const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));

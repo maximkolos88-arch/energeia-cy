@@ -13,3 +13,21 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 );
+
+// Clear app badge when application opens
+if (navigator && 'clearAppBadge' in navigator) {
+  navigator.clearAppBadge().catch((e) => console.warn('Failed to clear app badge:', e));
+}
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        console.log('SW registered successfully:', reg.scope);
+      })
+      .catch(err => {
+        console.error('SW registration failed:', err);
+      });
+  });
+}
