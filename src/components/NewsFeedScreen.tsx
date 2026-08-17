@@ -47,6 +47,39 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     refresh
   } = useNewsController();
 
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
+
+  const checkScrollable = () => {
+    const el = scrollContainerRef.current;
+    if (el) {
+      const canScrollRight = el.scrollWidth > el.clientWidth && (el.scrollLeft + el.clientWidth < el.scrollWidth - 15);
+      setShowScrollBtn(canScrollRight);
+    }
+  };
+
+  useEffect(() => {
+    checkScrollable();
+    // Add small delay to ensure rendering completes
+    const timer = setTimeout(checkScrollable, 200);
+    window.addEventListener('resize', checkScrollable);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', checkScrollable);
+    };
+  }, [categories, newsItems]);
+
+  const handleScroll = () => {
+    checkScrollable();
+  };
+
+  const handleScrollRight = () => {
+    const el = scrollContainerRef.current;
+    if (el) {
+      el.scrollBy({ left: 160, behavior: 'smooth' });
+    }
+  };
+
   const getProxyImageUrl = (url: string) => {
     return url || '';
   };
@@ -180,37 +213,56 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-6 pb-24 md:pb-12">
-      {/* Major Energy Pillar Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 hide-scrollbar">
-        {categories.map((cat) => {
-          const isActive = category === cat;
-          const getPillarIcon = (catName: string) => {
-            const name = catName.toLowerCase();
-            if (name.includes('renew') || name.includes('solar')) return <Sun className="w-3.5 h-3.5" />;
-            if (name.includes('oil') || name.includes('gas')) return <Flame className="w-3.5 h-3.5" />;
-            if (name.includes('govern') || name.includes('policy')) return <Landmark className="w-3.5 h-3.5" />;
-            if (name.includes('grid') || name.includes('infrastr')) return <Zap className="w-3.5 h-3.5" />;
-            if (name.includes('cera') || name.includes('regula')) return <ShieldCheck className="w-3.5 h-3.5" />;
-            if (name.includes('grant') || name.includes('subsidy')) return <Gift className="w-3.5 h-3.5" />;
-            if (name.includes('market')) return <TrendingUp className="w-3.5 h-3.5" />;
-            return <Layers className="w-3.5 h-3.5" />;
-          };
-
-          return (
+      {/* Major Energy Pillar Filter Chips Wrapper */}
+      <div className="relative w-full mb-6 categories-wrapper">
+        {/* Fade Mask & Scroll Button */}
+        {showScrollBtn && (
+          <>
+            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#fafafa] via-[#fafafa]/80 to-transparent dark:from-[#1b1c1e] dark:via-[#1b1c1e]/80 dark:to-transparent z-10 pointer-events-none rounded-r-xl" />
             <button
-              key={cat}
-              onClick={() => selectCategory(cat)}
-              className={`px-4 py-2 md:px-3.5 md:py-1.5 min-h-[40px] md:min-h-[32px] rounded-full text-xs font-semibold transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
-                isActive
-                  ? 'bg-[#1CA350] text-white shadow-xs'
-                  : 'bg-white dark:bg-[#2d2e30] text-[#5f6368] dark:text-gray-300 border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043]'
-              }`}
+              onClick={handleScrollRight}
+              className="absolute right-1 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#2d2e30] border border-neutral-200 dark:border-neutral-800 shadow-md hover:shadow-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer category-scroll-btn"
             >
-              {getPillarIcon(cat)}
-              <span>{getLocalizedCategory(cat)}</span>
+              <ChevronRight className="w-4 h-4" />
             </button>
-          );
-        })}
+          </>
+        )}
+
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex items-center gap-2 overflow-x-auto pb-2 hide-scrollbar categories-list pr-12 scroll-smooth"
+        >
+          {categories.map((cat) => {
+            const isActive = category === cat;
+            const getPillarIcon = (catName: string) => {
+              const name = catName.toLowerCase();
+              if (name.includes('renew') || name.includes('solar')) return <Sun className="w-3.5 h-3.5" />;
+              if (name.includes('oil') || name.includes('gas')) return <Flame className="w-3.5 h-3.5" />;
+              if (name.includes('govern') || name.includes('policy')) return <Landmark className="w-3.5 h-3.5" />;
+              if (name.includes('grid') || name.includes('infrastr')) return <Zap className="w-3.5 h-3.5" />;
+              if (name.includes('cera') || name.includes('regula')) return <ShieldCheck className="w-3.5 h-3.5" />;
+              if (name.includes('grant') || name.includes('subsidy')) return <Gift className="w-3.5 h-3.5" />;
+              if (name.includes('market')) return <TrendingUp className="w-3.5 h-3.5" />;
+              return <Layers className="w-3.5 h-3.5" />;
+            };
+
+            return (
+              <button
+                key={cat}
+                onClick={() => selectCategory(cat)}
+                className={`px-4 py-2 md:px-3.5 md:py-1.5 min-h-[40px] md:min-h-[32px] rounded-full text-xs font-semibold transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                  isActive
+                    ? 'bg-[#1CA350] text-white shadow-xs'
+                    : 'bg-white dark:bg-[#2d2e30] text-[#5f6368] dark:text-gray-300 border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043]'
+                }`}
+              >
+                {getPillarIcon(cat)}
+                <span>{getLocalizedCategory(cat)}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Error Banner */}
