@@ -662,11 +662,14 @@ Financing and regulatory clearance remain key priorities, with project developer
 
       if (editingMember.id) {
         await DirectoryRepository.updateMember(editingMember.id, payload);
+        setSuccessToast('Member updated successfully.');
       } else {
         await DirectoryRepository.createMember(payload);
+        setSuccessToast('Member created successfully.');
       }
       setEditingMember(null);
       await loadAllData();
+      setTimeout(() => setSuccessToast(null), 3000);
     } catch (err: any) {
       console.error('Save member error details:', err);
       const message = err.response?.data?.message 

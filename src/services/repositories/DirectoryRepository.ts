@@ -1,6 +1,6 @@
 /**
  * Member Directory Repository Layer
- * Interacts with Firestore 'participants' collection
+ * Interacts with Supabase 'participants' collection
  */
 
 import { supabase } from '../../lib/supabase';
@@ -19,7 +19,7 @@ export class DirectoryRepository {
   private static mapSupabaseToMember(item: any): DirectoryMember {
     return {
       id: item.id,
-      name: item.name || '',
+      name: item.company_name || item.name || '',
       type: item.type || 'Individual',
       roleOrCategory: item.role_or_category || '',
       email: item.email || '',
@@ -29,23 +29,70 @@ export class DirectoryRepository {
       expertiseTags: item.expertise_tags || [],
       imageUrl: item.image_url || '',
       description: item.description || '',
-      isVerified: item.is_verified || false
+      isVerified: item.is_verified || false,
+      logoUrl: item.logo_url || item.image_url || '',
+      website: item.website || '',
+      linkedin: item.linkedin || '',
+      keyContactName: item.key_contact_name || '',
+      showDescription: item.show_description ?? true,
+      showLocation: item.display_location ?? item.show_location ?? true,
+      showWebsite: item.display_website ?? item.show_website ?? true,
+      showLinkedin: item.display_linkedin ?? item.show_linkedin ?? true,
+      showEmail: item.display_email ?? item.show_email ?? true,
+      showPhone: item.display_phone ?? item.show_phone ?? true,
+      showKeyContact: item.display_contact_name ?? item.show_key_contact ?? true,
+      keyServices: item.key_services || [],
+      notableProjects: item.notable_projects || '',
+      certifications: item.certifications || '',
+      showKeyServices: item.display_services ?? item.show_key_services ?? true,
+      showNotableProjects: item.display_projects ?? item.show_notable_projects ?? true,
+      showCertifications: item.display_certifications ?? item.show_certifications ?? true
     };
   }
 
   private static mapMemberToSupabase(member: Partial<DirectoryMember>): any {
     const mapped: any = {};
-    if (member.name !== undefined) mapped.name = member.name;
-    if (member.type !== undefined) mapped.type = member.type;
-    if (member.roleOrCategory !== undefined) mapped.role_or_category = member.roleOrCategory;
-    if (member.email !== undefined) mapped.email = member.email;
-    if (member.phone !== undefined) mapped.phone = member.phone;
-    if (member.location !== undefined) mapped.location = member.location;
-    if (member.category !== undefined) mapped.category = member.category;
-    if (member.expertiseTags !== undefined) mapped.expertise_tags = member.expertiseTags;
-    if (member.imageUrl !== undefined) mapped.image_url = member.imageUrl;
-    if (member.description !== undefined) mapped.description = member.description;
-    if (member.isVerified !== undefined) mapped.is_verified = member.isVerified;
+    if (member.name !== undefined) {
+      mapped.company_name = member.name || '';
+      mapped.name = member.name || ''; // Fallback for name field
+    }
+    if (member.type !== undefined) mapped.type = member.type || 'Individual';
+    if (member.roleOrCategory !== undefined) mapped.role_or_category = member.roleOrCategory || '';
+    if (member.email !== undefined) mapped.email = member.email || '';
+    if (member.phone !== undefined) mapped.phone = member.phone || null;
+    if (member.location !== undefined) mapped.location = member.location || null;
+    if (member.category !== undefined) mapped.category = member.category || '';
+    if (member.expertiseTags !== undefined) mapped.expertise_tags = member.expertiseTags || [];
+    if (member.imageUrl !== undefined) mapped.image_url = member.imageUrl || null;
+    if (member.description !== undefined) mapped.description = member.description || '';
+    if (member.isVerified !== undefined) mapped.is_verified = member.isVerified ?? false;
+
+    // Supabase specific fields
+    if (member.website !== undefined) mapped.website = member.website || null;
+    if (member.linkedin !== undefined) mapped.linkedin = member.linkedin || null;
+    if (member.keyContactName !== undefined) mapped.key_contact_name = member.keyContactName || null;
+
+    if (member.keyServices !== undefined) {
+      mapped.key_services = Array.isArray(member.keyServices)
+        ? member.keyServices
+        : typeof member.keyServices === 'string'
+          ? (member.keyServices as string).split(',').map(s => s.trim()).filter(Boolean)
+          : [];
+    }
+    if (member.notableProjects !== undefined) mapped.notable_projects = member.notableProjects || '';
+    if (member.certifications !== undefined) mapped.certifications = member.certifications || '';
+
+    // Visibility Flags
+    if (member.showKeyServices !== undefined) mapped.display_services = member.showKeyServices;
+    if (member.showNotableProjects !== undefined) mapped.display_projects = member.showNotableProjects;
+    if (member.showCertifications !== undefined) mapped.display_certifications = member.showCertifications;
+    if (member.showEmail !== undefined) mapped.display_email = member.showEmail;
+    if (member.showPhone !== undefined) mapped.display_phone = member.showPhone;
+    if (member.showLocation !== undefined) mapped.display_location = member.showLocation;
+    if (member.showWebsite !== undefined) mapped.display_website = member.showWebsite;
+    if (member.showLinkedin !== undefined) mapped.display_linkedin = member.showLinkedin;
+    if (member.showKeyContact !== undefined) mapped.display_contact_name = member.showKeyContact;
+
     return mapped;
   }
 
@@ -56,7 +103,7 @@ export class DirectoryRepository {
     const { data, error } = await supabase
       .from('participants')
       .select('*')
-      .order('name', { ascending: true });
+      .order('id', { ascending: false });
     if (error) {
       console.error("Failed to fetch participants from Supabase:", error.message);
       throw error;
@@ -66,9 +113,6 @@ export class DirectoryRepository {
 
   /**
    * Fetch members from 'participants' collection with search query and multi-tag filtering support
-   * Match criteria:
-   * - Search: exact/partial match on name, roleOrCategory, location, description, or email
-   * - Multi-tag: if activeTags is non-empty, member must possess ALL selected tags (or ANY if configured)
    */
   static async getMembers(
     searchQuery: string = '', 
@@ -171,4 +215,3 @@ export class DirectoryRepository {
     return this.mapSupabaseToMember(data[0]);
   }
 }
-
