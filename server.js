@@ -768,7 +768,7 @@ CRITICAL: You MUST output ONLY valid JSON. Do not include any markdown formattin
           }
 
           const cleanTitleVal = cleanTitle(aiResult.title || item.title);
-          const cleanSummaryVal = cleanSummary(aiResult.summary || item.title.split(' - ')[0]);
+          const cleanSummaryVal = cleanSummary(aiResult.summary || fallbackSummary);
 
           const newEntry = {
             id: 'news-rss-' + Math.random().toString(36).substring(2, 9),
@@ -780,7 +780,7 @@ CRITICAL: You MUST output ONLY valid JSON. Do not include any markdown formattin
             sourceUrl: targetUrl,
             publishedAt: formatDateBackend(new Date().toISOString()),
             createdAt: new Date().toISOString(),
-            status: 'DRAFT',
+            status: 'Published',
             readTimeMinutes: Math.ceil((aiResult.content || '').split(' ').length / 200) || 3,
             commentsCount: 0
           };
@@ -824,7 +824,11 @@ CRITICAL: You MUST output ONLY valid JSON. Do not include any markdown formattin
         body: draft.title,
         url: `/news/${draft.id}`,
         type: 'news'
-      }).catch(err => console.error('[Crawler Ingestion Push Broadcast Error]:', err.message));
+      })
+      .then(() => {
+        console.log('Post ingested and push broadcasted:', draft.id);
+      })
+      .catch(err => console.error('[Crawler Ingestion Push Broadcast Error]:', err.message));
     });
   }
 
@@ -1223,56 +1227,110 @@ app.get('/api/news/:id', (req, res) => {
   res.json(item);
 });
 
-app.post('/api/news', (req, res) => {
-  const dbData = readDb();
-  const newItem = {
-    ...req.body,
-    id: req.body.id || 'news-' + Date.now(),
-    title: cleanTitle(req.body.title),
-    summary: cleanSummary(req.body.summary),
-    content: req.body.content ? cleanBoilerplate(req.body.content) : '',
-    imageUrl: req.body.imageUrl || req.body.image_url || '',
-    createdAt: req.body.createdAt || new Date().toISOString(),
-    commentsCount: req.body.commentsCount || 0
-  };
-  dbData.news.unshift(newItem);
-  writeDb(dbData);
+// Helper to generate summary automatically on backend
+async function autoGenerateSummary(content, title) {
+  if (process.env.GEMINI_API_KEY && content && content.length > 50) {
+    try {
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
+      const prompt = `You are an energy market editor. Generate a clear, engaging 2-sentence summary (max 180 chars) of this Cyprus energy news article. Return ONLY the plain text summary without quotes or filler phrases.
 
-  // Send push notification asynchronously
-  broadcastPushNotification({
-    title: "Breaking Energy News",
-    body: newItem.title,
-    url: `/news/${newItem.id}`,
-    type: "news"
-  }).catch(err => console.error('[News Create Push Broadcast Error]:', err.message));
+Article Body:
+"${content}"`;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text().trim();
+      if (text) return text;
+    } catch (err) {
+      console.warn('[Auto Summary] Gemini generation exception:', err.message);
+    }
+  }
 
-  res.status(201).json(newItem);
+  // Fallback if LLM fails
+  const cleanSnippet = cleanBoilerplate(content || title || '').replace(/\s+/g, ' ').trim();
+  const limit = 180;
+  if (cleanSnippet.length > limit) {
+    const cut = cleanSnippet.substring(0, limit);
+    const lastSpace = cut.lastIndexOf(' ');
+    return lastSpace > 100 ? cut.substring(0, lastSpace) + '...' : cut + '...';
+  }
+  return cleanSnippet;
+}
+
+app.post('/api/news', async (req, res) => {
+  try {
+    const dbData = readDb();
+    let summary = req.body.summary;
+    if (!summary && req.body.content) {
+      summary = await autoGenerateSummary(req.body.content, req.body.title);
+    }
+    const newItem = {
+      ...req.body,
+      id: req.body.id || 'news-' + Date.now(),
+      title: cleanTitle(req.body.title),
+      summary: cleanSummary(summary || req.body.title),
+      content: req.body.content ? cleanBoilerplate(req.body.content) : '',
+      imageUrl: req.body.imageUrl || req.body.image_url || '',
+      createdAt: req.body.createdAt || new Date().toISOString(),
+      commentsCount: req.body.commentsCount || 0
+    };
+    dbData.news.unshift(newItem);
+    writeDb(dbData);
+
+    // Send push notification asynchronously in the background
+    broadcastPushNotification({
+      title: "Breaking Energy News",
+      body: newItem.title,
+      url: `/news/${newItem.id}`,
+      type: "news"
+    })
+    .then(() => {
+      console.log('Post ingested and push broadcasted:', newItem.id);
+    })
+    .catch(err => console.error('[News Create Push Broadcast Error]:', err.message));
+
+    res.status(201).json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/api/news/create', (req, res) => {
-  const dbData = readDb();
-  const newItem = {
-    ...req.body,
-    id: req.body.id || 'news-' + Date.now(),
-    title: cleanTitle(req.body.title),
-    summary: cleanSummary(req.body.summary),
-    content: req.body.content ? cleanBoilerplate(req.body.content) : '',
-    imageUrl: req.body.imageUrl || req.body.image_url || '',
-    createdAt: req.body.createdAt || new Date().toISOString(),
-    commentsCount: req.body.commentsCount || 0
-  };
-  dbData.news.unshift(newItem);
-  writeDb(dbData);
+app.post('/api/news/create', async (req, res) => {
+  try {
+    const dbData = readDb();
+    let summary = req.body.summary;
+    if (!summary && req.body.content) {
+      summary = await autoGenerateSummary(req.body.content, req.body.title);
+    }
+    const newItem = {
+      ...req.body,
+      id: req.body.id || 'news-' + Date.now(),
+      title: cleanTitle(req.body.title),
+      summary: cleanSummary(summary || req.body.title),
+      content: req.body.content ? cleanBoilerplate(req.body.content) : '',
+      imageUrl: req.body.imageUrl || req.body.image_url || '',
+      createdAt: req.body.createdAt || new Date().toISOString(),
+      commentsCount: req.body.commentsCount || 0
+    };
+    dbData.news.unshift(newItem);
+    writeDb(dbData);
 
-  // Send push notification asynchronously
-  broadcastPushNotification({
-    title: "Breaking Energy News",
-    body: newItem.title,
-    url: `/news/${newItem.id}`,
-    type: "news"
-  }).catch(err => console.error('[News Create Push Broadcast Error]:', err.message));
+    // Send push notification asynchronously in the background
+    broadcastPushNotification({
+      title: "Breaking Energy News",
+      body: newItem.title,
+      url: `/news/${newItem.id}`,
+      type: "news"
+    })
+    .then(() => {
+      console.log('Post ingested and push broadcasted:', newItem.id);
+    })
+    .catch(err => console.error('[News Create Push Broadcast Error]:', err.message));
 
-  res.status(201).json(newItem);
+    res.status(201).json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.put('/api/articles/bulk-publish', (req, res) => {
