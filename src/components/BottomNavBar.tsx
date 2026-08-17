@@ -1,5 +1,6 @@
 import React from 'react';
-import { Newspaper, Users, GraduationCap, BookOpen, Info, UserPlus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Newspaper, Users, GraduationCap, BookOpen, Info } from 'lucide-react';
 
 interface BottomNavBarProps {
   activeTab: string;
@@ -7,16 +8,24 @@ interface BottomNavBarProps {
 }
 
 export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, onTabChange }) => {
+  const { t } = useTranslation();
   const tabs = [
-    { id: 'news', label: 'News', icon: Newspaper },
-    { id: 'members', label: 'Members', icon: Users },
-    { id: 'magazine', label: 'Magazine', icon: BookOpen },
-    { id: 'academy', label: 'Academy', icon: GraduationCap },
-    { id: 'about', label: 'About', icon: Info },
+    { id: 'news', label: t('nav.news'), icon: Newspaper },
+    { id: 'members', label: t('nav.members'), icon: Users },
+    { id: 'magazine', label: t('nav.magazine'), icon: BookOpen },
+    { id: 'academy', label: t('nav.academy'), icon: GraduationCap },
+    { id: 'about', label: t('nav.about'), icon: Info },
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#1f1f1f] border-t border-[#dadce0] dark:border-[#3c4043] flex justify-around items-center py-2 px-1 shadow-md">
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#1f1f1f] border-t border-[#dadce0] dark:border-[#3c4043] flex justify-around items-center px-1 shadow-md"
+      style={{
+        paddingTop: '8px',
+        paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))',
+        boxSizing: 'border-box'
+      }}
+    >
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;

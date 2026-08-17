@@ -44,3 +44,13 @@
     color: #202124 !important;
   }
 }
+
+.main-content {
+  padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    padding-bottom: 0px;
+  }
+}

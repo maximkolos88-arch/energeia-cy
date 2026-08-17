@@ -162,7 +162,7 @@ export default function App() {
       />
 
       {/* Main View Area */}
-      <main className="flex-1 w-full flex flex-col">
+      <main className="flex-1 w-full flex flex-col main-content">
         {renderActiveScreen()}
       </main>
 
