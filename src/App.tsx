@@ -34,18 +34,46 @@ export default function App() {
 
   // Language state controller (Default to browser language or 'en', save to localStorage)
   const [language, setLanguage] = useState<string>(() => {
-    const saved = localStorage.getItem('energeia_language');
-    if (saved) return saved;
-    const browserLang = navigator.language.split('-')[0].toLowerCase();
-    const supported = ['en', 'el', 'ru', 'he'];
-    return supported.includes(browserLang) ? browserLang : 'en';
+    const supportedLangs = ['en', 'el', 'ru', 'he'];
+    
+    // Priority 1: Check manual choice in app_lang or fallback energeia_language
+    const saved = localStorage.getItem('app_lang') || localStorage.getItem('energeia_language');
+    if (saved && supportedLangs.includes(saved)) {
+      i18n.changeLanguage(saved);
+      return saved;
+    }
+
+    // Priority 2: Check system languages with iw -> he mappings
+    const userLangs = navigator.languages || [navigator.language || 'en'];
+    for (const lang of userLangs) {
+      const code = lang.toLowerCase().split('-')[0];
+      if (code === 'iw') {
+        i18n.changeLanguage('he');
+        return 'he';
+      }
+      if (supportedLangs.includes(code)) {
+        i18n.changeLanguage(code);
+        return code;
+      }
+    }
+
+    // Priority 3: Fallback default
+    i18n.changeLanguage('en');
+    return 'en';
   });
 
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
-    localStorage.setItem('energeia_language', lang);
+    localStorage.setItem('app_lang', lang);
+    localStorage.setItem('energeia_language', lang); // compatibility backup
     i18n.changeLanguage(lang);
   };
+
+  // Synchronize HTML attributes (RTL dir and lang locale)
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+  }, [language]);
 
   // Monitor Supabase Auth Session
   useEffect(() => {
