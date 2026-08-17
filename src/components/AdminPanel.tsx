@@ -111,8 +111,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       fallbackCategory = 'Grants & Subsidies';
     }
 
-    const fallbackSummary = `The implementation of ${item.title || 'this energy project'} is set to drive significant advancements in Cyprus's energy market. This initiative introduces critical infrastructure updates designed to enhance capacity and align with long-term transition goals.`;
-    const fallbackContent = `The ongoing rollout of ${item.title || 'this energy project'} represents a major step forward for stakeholders across the Cypriot energy landscape. As the island seeks to modernize its transmission infrastructure and align with European Union energy objectives, this project introduces crucial technical upgrades designed to balance grid capacity and prevent supply bottlenecks. Regulatory bodies and ministry officials have fast-tracked discussions to ensure telemetry systems and local substation connections are fully prepared.
+    const fallbackSummary = item.summary || (item.title ? `Overview of key developments, infrastructure adjustments, and progress milestones related to: ${item.title}.` : 'Key details of this Cyprus energy update.');
+    const fallbackContent = item.content || `The ongoing rollout of ${item.title || 'this energy project'} represents a major step forward for stakeholders across the Cypriot energy landscape. As the island seeks to modernize its transmission infrastructure and align with European Union energy objectives, this project introduces crucial technical upgrades designed to balance grid capacity and prevent supply bottlenecks. Regulatory bodies and ministry officials have fast-tracked discussions to ensure telemetry systems and local substation connections are fully prepared.
 
 Financing and regulatory clearance remain key priorities, with project developers working closely with local councils to address administrative hurdles. Over the coming months, a series of workshops will establish the operational timeline and licensing protocols. Long-term commercial success will depend on securing power distribution agreements and stabilizing integration costs for consumers.`;
 
@@ -181,7 +181,7 @@ Financing and regulatory clearance remain key priorities, with project developer
           fallbackCategory = 'Grants & Subsidies';
         }
 
-        const fallbackSummary = `The implementation of ${parsedTitle} is set to drive significant advancements in Cyprus's energy market. This initiative introduces critical infrastructure updates designed to enhance capacity and align with long-term transition goals.`;
+        const fallbackSummary = `Overview of key developments, infrastructure adjustments, and progress milestones related to: ${parsedTitle}.`;
         const fallbackContent = `The ongoing rollout of ${parsedTitle} represents a major step forward for stakeholders across the Cypriot energy landscape. As the island seeks to modernize its transmission infrastructure and align with European Union energy objectives, this project introduces crucial technical upgrades designed to balance grid capacity and prevent supply bottlenecks. Regulatory bodies and ministry officials have fast-tracked discussions to ensure telemetry systems and local substation connections are fully prepared.
 
 Financing and regulatory clearance remain key priorities, with project developers working closely with local councils to address administrative hurdles. Over the coming months, a series of workshops will establish the operational timeline and licensing protocols. Long-term commercial success will depend on securing power distribution agreements and stabilizing integration costs for consumers.`;
@@ -480,14 +480,37 @@ Financing and regulatory clearance remain key priorities, with project developer
     }
   };
 
-  const handleAiGenerateSummary = () => {
+  const handleAiGenerateSummary = async () => {
     if (!editingNews) return;
-    const title = editingNews.title || "Cyprus Energy Sector Expansion Update";
-    const fallbackSummary = `The implementation of ${title} is set to drive significant advancements in Cyprus's energy market. This initiative introduces critical infrastructure updates designed to enhance capacity and align with long-term transition goals.`;
+    const content = editingNews.content || editingNews.title || "";
+    if (!content) return;
     
-    setEditingNews(prev => prev ? { ...prev, summary: fallbackSummary } : null);
-    
-    setSuccessToast(`Summary generated for: ${title}`);
+    try {
+      const response = await fetch('/api/ai/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.summary) {
+          setEditingNews(prev => prev ? { ...prev, summary: data.summary } : null);
+          setSuccessToast(`Summary generated for: ${editingNews.title}`);
+          setTimeout(() => setSuccessToast(null), 4000);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("AI summarize failed, falling back to clean excerpt:", e);
+    }
+
+    // Dynamic excerpt fallback instead of template
+    const cleanSnippet = editingNews.content 
+      ? editingNews.content.replace(/\s+/g, ' ').substring(0, 180) + '...'
+      : `Overview of the latest developments regarding ${editingNews.title || 'Cyprus energy sector'}.`;
+      
+    setEditingNews(prev => prev ? { ...prev, summary: cleanSnippet } : null);
+    setSuccessToast(`Fallback summary generated for: ${editingNews.title}`);
     setTimeout(() => setSuccessToast(null), 4000);
   };
 

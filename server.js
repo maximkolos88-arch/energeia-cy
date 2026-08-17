@@ -816,6 +816,16 @@ CRITICAL: You MUST output ONLY valid JSON. Do not include any markdown formattin
     updatedDbData.news.unshift(...drafts);
     writeDb(updatedDbData);
     console.log(`[Aggregator Worker] Successfully saved ${drafts.length} new draft entries.`);
+
+    // Broadcast notifications asynchronously in the background
+    drafts.forEach(draft => {
+      broadcastPushNotification({
+        title: 'Breaking Energy News',
+        body: draft.title,
+        url: `/news/${draft.id}`,
+        type: 'news'
+      }).catch(err => console.error('[Crawler Ingestion Push Broadcast Error]:', err.message));
+    });
   }
 
   return { success: true, insertedCount: drafts.length, drafts, logs };
@@ -1107,6 +1117,19 @@ app.post('/api/crawler/fetch', async (req, res) => {
       description = pTags.find(p => p.toLowerCase() !== cleanTitle.toLowerCase()) || '';
     }
 
+    // Clean and cut description/summary to 160-220 characters with ellipsis at word boundary
+    if (description) {
+      let cleanedDesc = cleanBoilerplate(description).replace(/\s+/g, ' ').trim();
+      const limit = 200;
+      if (cleanedDesc.length > limit) {
+        const cut = cleanedDesc.substring(0, limit);
+        const lastSpace = cut.lastIndexOf(' ');
+        description = lastSpace > 100 ? cut.substring(0, lastSpace) + '...' : cut + '...';
+      } else {
+        description = cleanedDesc;
+      }
+    }
+
     // Use Gemini to generate a professional summary and category classification for the article "content" if key is set
     let finalContent = cleanContent;
     let aiCategory = 'Uncategorized';
@@ -1125,12 +1148,14 @@ If the article's topic does not fit cleanly into any of these, set the category 
 
 JSON Schema requirements:
 - "title": A clean, engaging headline.
+- "summary": Summarize this energy news article in 2 concise, informative sentences in English. Do not use generic filler phrases or templates.
 - "content": A 2-3 paragraph professional news summary (use \\n\\n for paragraphs, NO HTML tags).
 - "category": Choose exactly ONE: 'Renewables', 'Oil & Gas', 'Government & Policy', 'Grid & Infrastructure', 'Grants & Subsidies', 'CERA Regulation', 'Energy Market', or 'Uncategorized'.
 
 Your output must follow this schema:
 {
   "title": "(Your engaging headline)",
+  "summary": "(Summarize this energy news article in 2 concise, informative sentences in English. Do not use generic filler phrases or templates.)",
   "content": "(Your news summary)",
   "category": "(Your classified category)"
 }`;
@@ -1141,6 +1166,7 @@ Your output must follow this schema:
         
         if (aiResult.content) finalContent = aiResult.content;
         if (aiResult.category) aiCategory = aiResult.category;
+        if (aiResult.summary) description = aiResult.summary;
       } catch (geminiErr) {
         console.warn('[Smart Fetch] Gemini parsing failed, returning clean content directly:', geminiErr.message);
       }
@@ -1211,6 +1237,41 @@ app.post('/api/news', (req, res) => {
   };
   dbData.news.unshift(newItem);
   writeDb(dbData);
+
+  // Send push notification asynchronously
+  broadcastPushNotification({
+    title: "Breaking Energy News",
+    body: newItem.title,
+    url: `/news/${newItem.id}`,
+    type: "news"
+  }).catch(err => console.error('[News Create Push Broadcast Error]:', err.message));
+
+  res.status(201).json(newItem);
+});
+
+app.post('/api/news/create', (req, res) => {
+  const dbData = readDb();
+  const newItem = {
+    ...req.body,
+    id: req.body.id || 'news-' + Date.now(),
+    title: cleanTitle(req.body.title),
+    summary: cleanSummary(req.body.summary),
+    content: req.body.content ? cleanBoilerplate(req.body.content) : '',
+    imageUrl: req.body.imageUrl || req.body.image_url || '',
+    createdAt: req.body.createdAt || new Date().toISOString(),
+    commentsCount: req.body.commentsCount || 0
+  };
+  dbData.news.unshift(newItem);
+  writeDb(dbData);
+
+  // Send push notification asynchronously
+  broadcastPushNotification({
+    title: "Breaking Energy News",
+    body: newItem.title,
+    url: `/news/${newItem.id}`,
+    type: "news"
+  }).catch(err => console.error('[News Create Push Broadcast Error]:', err.message));
+
   res.status(201).json(newItem);
 });
 
@@ -1465,21 +1526,15 @@ webpush.setVapidDetails(
   vapidPrivateKey
 );
 
-// PUSH NOTIFICATION DISPATCHER
-app.post('/api/push/send', async (req, res) => {
-  const { title, body, url, type } = req.body;
-  
-  if (!title || !body) {
-    return res.status(400).json({ error: 'Title and body are required' });
-  }
-  
+// Reusable server-side helper function to send push notifications
+async function broadcastPushNotification({ title, body, url, type }) {
+  console.log(`[Push Dispatcher] Broadcasting: "${title}" - "${body}"`);
   const dbData = readDb();
   const subscriptions = dbData.push_subscriptions || [];
-  
   if (subscriptions.length === 0) {
-    return res.json({ success: true, sentCount: 0, message: 'No subscriptions found' });
+    return { success: true, sentCount: 0, message: 'No subscriptions found' };
   }
-  
+
   const notificationPayload = JSON.stringify({
     title,
     body,
@@ -1487,40 +1542,56 @@ app.post('/api/push/send', async (req, res) => {
     type: type || 'news',
     unread_count: 1
   });
-  
+
   const promises = subscriptions.map((sub, idx) => {
     const pushSubscription = {
       endpoint: sub.endpoint,
       keys: sub.keys
     };
-    
+
     return webpush.sendNotification(pushSubscription, notificationPayload)
       .then(() => ({ success: true, index: idx }))
       .catch(err => {
-        console.error(`Error sending push to subscriber ${idx}:`, err);
+        console.error(`Error sending push to subscriber ${idx}:`, err.message);
         if (err.statusCode === 404 || err.statusCode === 410) {
           return { success: false, expired: true, endpoint: sub.endpoint, index: idx };
         }
         return { success: false, expired: false, index: idx };
       });
   });
-  
+
   const results = await Promise.all(promises);
-  
+
   const expiredEndpoints = results.filter(r => !r.success && r.expired).map(r => r.endpoint);
   if (expiredEndpoints.length > 0) {
     dbData.push_subscriptions = dbData.push_subscriptions.filter(sub => !expiredEndpoints.includes(sub.endpoint));
     writeDb(dbData);
     console.log(`Cleaned up ${expiredEndpoints.length} expired push subscriptions.`);
   }
-  
+
   const sentCount = results.filter(r => r.success).length;
-  res.json({
+  return {
     success: true,
     sentCount,
     totalCount: subscriptions.length,
     cleanedCount: expiredEndpoints.length
-  });
+  };
+}
+
+// PUSH NOTIFICATION DISPATCHER ENDPOINT
+app.post('/api/push/send', async (req, res) => {
+  const { title, body, url, type } = req.body;
+  
+  if (!title || !body) {
+    return res.status(400).json({ error: 'Title and body are required' });
+  }
+
+  try {
+    const result = await broadcastPushNotification({ title, body, url, type });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Setup static file serving for React frontend SPA build files
