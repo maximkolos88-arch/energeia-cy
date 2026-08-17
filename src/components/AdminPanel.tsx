@@ -667,8 +667,13 @@ Financing and regulatory clearance remain key priorities, with project developer
       }
       setEditingMember(null);
       await loadAllData();
-    } catch (err) {
-      alert("Error saving directory member: " + err);
+    } catch (err: any) {
+      console.error('Save member error details:', err);
+      const message = err.response?.data?.message 
+        || err.response?.data?.error 
+        || err.message 
+        || (typeof err === 'object' ? JSON.stringify(err) : err);
+      alert(`Error saving directory member: ${message}`);
     }
   };
 
