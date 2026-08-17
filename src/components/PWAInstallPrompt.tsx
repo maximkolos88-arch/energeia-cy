@@ -236,10 +236,10 @@ export const PWAInstallPrompt: React.FC = () => {
   // Render Standalone Push Notifications Screen
   if (showPushPrompt) {
     return (
-      <div className="fixed inset-0 z-[2000] flex items-end md:items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+      <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-[#0f172a]/40 backdrop-blur-[8px] animate-fade-in">
         <div 
-          className="bg-white dark:bg-[#1b1c1e] w-full max-w-md p-6 relative shadow-2xl animate-scale-up overflow-hidden border border-neutral-200 dark:border-neutral-800 pb-8 md:pb-6"
-          style={{ borderRadius: '20px' }}
+          className="bg-white dark:bg-[#1b1c1e] w-[calc(100%-32px)] max-w-[380px] p-6 relative animate-scale-up overflow-hidden border border-black/[0.06] dark:border-neutral-800 pb-6 text-center push-modal-card"
+          style={{ borderRadius: '24px', boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.12)' }}
         >
           {/* Dismiss Button */}
           <button
@@ -249,44 +249,38 @@ export const PWAInstallPrompt: React.FC = () => {
             <X className="w-5 h-5" />
           </button>
 
-          {/* Pulse bell animation */}
-          <div className="relative w-40 h-40 mx-auto flex items-center justify-center mb-2 mt-4">
-            <div className="absolute w-24 h-24 rounded-full bg-emerald-500/20 dark:bg-emerald-500/10 blur-xl animate-pulse" />
-            <div className="absolute w-16 h-16 rounded-full bg-primary/30 dark:bg-primary/20 blur-lg" />
-            
-            <div className="relative w-16 h-16 bg-gradient-to-br from-[#16a34a] to-[#15823f] rounded-2xl flex items-center justify-center shadow-lg border border-[#14532d]/25 z-10">
-              <span className="material-symbols-outlined text-white text-3xl select-none">
-                notifications
-              </span>
-              <span className="absolute top-1.5 right-1.5 w-3 h-3 bg-red-500 border-2 border-white dark:border-neutral-900 rounded-full" />
-            </div>
+          {/* Centered bell notification icon container */}
+          <div className="w-12 h-12 rounded-full bg-[#ecfdf5] dark:bg-emerald-950/30 flex items-center justify-center relative mx-auto mt-2">
+            <span className="material-symbols-outlined text-[#047857] text-2xl select-none">
+              notifications
+            </span>
+            <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 border-2 border-[#ecfdf5] dark:border-neutral-900 rounded-full" />
           </div>
 
-          {/* Content */}
-          <div className="text-center space-y-2 px-1">
-            <h2 className="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">
-              Never Miss Breaking Energy News
-            </h2>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-xs mx-auto">
-              Get instant push notifications on your lock screen and live updates right on your home screen icon.
-            </p>
-          </div>
+          {/* Typography Content */}
+          <h2 className="font-bold text-[#111827] dark:text-white tracking-tight" style={{ fontSize: '19px', marginTop: '12px' }}>
+            Never miss breaking energy news
+          </h2>
+          <p className="text-[#6b7280] dark:text-neutral-400" style={{ fontSize: '14px', lineHeight: '1.45', marginTop: '6px', marginBottom: '20px' }}>
+            Get instant push notifications on your lock screen and timely updates right on your home screen icon.
+          </p>
 
           {/* Buttons */}
-          <div className="mt-6 space-y-3">
+          <div className="space-y-1">
             <button
               onClick={handleEnableNotifications}
-              className="w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-colors shadow-sm focus:outline-none flex items-center justify-center gap-2 cursor-pointer h-[52px]"
-              style={{ borderRadius: '14px' }}
+              className="w-full bg-[#047857] hover:bg-[#035e43] text-white font-semibold flex items-center justify-center cursor-pointer transition-colors shadow-sm focus:outline-none"
+              style={{ height: '48px', borderRadius: '12px', fontSize: '15px' }}
             >
-              Enable Notifications
+              Enable notifications
             </button>
             
             <button
               onClick={handleMaybeLaterClick}
-              className="w-full bg-transparent text-[#6b7280] hover:text-neutral-600 font-semibold py-2 text-xs transition-colors cursor-pointer block text-center"
+              className="w-full bg-transparent text-[#9ca3af] hover:text-neutral-500 font-medium transition-colors cursor-pointer block border-none outline-none"
+              style={{ height: '40px', fontSize: '14px', marginTop: '4px' }}
             >
-              Maybe Later
+              Maybe later
             </button>
           </div>
         </div>
