@@ -117,10 +117,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick }) => {
           </div>
         )}
 
-        {/* Services Tags */}
-        {member.showKeyServices === true && services.length > 0 && (
+        {/* Expertise Tags (First 2-3 tags) */}
+        {member.expertiseTags && member.expertiseTags.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {services.map((tag, idx) => (
+            {member.expertiseTags.slice(0, 3).map((tag, idx) => (
               <span
                 key={idx}
                 className="px-2 py-0.5 rounded-md bg-neutral-50 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 text-[9px] font-bold border border-neutral-200 dark:border-neutral-800"
