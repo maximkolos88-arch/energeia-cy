@@ -45,12 +45,40 @@
   }
 }
 
+:root {
+  --header-height: 64px;
+}
+
+.top-app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding-top: env(safe-area-inset-top, 0px);
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  .top-app-header {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  }
+}
+
 .main-content {
+  padding-top: calc(var(--header-height, 64px) + env(safe-area-inset-top, 0px));
   padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 767px) {
+  .main-content {
+    padding-top: calc(76px + env(safe-area-inset-top, 0px));
+  }
 }
 
 @media (min-width: 768px) {
   .main-content {
+    padding-top: var(--header-height, 64px);
     padding-bottom: 0px;
   }
 }
