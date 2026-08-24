@@ -87,20 +87,26 @@ CREATE POLICY "Allow public insert on analytics_events" ON public.analytics_even
 -- Enable SELECT policy for authenticated users (admin panel updates)
 CREATE POLICY "Allow authenticated select on analytics_events" ON public.analytics_events FOR SELECT USING (auth.role() = 'authenticated');
 
--- Create Pageviews table for Media Kit & Analytics Tracking
+-- Create Pageviews table for Analytics Tracking
 CREATE TABLE IF NOT EXISTS public.pageviews (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  visitor_id TEXT,
   path TEXT NOT NULL,
   type TEXT NOT NULL DEFAULT 'GENERAL', -- 'ARTICLE', 'COMPANY', 'GENERAL'
   entity_id TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Add column if table already exists
+ALTER TABLE public.pageviews ADD COLUMN IF NOT EXISTS visitor_id TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_pageviews_created_at ON public.pageviews(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_pageviews_type ON public.pageviews(type);
 CREATE INDEX IF NOT EXISTS idx_pageviews_entity_id ON public.pageviews(entity_id);
+CREATE INDEX IF NOT EXISTS idx_pageviews_visitor_id ON public.pageviews(visitor_id);
 
 ALTER TABLE public.pageviews ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public insert on pageviews" ON public.pageviews FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow public select on pageviews" ON public.pageviews FOR SELECT USING (true);
+
 

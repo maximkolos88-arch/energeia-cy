@@ -1837,11 +1837,12 @@ app.post('/api/track', (req, res) => {
   // Return 200 OK immediately for minimal latency
   res.status(200).json({ success: true });
 
-  const { path: pagePath, type, entityId } = req.body || {};
+  const { path: pagePath, type, entityId, visitorId } = req.body || {};
   if (!pagePath) return;
 
   const pageviewItem = {
     id: 'pv-' + Math.random().toString(36).substring(2, 11),
+    visitor_id: visitorId || null,
     path: pagePath,
     type: type || 'GENERAL',
     entityId: entityId || null,
@@ -1860,6 +1861,7 @@ app.post('/api/track', (req, res) => {
 
   // Asynchronous Supabase sync
   supabase.from('pageviews').insert([{
+    visitor_id: visitorId || null,
     path: pagePath,
     type: type || 'GENERAL',
     entity_id: entityId || null,
@@ -1871,8 +1873,13 @@ app.post('/api/track', (req, res) => {
   });
 });
 
-// MEDIA KIT STATS ENDPOINT (GET /api/stats/media-kit)
+// MEDIA KIT / ANALYTICS STATS ENDPOINT (GET /api/stats/media-kit)
 app.get('/api/stats/media-kit', async (req, res) => {
+  // Disable HTTP caching for live fresh data
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   try {
     const thirtyDaysAgoDate = new Date(Date.now() - (30 * 24 * 60 * 60 * 1000));
     const thirtyDaysAgoIso = thirtyDaysAgoDate.toISOString();
@@ -1880,32 +1887,23 @@ app.get('/api/stats/media-kit', async (req, res) => {
     // 1. Fetch total monthly pageviews from Supabase pageviews table (last 30 days)
     const { data: pageviewRows, error: pvError } = await supabase
       .from('pageviews')
-      .select('id, type, created_at')
+      .select('id, visitor_id, type, created_at')
       .gte('created_at', thirtyDaysAgoIso);
 
     if (pvError) {
-      console.warn('[MediaKit API] Supabase pageviews fetch warning:', pvError.message);
+      console.warn('[Analytics API] Supabase pageviews fetch warning:', pvError.message);
     }
 
-    // 2. Fetch total companies count from Supabase participants table
-    const { count: companyCount, error: compError } = await supabase
-      .from('participants')
-      .select('*', { count: 'exact', head: true });
-
-    if (compError) {
-      console.warn('[MediaKit API] Supabase participants count warning:', compError.message);
-    }
-
-    // 3. Fetch total articles count from Supabase news table
-    const { count: articleCount, error: artError } = await supabase
+    // 2. Fetch total news count from Supabase news table
+    const { count: newsCount, error: newsError } = await supabase
       .from('news')
       .select('*', { count: 'exact', head: true });
 
-    if (artError) {
-      console.warn('[MediaKit API] Supabase news count warning:', artError.message);
+    if (newsError) {
+      console.warn('[Analytics API] Supabase news count warning:', newsError.message);
     }
 
-    // Combine database and local fallback data sources
+    // Combine database and local data fallback
     const dbData = readDb();
     const localRecentPv = (dbData.pageviews || []).filter(pv => new Date(pv.createdAt || pv.created_at).getTime() >= thirtyDaysAgoDate.getTime());
     
@@ -1913,31 +1911,35 @@ app.get('/api/stats/media-kit', async (req, res) => {
       ? pageviewRows 
       : localRecentPv;
 
-    const totalMonthlyViews = allPageviews.length;
+    // a) uniqueVisitors: Count of DISTINCT visitor_id in pageviews (last 30 days)
+    const uniqueVisitorSet = new Set();
+    allPageviews.forEach(pv => {
+      const vid = pv.visitor_id || pv.visitorId;
+      if (vid) uniqueVisitorSet.add(vid);
+    });
+    const uniqueVisitors = uniqueVisitorSet.size;
 
-    const totalCompanies = (companyCount !== null && companyCount !== undefined)
-      ? companyCount
-      : ((dbData.participants || []).length || 0);
+    // b) totalVisits: Total row count in pageviews table (last 30 days)
+    const totalVisits = allPageviews.length;
 
-    const totalArticles = (articleCount !== null && articleCount !== undefined)
-      ? articleCount
+    // c) totalNewsArticles: Total row count of news table (overall published news)
+    const totalNewsArticles = (newsCount !== null && newsCount !== undefined)
+      ? newsCount
       : ((dbData.news || []).length || 0);
 
-    // 4. Fetch deep engagement: total article reads (rows where type = 'ARTICLE')
-    const totalArticleReads = allPageviews.filter(pv => (pv.type || '').toUpperCase() === 'ARTICLE').length;
+    // d) newsViews: Total row count in pageviews where type = 'ARTICLE' (last 30 days)
+    const newsViews = allPageviews.filter(pv => (pv.type || '').toUpperCase() === 'ARTICLE').length;
 
-    // 5. Generate consecutive 30-day timeline chart array (merging database views per day)
+    // 3. Generate consecutive 30-day timeline chart array (totalVisits per day)
     const dailyViewMap = {};
     const now = new Date();
 
-    // Helper: Initialize 30 consecutive calendar days up to today
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now.getTime() - (i * 24 * 60 * 60 * 1000));
       const dateKey = d.toISOString().split('T')[0];
       dailyViewMap[dateKey] = 0;
     }
 
-    // Group actual pageviews by day
     allPageviews.forEach(pv => {
       const pvDate = new Date(pv.created_at || pv.createdAt);
       if (!isNaN(pvDate.getTime())) {
@@ -1960,15 +1962,20 @@ app.get('/api/stats/media-kit', async (req, res) => {
     });
 
     res.json({
-      totalMonthlyViews,
-      totalCompanies,
-      totalArticles,
-      totalArticleReads,
+      uniqueVisitors,
+      totalVisits,
+      totalNewsArticles,
+      newsViews,
+      // Legacy backward compatibility aliases
+      totalMonthlyViews: totalVisits,
+      totalCompanies: totalNewsArticles,
+      totalArticles: totalNewsArticles,
+      totalArticleReads: newsViews,
       chartData
     });
   } catch (err) {
-    console.error('[MediaKit API Error]:', err);
-    res.status(500).json({ error: 'Database query failed: ' + (err.message || 'Unknown database error') });
+    console.error('[Analytics API Error]:', err);
+    res.status(500).json({ error: 'Database query failed: ' + (err.message || 'Unknown error') });
   }
 });
 
