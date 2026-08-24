@@ -30,8 +30,7 @@ export default function App() {
     return 'news';
   });
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(() => {
-    const path = window.location.pathname;
-    return path.startsWith('/admin') || path === '/media-kit' || path === '/mediakit';
+    return window.location.pathname.startsWith('/admin');
   });
   const [refreshKey, setRefreshKey] = useState<number>(0);
 
