@@ -18,7 +18,6 @@ import {
   Printer,
   ShieldCheck,
 } from 'lucide-react';
-import { usePageTracking } from '../hooks/usePageTracking';
 
 interface ChartDataItem {
   date: string;
@@ -35,8 +34,6 @@ interface AnalyticsStats {
 }
 
 export const MediaKitScreen: React.FC = () => {
-  // Silent tracking call
-  usePageTracking('GENERAL', 'admin-analytics-stats');
 
   const [stats, setStats] = useState<AnalyticsStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

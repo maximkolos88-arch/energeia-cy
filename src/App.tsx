@@ -14,7 +14,6 @@ import { LoginScreen } from './components/LoginScreen';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
-import { AnalyticsTracker } from './components/AnalyticsTracker';
 import { useTranslation } from 'react-i18next';
 import './index.css';
 
@@ -194,7 +193,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background text-on-background flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
       <ScrollToTop trigger={activeTab} />
-      <AnalyticsTracker />
       {/* Sticky Top App Bar */}
       <TopAppBar
         activeTab={activeTab}

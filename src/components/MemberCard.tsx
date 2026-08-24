@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DirectoryMember } from '../models/types';
-import { ViewCounter } from './ViewCounter';
 import { 
   MapPin, ArrowRight, CheckCircle2, Building2, User, Leaf, 
   Globe, Linkedin 
@@ -182,7 +181,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick }) => {
                 <span className="truncate">{member.location}</span>
               </div>
             )}
-            <ViewCounter views={member.viewsCount || (Math.abs(member.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * 23) % 450) + 85} />
           </div>
           
           <button className="text-primary font-bold text-xs flex items-center gap-1 hover:underline whitespace-nowrap bg-transparent border-0 cursor-pointer p-0 shrink-0">

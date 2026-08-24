@@ -8,11 +8,8 @@ import { DirectoryMember } from '../models/types';
 import { Search, Mail, ArrowRight, Building2, User, Leaf, X, Phone, MapPin, CheckCircle2, Globe, Award, Copy, Check } from 'lucide-react';
 import { MemberCard } from './MemberCard';
 import PageHeader from './PageHeader';
-import { usePageTracking } from '../hooks/usePageTracking';
-
 export const DirectoryScreen: React.FC = () => {
   const { t } = useTranslation();
-  usePageTracking('GENERAL', 'member-directory');
   const {
     searchQuery,
     setSearchQuery,

@@ -3,8 +3,6 @@ import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
 import { useNewsController } from '../controllers/useNewsController';
 import { NewsItem, NewsCategory } from '../models/types';
-import { ViewCounter } from './ViewCounter';
-import { usePageTracking } from '../hooks/usePageTracking';
 import { 
   ArrowRight, 
   ExternalLink, 
@@ -36,7 +34,6 @@ interface NewsFeedScreenProps {
 
 export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' }) => {
   const { t } = useTranslation();
-  usePageTracking('GENERAL', 'news-feed');
   const {
     category,
     categories,
@@ -344,7 +341,6 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                                 {getLocalizedCategory(item.category)}
                               </span>
                             ) : null}
-                            <ViewCounter views={item.readCount || item.viewsCount || (Math.abs(item.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * 17) % 850) + 120} />
                           </div>
                         </div>
 
