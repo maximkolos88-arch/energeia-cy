@@ -6,6 +6,8 @@ import {
   Globe, Linkedin 
 } from 'lucide-react';
 
+import { getLocalizedTag } from '../utils/tagLocalization';
+
 interface MemberCardProps {
   member: DirectoryMember;
   onClick: () => void;
@@ -133,7 +135,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick }) => {
                 key={idx}
                 className="px-2 py-0.5 rounded-md bg-neutral-50 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 text-[9px] font-bold border border-neutral-200 dark:border-neutral-800"
               >
-                {tag}
+                {getLocalizedTag(tag, t)}
               </span>
             ))}
           </div>

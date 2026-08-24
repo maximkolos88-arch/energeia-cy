@@ -14,6 +14,8 @@ import { DirectoryRepository, ALL_EXPERTISE_TAGS } from '../services/repositorie
 import { MagazineRepository } from '../services/repositories/MagazineRepository';
 import { CourseRepository } from '../services/repositories/CourseRepository';
 import { NewsItem, DirectoryMember, MagazineIssue, AcademyCourse } from '../models/types';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedTag } from '../utils/tagLocalization';
 
 const PREDEFINED_KEY_SERVICES = [
   "EPC", "O&M", "Project Management", "Solar PV Development", 
@@ -41,6 +43,7 @@ export interface LeadApplication {
 type AdminModule = 'dashboard' | 'news' | 'directory' | 'magazine' | 'academy' | 'applications' | 'scraper';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
+  const { t } = useTranslation();
   // Authentication Guard State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [loginEmail, setLoginEmail] = useState<string>('');
@@ -1749,7 +1752,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                                         : 'bg-surface hover:bg-surface-container-high text-on-surface-variant border-outline'
                                     }`}
                                   >
-                                    {tag}
+                                    {getLocalizedTag(tag, t)}
                                   </button>
                                 );
                               })}

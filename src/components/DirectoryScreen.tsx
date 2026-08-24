@@ -8,6 +8,7 @@ import { DirectoryMember } from '../models/types';
 import { Search, Mail, ArrowRight, Building2, User, Leaf, X, Phone, MapPin, CheckCircle2, Globe, Award, Copy, Check } from 'lucide-react';
 import { MemberCard } from './MemberCard';
 import PageHeader from './PageHeader';
+import { getLocalizedTag } from '../utils/tagLocalization';
 export const DirectoryScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
 
@@ -246,7 +247,7 @@ export const DirectoryScreen: React.FC = () => {
                                 key={idx}
                                 className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-bold border border-primary/20"
                               >
-                                {tag}
+                                {getLocalizedTag(tag, t)}
                               </span>
                             ))}
                           </div>
