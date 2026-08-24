@@ -1891,7 +1891,7 @@ app.get('/api/stats/media-kit', async (req, res) => {
       .gte('created_at', thirtyDaysAgoIso);
 
     if (pvError) {
-      console.warn('[Analytics API] Supabase pageviews fetch warning:', pvError.message);
+      console.error('[Analytics API] Supabase pageviews error:', pvError.message);
     }
 
     // 2. Fetch total news count from Supabase news table
@@ -1900,22 +1900,18 @@ app.get('/api/stats/media-kit', async (req, res) => {
       .select('*', { count: 'exact', head: true });
 
     if (newsError) {
-      console.warn('[Analytics API] Supabase news count warning:', newsError.message);
+      console.error('[Analytics API] Supabase news count error:', newsError.message);
     }
 
-    // Combine database and local data fallback
-    const dbData = readDb();
-    const localRecentPv = (dbData.pageviews || []).filter(pv => new Date(pv.createdAt || pv.created_at).getTime() >= thirtyDaysAgoDate.getTime());
-    
-    const allPageviews = (pageviewRows && Array.isArray(pageviewRows) && pageviewRows.length > 0) 
-      ? pageviewRows 
-      : localRecentPv;
+    const allPageviews = (pageviewRows && Array.isArray(pageviewRows)) ? pageviewRows : [];
 
     // a) uniqueVisitors: Count of DISTINCT visitor_id in pageviews (last 30 days)
     const uniqueVisitorSet = new Set();
     allPageviews.forEach(pv => {
       const vid = pv.visitor_id || pv.visitorId;
-      if (vid) uniqueVisitorSet.add(vid);
+      if (vid && typeof vid === 'string' && vid.trim().length > 0) {
+        uniqueVisitorSet.add(vid.trim());
+      }
     });
     const uniqueVisitors = uniqueVisitorSet.size;
 
@@ -1923,9 +1919,7 @@ app.get('/api/stats/media-kit', async (req, res) => {
     const totalVisits = allPageviews.length;
 
     // c) totalNewsArticles: Total row count of news table (overall published news)
-    const totalNewsArticles = (newsCount !== null && newsCount !== undefined)
-      ? newsCount
-      : ((dbData.news || []).length || 0);
+    const totalNewsArticles = (typeof newsCount === 'number' && newsCount >= 0) ? newsCount : 0;
 
     // d) newsViews: Total row count in pageviews where type = 'ARTICLE' (last 30 days)
     const newsViews = allPageviews.filter(pv => (pv.type || '').toUpperCase() === 'ARTICLE').length;
@@ -1966,7 +1960,7 @@ app.get('/api/stats/media-kit', async (req, res) => {
       totalVisits,
       totalNewsArticles,
       newsViews,
-      // Legacy backward compatibility aliases
+      // Alias mappings
       totalMonthlyViews: totalVisits,
       totalCompanies: totalNewsArticles,
       totalArticles: totalNewsArticles,
@@ -1974,7 +1968,7 @@ app.get('/api/stats/media-kit', async (req, res) => {
       chartData
     });
   } catch (err) {
-    console.error('[Analytics API Error]:', err);
+    console.error('[Analytics API Exception]:', err);
     res.status(500).json({ error: 'Database query failed: ' + (err.message || 'Unknown error') });
   }
 });

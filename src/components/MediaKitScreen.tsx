@@ -60,18 +60,18 @@ export const MediaKitScreen: React.FC = () => {
       })
       .catch((err) => {
         if (isMounted) {
-          console.warn('[Analytics] Failed fetching stats, using fallback:', err);
+          console.warn('[Analytics] Failed fetching stats from API:', err);
           setStats({
-            uniqueVisitors: 1420,
-            totalVisits: 3850,
-            totalNewsArticles: 58,
-            newsViews: 2480,
+            uniqueVisitors: 0,
+            totalVisits: 0,
+            totalNewsArticles: 0,
+            newsViews: 0,
             chartData: Array.from({ length: 30 }, (_, i) => {
               const date = new Date(Date.now() - (29 - i) * 86400000);
               return {
                 date: date.toISOString().split('T')[0],
                 label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                views: Math.round(100 + Math.sin(i * 0.4) * 35 + Math.cos(i * 0.6) * 20),
+                views: 0,
               };
             }),
           });
