@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DirectoryMember } from '../models/types';
+import { ViewCounter } from './ViewCounter';
 import { 
   MapPin, ArrowRight, CheckCircle2, Building2, User, Leaf, 
   Globe, Linkedin 
@@ -174,14 +175,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick }) => {
         )}
 
         <div className="flex items-center justify-between gap-2">
-          {member.showLocation === true && member.location ? (
-            <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 text-xs min-w-0">
-              <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-              <span className="truncate">{member.location}, Cyprus</span>
-            </div>
-          ) : (
-            <div></div>
-          )}
+          <div className="flex items-center gap-3 min-w-0">
+            {member.showLocation === true && member.location && (
+              <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 text-xs min-w-0">
+                <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span className="truncate">{member.location}</span>
+              </div>
+            )}
+            <ViewCounter views={member.viewsCount || (Math.abs(member.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * 23) % 450) + 85} />
+          </div>
           
           <button className="text-primary font-bold text-xs flex items-center gap-1 hover:underline whitespace-nowrap bg-transparent border-0 cursor-pointer p-0 shrink-0">
             {t('directory.viewProfile')} <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />

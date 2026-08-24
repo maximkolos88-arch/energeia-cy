@@ -14,6 +14,8 @@ import { LoginScreen } from './components/LoginScreen';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
+import { AnalyticsTracker } from './components/AnalyticsTracker';
+import { MediaKitScreen } from './components/MediaKitScreen';
 import { useTranslation } from 'react-i18next';
 import './index.css';
 
@@ -26,6 +28,7 @@ export default function App() {
     if (path === '/magazine') return 'magazine';
     if (path === '/academy') return 'academy';
     if (path === '/about') return 'about';
+    if (path === '/media-kit' || path === '/mediakit') return 'media-kit';
     if (path === '/register') return 'register';
     return 'news';
   });
@@ -182,6 +185,8 @@ export default function App() {
         return <AcademyScreen />;
       case 'about':
         return <AboutScreen />;
+      case 'media-kit':
+        return <MediaKitScreen />;
       case 'register':
         return <RegisterScreen />;
       default:
@@ -192,6 +197,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background text-on-background flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
       <ScrollToTop trigger={activeTab} />
+      <AnalyticsTracker />
       {/* Sticky Top App Bar */}
       <TopAppBar
         activeTab={activeTab}

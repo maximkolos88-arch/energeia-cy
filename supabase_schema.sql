@@ -56,3 +56,51 @@ CREATE POLICY "Allow public select on courses" ON public.courses FOR SELECT USIN
 CREATE POLICY "Allow authenticated changes on participants" ON public.participants FOR ALL USING (auth.role() = 'authenticated');
 CREATE POLICY "Allow authenticated changes on magazines" ON public.magazines FOR ALL USING (auth.role() = 'authenticated');
 CREATE POLICY "Allow authenticated changes on courses" ON public.courses FOR ALL USING (auth.role() = 'authenticated');
+
+-- Create analytics_events table
+CREATE TABLE IF NOT EXISTS public.analytics_events (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  session_id TEXT NOT NULL,
+  event_type TEXT NOT NULL, -- 'page_view', 'post_read', 'member_view', 'contact_click', 'pwa_install'
+  path TEXT NOT NULL,
+  referrer TEXT,
+  target_id TEXT, -- ID новости или профиля участника
+  country TEXT DEFAULT 'CY',
+  device_type TEXT, -- 'mobile', 'desktop', 'tablet'
+  is_pwa BOOLEAN DEFAULT false,
+  browser TEXT,
+  os TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Индексы для быстрой работы графиков в админке
+CREATE INDEX IF NOT EXISTS idx_analytics_created_at ON public.analytics_events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_analytics_event_type ON public.analytics_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_analytics_path ON public.analytics_events(path);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
+
+-- Enable INSERT policy for anonymous public access
+CREATE POLICY "Allow public insert on analytics_events" ON public.analytics_events FOR INSERT WITH CHECK (true);
+
+-- Enable SELECT policy for authenticated users (admin panel updates)
+CREATE POLICY "Allow authenticated select on analytics_events" ON public.analytics_events FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Create Pageviews table for Media Kit & Analytics Tracking
+CREATE TABLE IF NOT EXISTS public.pageviews (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  path TEXT NOT NULL,
+  type TEXT NOT NULL DEFAULT 'GENERAL', -- 'ARTICLE', 'COMPANY', 'GENERAL'
+  entity_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_pageviews_created_at ON public.pageviews(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_pageviews_type ON public.pageviews(type);
+CREATE INDEX IF NOT EXISTS idx_pageviews_entity_id ON public.pageviews(entity_id);
+
+ALTER TABLE public.pageviews ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public insert on pageviews" ON public.pageviews FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public select on pageviews" ON public.pageviews FOR SELECT USING (true);
+

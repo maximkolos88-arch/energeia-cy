@@ -8,9 +8,11 @@ import { DirectoryMember } from '../models/types';
 import { Search, Mail, ArrowRight, Building2, User, Leaf, X, Phone, MapPin, CheckCircle2, Globe, Award, Copy, Check } from 'lucide-react';
 import { MemberCard } from './MemberCard';
 import PageHeader from './PageHeader';
+import { usePageTracking } from '../hooks/usePageTracking';
 
 export const DirectoryScreen: React.FC = () => {
   const { t } = useTranslation();
+  usePageTracking('GENERAL', 'member-directory');
   const {
     searchQuery,
     setSearchQuery,
@@ -132,7 +134,10 @@ export const DirectoryScreen: React.FC = () => {
             <MemberCard
               key={member.id}
               member={member}
-              onClick={() => openMemberContact(member)}
+              onClick={() => {
+                openMemberContact(member);
+                (window as any).trackCustomEvent?.('member_view', member.id);
+              }}
             />
           ))}
         </div>
@@ -306,12 +311,19 @@ export const DirectoryScreen: React.FC = () => {
                               <div className="flex items-center justify-between gap-2 bg-white dark:bg-[#1b1c1e] p-2 rounded-lg border border-neutral-200 dark:border-neutral-800">
                                 <div className="flex items-center gap-2 min-w-0">
                                   <Mail className="w-4 h-4 text-primary shrink-0" />
-                                  <a href={`mailto:${selectedMember.email}`} className="hover:underline text-primary font-bold truncate block max-w-full">
+                                  <a 
+                                    href={`mailto:${selectedMember.email}`} 
+                                    onClick={() => (window as any).trackCustomEvent?.('contact_click', selectedMember.id)}
+                                    className="hover:underline text-primary font-bold truncate block max-w-full"
+                                  >
                                     {selectedMember.email}
                                   </a>
                                 </div>
                                 <button
-                                  onClick={() => handleCopyEmail(selectedMember.email)}
+                                  onClick={() => {
+                                    handleCopyEmail(selectedMember.email);
+                                    (window as any).trackCustomEvent?.('contact_click', selectedMember.id);
+                                  }}
                                   className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors cursor-pointer text-neutral-450 shrink-0"
                                   title="Copy email"
                                 >
@@ -327,7 +339,11 @@ export const DirectoryScreen: React.FC = () => {
                               <span className="text-[10px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.phone')}</span>
                               <div className="flex items-center gap-2">
                                 <Phone className="w-4 h-4 text-primary shrink-0" />
-                                <a href={`tel:${selectedMember.phone}`} className="hover:underline text-neutral-700 dark:text-neutral-300 font-medium">
+                                <a 
+                                  href={`tel:${selectedMember.phone}`} 
+                                  onClick={() => (window as any).trackCustomEvent?.('contact_click', selectedMember.id)}
+                                  className="hover:underline text-neutral-700 dark:text-neutral-300 font-medium"
+                                >
                                   {selectedMember.phone}
                                 </a>
                               </div>
@@ -340,7 +356,13 @@ export const DirectoryScreen: React.FC = () => {
                               <span className="text-[10px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.website')}</span>
                               <div className="flex items-center gap-2">
                                 <Globe className="w-4 h-4 text-primary shrink-0" />
-                                <a href={selectedMember.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary font-bold truncate block max-w-full">
+                                <a 
+                                  href={selectedMember.website} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  onClick={() => (window as any).trackCustomEvent?.('contact_click', selectedMember.id)}
+                                  className="hover:underline text-primary font-bold truncate block max-w-full"
+                                >
                                   {selectedMember.website}
                                 </a>
                               </div>
@@ -353,7 +375,13 @@ export const DirectoryScreen: React.FC = () => {
                               <span className="text-[10px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.linkedin')}</span>
                               <div className="flex items-center gap-2">
                                 <span className="font-bold text-primary text-center w-4 shrink-0">in</span>
-                                <a href={selectedMember.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary font-bold truncate block max-w-full">
+                                <a 
+                                  href={selectedMember.linkedin} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  onClick={() => (window as any).trackCustomEvent?.('contact_click', selectedMember.id)}
+                                  className="hover:underline text-primary font-bold truncate block max-w-full"
+                                >
                                   {selectedMember.linkedin}
                                 </a>
                               </div>
@@ -365,6 +393,7 @@ export const DirectoryScreen: React.FC = () => {
                         {selectedMember.showEmail === true && selectedMember.email && (
                           <a
                             href={`mailto:${selectedMember.email}?subject=Energeia%20Network%20Inquiry`}
+                            onClick={() => (window as any).trackCustomEvent?.('contact_click', selectedMember.id)}
                             className="w-full bg-primary text-white py-2.5 rounded-full font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary-hover transition-colors mt-2 cursor-pointer"
                           >
                             <Mail className="w-4 h-4" /> {t('directory.sendEmail')}

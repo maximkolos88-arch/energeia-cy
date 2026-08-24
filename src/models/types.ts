@@ -28,6 +28,8 @@ export interface NewsItem {
   createdAt: string;
   status: NewsStatus;
   readTimeMinutes?: number;
+  readCount?: number;
+  viewsCount?: number;
   title_el?: string;
   title_ru?: string;
   title_he?: string;
@@ -48,6 +50,7 @@ export interface DirectoryMember {
   roleOrCategory: string; // e.g., 'Independent Auditor', 'Solar Installation Co.', 'Grid Specialist', 'ESG Agency'
   email: string;
   phone?: string;
+  viewsCount?: number;
   location?: string; // e.g. 'Nicosia', 'Limassol', 'Larnaca'
   category?: "Oil & Gas" | "Renewables" | "Electricity & Trading" | "Maritime & Offshore" | "Engineering & EPC" | "Professional Services" | "Government & Associations" | string;
   expertiseTags: string[]; // e.g., ['Solar', 'Wind', 'Storage', 'Policy', 'ESG', 'Grid', 'ESG Auditors', 'Solar Installers']
