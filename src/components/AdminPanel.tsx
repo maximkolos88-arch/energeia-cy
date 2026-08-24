@@ -1651,45 +1651,54 @@ Financing and regulatory clearance remain key priorities, with project developer
                             />
 
                             {/* Localized Descriptions (Greek, Russian, Hebrew) */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-outline-variant/40 mt-2">
-                              <div className="space-y-1">
-                                <label className="text-[11px] font-semibold text-on-surface-variant flex items-center gap-1">
-                                  🇬🇷 Greek Description (description_el)
+                            <div className="space-y-3 pt-3 border-t border-outline-variant/60 mt-3">
+                              <div className="flex items-center justify-between">
+                                <label className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                                  <span className="material-symbols-outlined text-base">translate</span>
+                                  Multilingual Company Descriptions (Greek, Russian, Hebrew)
                                 </label>
-                                <textarea
-                                  value={editingMember.description_el || ''}
-                                  onChange={e => setEditingMember({ ...editingMember, description_el: e.target.value })}
-                                  rows={2}
-                                  className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
-                                  placeholder="Περιγραφή στα Ελληνικά..."
-                                />
+                                <span className="text-[10px] text-on-surface-variant/70 font-medium">Optional - Falls back to English if left blank</span>
                               </div>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div className="space-y-1 bg-surface-container/40 p-2.5 rounded-xl border border-outline-variant/60">
+                                  <label className="text-[11px] font-bold text-on-surface flex items-center gap-1.5">
+                                    <span className="text-sm">🇬🇷</span> Greek Description (<code className="text-[10px] font-mono text-primary">description_el</code>)
+                                  </label>
+                                  <textarea
+                                    value={editingMember.description_el || ''}
+                                    onChange={e => setEditingMember({ ...editingMember, description_el: e.target.value })}
+                                    rows={3}
+                                    className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
+                                    placeholder="Περιγραφή εταιρείας στα Ελληνικά..."
+                                  />
+                                </div>
 
-                              <div className="space-y-1">
-                                <label className="text-[11px] font-semibold text-on-surface-variant flex items-center gap-1">
-                                  🇷🇺 Russian Description (description_ru)
-                                </label>
-                                <textarea
-                                  value={editingMember.description_ru || ''}
-                                  onChange={e => setEditingMember({ ...editingMember, description_ru: e.target.value })}
-                                  rows={2}
-                                  className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
-                                  placeholder="Описание на русском..."
-                                />
-                              </div>
+                                <div className="space-y-1 bg-surface-container/40 p-2.5 rounded-xl border border-outline-variant/60">
+                                  <label className="text-[11px] font-bold text-on-surface flex items-center gap-1.5">
+                                    <span className="text-sm">🇷🇺</span> Russian Description (<code className="text-[10px] font-mono text-primary">description_ru</code>)
+                                  </label>
+                                  <textarea
+                                    value={editingMember.description_ru || ''}
+                                    onChange={e => setEditingMember({ ...editingMember, description_ru: e.target.value })}
+                                    rows={3}
+                                    className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
+                                    placeholder="Описание компании на русском..."
+                                  />
+                                </div>
 
-                              <div className="space-y-1">
-                                <label className="text-[11px] font-semibold text-on-surface-variant flex items-center gap-1">
-                                  🇮🇱 Hebrew Description (description_he)
-                                </label>
-                                <textarea
-                                  value={editingMember.description_he || ''}
-                                  onChange={e => setEditingMember({ ...editingMember, description_he: e.target.value })}
-                                  rows={2}
-                                  dir="rtl"
-                                  className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
-                                  placeholder="תיאור בעברית..."
-                                />
+                                <div className="space-y-1 bg-surface-container/40 p-2.5 rounded-xl border border-outline-variant/60">
+                                  <label className="text-[11px] font-bold text-on-surface flex items-center gap-1.5">
+                                    <span className="text-sm">🇮🇱</span> Hebrew Description (<code className="text-[10px] font-mono text-primary">description_he</code>)
+                                  </label>
+                                  <textarea
+                                    value={editingMember.description_he || ''}
+                                    onChange={e => setEditingMember({ ...editingMember, description_he: e.target.value })}
+                                    rows={3}
+                                    dir="rtl"
+                                    className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
+                                    placeholder="תיאור החברה בעברית..."
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>
