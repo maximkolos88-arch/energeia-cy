@@ -1833,6 +1833,7 @@ app.get('/api/analytics/stats', async (req, res) => {
 });
 
 // TRACKING ENDPOINT (POST /api/track)
+app.options('/api/track', cors());
 app.post('/api/track', (req, res) => {
   // Return 200 OK immediately for minimal latency
   res.status(200).json({ success: true });
