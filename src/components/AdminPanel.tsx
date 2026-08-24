@@ -77,7 +77,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [isParsing, setIsParsing] = useState(false);
   const [enrichingId, setEnrichingId] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
-  const [isGeneratingSummary, setIsGeneratingSummary] = useState<boolean>(false);
   const [sendPush, setSendPush] = useState<boolean>(true);
 
   const triggerPushNotification = async (payload: { title: string; body: string; url: string; type: 'news' | 'member' | 'magazine' | 'academy' }) => {
@@ -478,40 +477,6 @@ Financing and regulatory clearance remain key priorities, with project developer
     } finally {
       setLoadingData(false);
     }
-  };
-
-  const handleAiGenerateSummary = async () => {
-    if (!editingNews) return;
-    const content = editingNews.content || editingNews.title || "";
-    if (!content) return;
-    
-    try {
-      const response = await fetch('/api/ai/summarize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content })
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.summary) {
-          setEditingNews(prev => prev ? { ...prev, summary: data.summary } : null);
-          setSuccessToast(`Summary generated for: ${editingNews.title}`);
-          setTimeout(() => setSuccessToast(null), 4000);
-          return;
-        }
-      }
-    } catch (e) {
-      console.warn("AI summarize failed, falling back to clean excerpt:", e);
-    }
-
-    // Dynamic excerpt fallback instead of template
-    const cleanSnippet = editingNews.content 
-      ? editingNews.content.replace(/\s+/g, ' ').substring(0, 180) + '...'
-      : `Overview of the latest developments regarding ${editingNews.title || 'Cyprus energy sector'}.`;
-      
-    setEditingNews(prev => prev ? { ...prev, summary: cleanSnippet } : null);
-    setSuccessToast(`Fallback summary generated for: ${editingNews.title}`);
-    setTimeout(() => setSuccessToast(null), 4000);
   };
 
   const cleanTitle = (title: string): string => {
@@ -1181,30 +1146,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                       </div>
 
                       <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <label className="text-xs font-label-lg text-on-surface-variant font-semibold">Summary (Short description in feed) *</label>
-                          {editingNews && (
-                            <button
-                              type="button"
-                              onClick={handleAiGenerateSummary}
-                              disabled={isGeneratingSummary || !editingNews.content?.trim()}
-                              className="text-xs font-semibold px-2 py-1 rounded bg-primary-container text-on-primary-container hover:bg-primary-container-hover transition-all flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
-                              title={!editingNews.content?.trim() ? "Add article body content first to generate a summary" : "Generate a 1-2 sentence AI summary"}
-                            >
-                              {isGeneratingSummary ? (
-                                <>
-                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  Generating...
-                                </>
-                              ) : (
-                                <>
-                                  <Sparkles className="w-3.5 h-3.5 text-primary" />
-                                  AI Generate Summary
-                                </>
-                              )}
-                            </button>
-                          )}
-                        </div>
+                        <label className="block text-xs font-label-lg text-on-surface-variant font-semibold">Summary (Short description in feed) *</label>
                         <textarea
                           value={editingNews.summary || ''}
                           onChange={e => setEditingNews({ ...editingNews, summary: e.target.value })}
