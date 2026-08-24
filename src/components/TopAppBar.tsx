@@ -25,7 +25,6 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
     { id: 'magazine', label: t('nav.magazine') },
     { id: 'academy', label: t('nav.academy') },
     { id: 'about', label: t('nav.about') },
-    { id: 'media-kit', label: 'Media Kit' },
     { id: 'register', label: t('nav.register') },
   ];
 

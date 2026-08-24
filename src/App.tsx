@@ -15,7 +15,6 @@ import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { AnalyticsTracker } from './components/AnalyticsTracker';
-import { MediaKitScreen } from './components/MediaKitScreen';
 import { useTranslation } from 'react-i18next';
 import './index.css';
 
@@ -28,13 +27,13 @@ export default function App() {
     if (path === '/magazine') return 'magazine';
     if (path === '/academy') return 'academy';
     if (path === '/about') return 'about';
-    if (path === '/media-kit' || path === '/mediakit') return 'media-kit';
     if (path === '/register') return 'register';
     return 'news';
   });
-  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(
-    window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin')
-  );
+  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(() => {
+    const path = window.location.pathname;
+    return path.startsWith('/admin') || path === '/media-kit' || path === '/mediakit';
+  });
   const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Language state controller (Default to browser language or 'en', save to localStorage)
@@ -185,8 +184,6 @@ export default function App() {
         return <AcademyScreen />;
       case 'about':
         return <AboutScreen />;
-      case 'media-kit':
-        return <MediaKitScreen />;
       case 'register':
         return <RegisterScreen />;
       default:

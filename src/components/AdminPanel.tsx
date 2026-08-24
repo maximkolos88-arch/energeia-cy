@@ -14,6 +14,7 @@ import { DirectoryRepository, ALL_EXPERTISE_TAGS } from '../services/repositorie
 import { MagazineRepository } from '../services/repositories/MagazineRepository';
 import { CourseRepository } from '../services/repositories/CourseRepository';
 import { NewsItem, DirectoryMember, MagazineIssue, AcademyCourse } from '../models/types';
+import { MediaKitScreen } from './MediaKitScreen';
 
 const PREDEFINED_KEY_SERVICES = [
   "EPC", "O&M", "Project Management", "Solar PV Development", 
@@ -38,7 +39,7 @@ export interface LeadApplication {
   created_at: string;
 }
 
-type AdminModule = 'dashboard' | 'news' | 'directory' | 'magazine' | 'academy' | 'applications' | 'scraper';
+type AdminModule = 'dashboard' | 'media-kit' | 'news' | 'directory' | 'magazine' | 'academy' | 'applications' | 'scraper';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   // Authentication Guard State
@@ -48,7 +49,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [loginError, setLoginError] = useState<string | null>(null);
 
   // Active module tab
-  const [activeModule, setActiveModule] = useState<AdminModule>('dashboard');
+  const [activeModule, setActiveModule] = useState<AdminModule>(() => {
+    if (typeof window !== 'undefined') {
+      const p = window.location.pathname;
+      if (p.includes('media-kit') || p.includes('mediakit') || p.includes('analytics')) {
+        return 'media-kit';
+      }
+    }
+    return 'dashboard';
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Database Data States
@@ -968,6 +977,7 @@ Financing and regulatory clearance remain key priorities, with project developer
         <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
           {[
             { id: 'dashboard', label: 'Dashboard Overview', icon: BarChart2 },
+            { id: 'media-kit', label: 'B2B Media Kit & Analytics', icon: Sparkles },
             { id: 'news', label: 'News Updates', icon: FileText, badge: stats.draftNews > 0 ? `${stats.draftNews} Drafts` : null },
             { id: 'directory', label: 'Member Directory', icon: Users },
             { id: 'magazine', label: 'Digital Magazine', icon: BookOpen },
@@ -1074,6 +1084,11 @@ Financing and regulatory clearance remain key priorities, with project developer
             </div>
           ) : (
             <>
+              {/* ==================== MODULE: B2B MEDIA KIT & ANALYTICS ==================== */}
+              {activeModule === 'media-kit' && (
+                <MediaKitScreen />
+              )}
+
               {/* ==================== MODULE: DASHBOARD OVERVIEW ==================== */}
               {activeModule === 'dashboard' && (
                 <div className="space-y-6">

@@ -21,6 +21,9 @@ import {
   BarChart3,
   Globe2,
   Sparkles,
+  Printer,
+  Download,
+  Lock,
 } from 'lucide-react';
 import { usePageTracking } from '../hooks/usePageTracking';
 
@@ -39,12 +42,11 @@ interface MediaKitStats {
 }
 
 export const MediaKitScreen: React.FC = () => {
-  // Track Media Kit pageview
-  usePageTracking('GENERAL', 'media-kit');
+  // Silent tracking call
+  usePageTracking('GENERAL', 'admin-media-kit');
 
   const [stats, setStats] = useState<MediaKitStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -59,7 +61,6 @@ export const MediaKitScreen: React.FC = () => {
       .catch((err) => {
         if (isMounted) {
           console.warn('[MediaKit] Failed fetching stats, using fallback:', err);
-          // High-grade default fallback for offline or cold start environments
           setStats({
             totalMonthlyViews: 6920,
             totalCompanies: 24,
@@ -83,16 +84,76 @@ export const MediaKitScreen: React.FC = () => {
     };
   }, []);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50/60 dark:bg-[#121315] text-slate-800 dark:text-slate-100 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-10">
+    <div className="min-h-screen bg-slate-50/60 dark:bg-[#121315] text-slate-800 dark:text-slate-100 py-6 px-4 sm:px-6 lg:px-8 media-kit-printable">
+      {/* Print Specific CSS Rules */}
+      <style>{`
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 12mm 10mm;
+          }
+          body {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          /* Hide non-essential layout wrappers during print */
+          header, footer, nav, .no-print, button, .top-app-header, .admin-sidebar, .admin-topbar {
+            display: none !important;
+          }
+          .media-kit-printable {
+            padding: 0 !important;
+            background: #ffffff !important;
+          }
+          .media-kit-hero {
+            background: #0f172a !important;
+            color: #ffffff !important;
+            border-radius: 16px !important;
+            padding: 24px !important;
+          }
+          .print-card {
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: none !important;
+            break-inside: avoid;
+          }
+        }
+      `}</style>
+
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* ADMIN TOP CONTROL BAR (EXPORT PDF BUTTON) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#1b1c1e] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs no-print">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5" /> Internal Admin Dashboard
+            </div>
+            <span className="text-xs text-slate-500 hidden md:inline">
+              B2B Media Kit & Advertiser Engagement Intel
+            </span>
+          </div>
+
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs transition-all shadow-sm cursor-pointer"
+            title="Export cleanly to A4 PDF via browser print dialog"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Export to PDF / Print Media Kit</span>
+          </button>
+        </div>
+
         {/* HERO SECTION */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-800">
-          <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-[#27AE60]/20 rounded-full blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-800 media-kit-hero">
+          <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-96 h-96 bg-[#27AE60]/20 rounded-full blur-3xl pointer-events-none no-print" />
           
           <div className="relative z-10 max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#27AE60]/20 border border-[#27AE60]/40 text-[#27AE60] text-xs font-semibold tracking-wide uppercase">
-              <Sparkles className="w-3.5 h-3.5" /> B2B Media Kit & Audience Intel
+              <Sparkles className="w-3.5 h-3.5" /> Energeia B2B Intelligence & Media Kit
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
@@ -103,19 +164,19 @@ export const MediaKitScreen: React.FC = () => {
               Verified reach, market intelligence, and decision-maker engagement across Cyprus’s energy, renewables, and infrastructure sector.
             </p>
 
-            <div className="pt-4 flex flex-wrap gap-4 items-center">
+            <div className="pt-4 flex flex-wrap gap-4 items-center no-print">
               <a
                 href="mailto:contact@energeia.cy?subject=Energeia%20Media%20Kit%20Inquiry"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#27AE60] hover:bg-[#219653] text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-[#27AE60]/25 cursor-pointer"
               >
-                <Mail className="w-4 h-4" /> Request Advertising Rate Card
+                <Mail className="w-4 h-4" /> Send Proposal to Advertiser
               </a>
-              <a
-                href="#audience-breakdown"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 font-medium text-sm border border-slate-700 transition-colors"
+              <button
+                onClick={handlePrint}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 font-medium text-sm border border-slate-700 transition-colors cursor-pointer"
               >
-                Explore Demographic Specs <ArrowRight className="w-4 h-4" />
-              </a>
+                <Download className="w-4 h-4" /> Download PDF Presentation
+              </button>
             </div>
           </div>
         </section>
@@ -128,7 +189,7 @@ export const MediaKitScreen: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Card 1: Total Monthly Views */}
-            <div className="bg-white dark:bg-[#1b1c1e] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-[#1b1c1e] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm print-card">
               {loading ? (
                 <div className="animate-pulse space-y-3">
                   <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-24" />
@@ -158,7 +219,7 @@ export const MediaKitScreen: React.FC = () => {
             </div>
 
             {/* Card 2: Active Companies */}
-            <div className="bg-white dark:bg-[#1b1c1e] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-[#1b1c1e] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm print-card">
               {loading ? (
                 <div className="animate-pulse space-y-3">
                   <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-24" />
@@ -186,7 +247,7 @@ export const MediaKitScreen: React.FC = () => {
             </div>
 
             {/* Card 3: Total Articles */}
-            <div className="bg-white dark:bg-[#1b1c1e] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-[#1b1c1e] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm print-card">
               {loading ? (
                 <div className="animate-pulse space-y-3">
                   <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-24" />
@@ -214,7 +275,7 @@ export const MediaKitScreen: React.FC = () => {
             </div>
 
             {/* Card 4: Total Article Reads */}
-            <div className="bg-white dark:bg-[#1b1c1e] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-[#1b1c1e] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm print-card">
               {loading ? (
                 <div className="animate-pulse space-y-3">
                   <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-24" />
@@ -243,8 +304,8 @@ export const MediaKitScreen: React.FC = () => {
           </div>
         </section>
 
-        {/* CHART SECTION: RECHARTS TRAFFIC OVER LAST 30 DAYS */}
-        <section className="bg-white dark:bg-[#1b1c1e] p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+        {/* CHART SECTION */}
+        <section className="bg-white dark:bg-[#1b1c1e] p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6 print-card">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -254,7 +315,7 @@ export const MediaKitScreen: React.FC = () => {
                 Daily aggregated pageviews across desktop, mobile PWA, and direct industry traffic.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-xs font-semibold bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300">
+            <div className="flex items-center gap-2 text-xs font-semibold bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 no-print">
               <span className="w-2.5 h-2.5 rounded-full bg-[#27AE60]" /> Brand Accent Color: #27AE60
             </div>
           </div>
@@ -310,8 +371,8 @@ export const MediaKitScreen: React.FC = () => {
         </section>
 
         {/* AUDIENCE SPECS & B2B ADVERTISING OPPORTUNITIES */}
-        <section id="audience-breakdown" className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-[#1b1c1e] p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white dark:bg-[#1b1c1e] p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5 print-card">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Users className="w-5 h-5 text-[#27AE60]" /> Audience Breakdown
             </h3>
@@ -343,7 +404,7 @@ export const MediaKitScreen: React.FC = () => {
             </ul>
           </div>
 
-          <div className="bg-white dark:bg-[#1b1c1e] p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+          <div className="bg-white dark:bg-[#1b1c1e] p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5 print-card">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Award className="w-5 h-5 text-[#27AE60]" /> Ad Placement Options
             </h3>
