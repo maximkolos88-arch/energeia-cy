@@ -1874,52 +1874,88 @@ app.post('/api/track', (req, res) => {
 // MEDIA KIT STATS ENDPOINT (GET /api/stats/media-kit)
 app.get('/api/stats/media-kit', async (req, res) => {
   try {
+    const thirtyDaysAgoDate = new Date(Date.now() - (30 * 24 * 60 * 60 * 1000));
+    const thirtyDaysAgoIso = thirtyDaysAgoDate.toISOString();
+
+    // 1. Fetch total monthly pageviews from Supabase pageviews table (last 30 days)
+    const { data: pageviewRows, error: pvError } = await supabase
+      .from('pageviews')
+      .select('id, type, created_at')
+      .gte('created_at', thirtyDaysAgoIso);
+
+    if (pvError) {
+      console.warn('[MediaKit API] Supabase pageviews fetch warning:', pvError.message);
+    }
+
+    // 2. Fetch total companies count from Supabase participants table
+    const { count: companyCount, error: compError } = await supabase
+      .from('participants')
+      .select('*', { count: 'exact', head: true });
+
+    if (compError) {
+      console.warn('[MediaKit API] Supabase participants count warning:', compError.message);
+    }
+
+    // 3. Fetch total articles count from Supabase news table
+    const { count: articleCount, error: artError } = await supabase
+      .from('news')
+      .select('*', { count: 'exact', head: true });
+
+    if (artError) {
+      console.warn('[MediaKit API] Supabase news count warning:', artError.message);
+    }
+
+    // Combine database and local fallback data sources
     const dbData = readDb();
-    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    const localRecentPv = (dbData.pageviews || []).filter(pv => new Date(pv.createdAt || pv.created_at).getTime() >= thirtyDaysAgoDate.getTime());
     
-    // Pageviews from last 30 days
-    const recentPageviews = (dbData.pageviews || []).filter(pv => {
-      return new Date(pv.createdAt || pv.created_at).getTime() >= thirtyDaysAgo;
-    });
+    const allPageviews = (pageviewRows && Array.isArray(pageviewRows) && pageviewRows.length > 0) 
+      ? pageviewRows 
+      : localRecentPv;
 
-    const totalCompanies = (dbData.participants || []).length || 24;
-    const totalArticles = (dbData.news || []).length || 58;
-    
-    const realArticleReads = recentPageviews.filter(pv => pv.type === 'ARTICLE').length;
-    const totalArticleReads = Math.max(realArticleReads, 2840);
-    const totalMonthlyViews = Math.max(recentPageviews.length, 6920);
+    const totalMonthlyViews = allPageviews.length;
 
-    // Group views by date for last 30 days chart
+    const totalCompanies = (companyCount !== null && companyCount !== undefined)
+      ? companyCount
+      : ((dbData.participants || []).length || 0);
+
+    const totalArticles = (articleCount !== null && articleCount !== undefined)
+      ? articleCount
+      : ((dbData.news || []).length || 0);
+
+    // 4. Fetch deep engagement: total article reads (rows where type = 'ARTICLE')
+    const totalArticleReads = allPageviews.filter(pv => (pv.type || '').toUpperCase() === 'ARTICLE').length;
+
+    // 5. Generate consecutive 30-day timeline chart array (merging database views per day)
     const dailyViewMap = {};
     const now = new Date();
-    
+
+    // Helper: Initialize 30 consecutive calendar days up to today
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now.getTime() - (i * 24 * 60 * 60 * 1000));
       const dateKey = d.toISOString().split('T')[0];
       dailyViewMap[dateKey] = 0;
     }
 
-    recentPageviews.forEach(pv => {
-      const dateKey = new Date(pv.createdAt || pv.created_at).toISOString().split('T')[0];
-      if (dailyViewMap[dateKey] !== undefined) {
-        dailyViewMap[dateKey]++;
+    // Group actual pageviews by day
+    allPageviews.forEach(pv => {
+      const pvDate = new Date(pv.created_at || pv.createdAt);
+      if (!isNaN(pvDate.getTime())) {
+        const dateKey = pvDate.toISOString().split('T')[0];
+        if (dailyViewMap[dateKey] !== undefined) {
+          dailyViewMap[dateKey]++;
+        }
       }
     });
 
     const chartData = [];
-    const baseViews = Math.round(totalMonthlyViews / 30);
-    Object.keys(dailyViewMap).forEach((dateKey, index) => {
-      const actual = dailyViewMap[dateKey];
-      const pseudoVariance = Math.round(Math.sin(index * 0.4) * 35 + Math.cos(index * 0.7) * 20);
-      const views = actual > 0 ? actual : Math.max(65, baseViews + pseudoVariance);
-      
+    Object.keys(dailyViewMap).forEach((dateKey) => {
       const dateObj = new Date(dateKey);
       const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      
       chartData.push({
         date: dateKey,
         label: formattedDate,
-        views
+        views: dailyViewMap[dateKey]
       });
     });
 
@@ -1931,7 +1967,8 @@ app.get('/api/stats/media-kit', async (req, res) => {
       chartData
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[MediaKit API Error]:', err);
+    res.status(500).json({ error: 'Database query failed: ' + (err.message || 'Unknown database error') });
   }
 });
 
