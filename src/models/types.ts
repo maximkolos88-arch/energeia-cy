@@ -56,6 +56,9 @@ export interface DirectoryMember {
   expertiseTags: string[]; // e.g., ['Solar', 'Wind', 'Storage', 'Policy', 'ESG', 'Grid', 'ESG Auditors', 'Solar Installers']
   imageUrl?: string;
   description?: string;
+  description_el?: string;
+  description_ru?: string;
+  description_he?: string;
   isVerified?: boolean;
   createdAt?: string;
   logoUrl?: string;

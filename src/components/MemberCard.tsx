@@ -12,7 +12,15 @@ interface MemberCardProps {
 }
 
 export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const getLocalizedDescription = (m: DirectoryMember): string => {
+    const lang = i18n.language || 'en';
+    if (lang === 'el' && m.description_el && m.description_el.trim() !== '') return m.description_el;
+    if (lang === 'ru' && m.description_ru && m.description_ru.trim() !== '') return m.description_ru;
+    if (lang === 'he' && m.description_he && m.description_he.trim() !== '') return m.description_he;
+    return m.description || '';
+  };
 
   const getMemberIcon = () => {
     if (member.type === 'Company') {
@@ -132,9 +140,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick }) => {
         )}
 
         {/* Description: clamped to 3 lines */}
-        {member.showDescription === true && member.description && (
+        {member.showDescription === true && getLocalizedDescription(member) && (
           <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-3 leading-relaxed">
-            {member.description}
+            {getLocalizedDescription(member)}
           </p>
         )}
 

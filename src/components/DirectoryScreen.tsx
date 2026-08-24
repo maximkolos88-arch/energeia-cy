@@ -9,7 +9,15 @@ import { Search, Mail, ArrowRight, Building2, User, Leaf, X, Phone, MapPin, Chec
 import { MemberCard } from './MemberCard';
 import PageHeader from './PageHeader';
 export const DirectoryScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const getLocalizedDescription = (m: DirectoryMember): string => {
+    const lang = i18n.language || 'en';
+    if (lang === 'el' && m.description_el && m.description_el.trim() !== '') return m.description_el;
+    if (lang === 'ru' && m.description_ru && m.description_ru.trim() !== '') return m.description_ru;
+    if (lang === 'he' && m.description_he && m.description_he.trim() !== '') return m.description_he;
+    return m.description || '';
+  };
   const {
     searchQuery,
     setSearchQuery,
@@ -215,13 +223,13 @@ export const DirectoryScreen: React.FC = () => {
                     <div className="flex-1 space-y-6 min-w-0">
                       
                       {/* About Section */}
-                      {selectedMember.showDescription === true && selectedMember.description && (
+                      {selectedMember.showDescription === true && getLocalizedDescription(selectedMember) && (
                         <div className="space-y-2">
                           <h3 className="text-xs font-bold text-neutral-900 dark:text-white border-b border-neutral-200 dark:border-neutral-800 pb-1.5 uppercase tracking-wider">
                             {t('directory.about')}
                           </h3>
                           <p className="text-xs text-neutral-600 dark:text-neutral-450 leading-relaxed whitespace-pre-wrap">
-                            {selectedMember.description}
+                            {getLocalizedDescription(selectedMember)}
                           </p>
                         </div>
                       )}

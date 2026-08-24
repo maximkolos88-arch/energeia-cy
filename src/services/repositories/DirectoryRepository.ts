@@ -29,6 +29,9 @@ export class DirectoryRepository {
       expertiseTags: item.expertise_tags || [],
       imageUrl: item.image_url || '',
       description: item.description || '',
+      description_el: item.description_el || '',
+      description_ru: item.description_ru || '',
+      description_he: item.description_he || '',
       isVerified: item.is_verified || false,
       logoUrl: item.logo_url || item.image_url || '',
       website: item.website || '',
@@ -65,6 +68,9 @@ export class DirectoryRepository {
     if (member.expertiseTags !== undefined) mapped.expertise_tags = member.expertiseTags || [];
     if (member.imageUrl !== undefined) mapped.image_url = member.imageUrl || null;
     if (member.description !== undefined) mapped.description = member.description || '';
+    if (member.description_el !== undefined) mapped.description_el = member.description_el || null;
+    if (member.description_ru !== undefined) mapped.description_ru = member.description_ru || null;
+    if (member.description_he !== undefined) mapped.description_he = member.description_he || null;
     if (member.isVerified !== undefined) mapped.is_verified = member.isVerified ?? false;
 
     // Supabase specific fields

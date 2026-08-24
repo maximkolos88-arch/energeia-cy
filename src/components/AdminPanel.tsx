@@ -674,6 +674,9 @@ Financing and regulatory clearance remain key priorities, with project developer
         category: editingMember.category || 'Renewables',
         expertiseTags: tags,
         description: editingMember.description || '',
+        description_el: editingMember.description_el || '',
+        description_ru: editingMember.description_ru || '',
+        description_he: editingMember.description_he || '',
         imageUrl: editingMember.imageUrl || '',
         logoUrl: editingMember.logoUrl || editingMember.imageUrl || '',
         website: editingMember.website || '',
@@ -1628,7 +1631,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                           
                           <div className="space-y-1.5 border border-outline-variant/60 rounded-xl p-3 bg-surface-container-lowest">
                             <div className="flex justify-between items-center">
-                              <label className="text-xs font-semibold text-on-surface-variant">Description</label>
+                              <label className="text-xs font-semibold text-on-surface-variant">Description (English / Main)</label>
                               <label className="inline-flex items-center gap-1.5 text-[11px] font-medium text-on-surface-variant cursor-pointer">
                                 <input
                                   type="checkbox"
@@ -1644,8 +1647,51 @@ Financing and regulatory clearance remain key priorities, with project developer
                               onChange={e => setEditingMember({ ...editingMember, description: e.target.value })}
                               rows={2}
                               className="w-full bg-surface border border-outline rounded-lg px-3 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
-                              placeholder="Brief description..."
+                              placeholder="Brief description in English..."
                             />
+
+                            {/* Localized Descriptions (Greek, Russian, Hebrew) */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-outline-variant/40 mt-2">
+                              <div className="space-y-1">
+                                <label className="text-[11px] font-semibold text-on-surface-variant flex items-center gap-1">
+                                  🇬🇷 Greek Description (description_el)
+                                </label>
+                                <textarea
+                                  value={editingMember.description_el || ''}
+                                  onChange={e => setEditingMember({ ...editingMember, description_el: e.target.value })}
+                                  rows={2}
+                                  className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
+                                  placeholder="Περιγραφή στα Ελληνικά..."
+                                />
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="text-[11px] font-semibold text-on-surface-variant flex items-center gap-1">
+                                  🇷🇺 Russian Description (description_ru)
+                                </label>
+                                <textarea
+                                  value={editingMember.description_ru || ''}
+                                  onChange={e => setEditingMember({ ...editingMember, description_ru: e.target.value })}
+                                  rows={2}
+                                  className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
+                                  placeholder="Описание на русском..."
+                                />
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="text-[11px] font-semibold text-on-surface-variant flex items-center gap-1">
+                                  🇮🇱 Hebrew Description (description_he)
+                                </label>
+                                <textarea
+                                  value={editingMember.description_he || ''}
+                                  onChange={e => setEditingMember({ ...editingMember, description_he: e.target.value })}
+                                  rows={2}
+                                  dir="rtl"
+                                  className="w-full bg-surface border border-outline rounded-lg px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
+                                  placeholder="תיאור בעברית..."
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

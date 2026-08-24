@@ -11,9 +11,17 @@ CREATE TABLE IF NOT EXISTS public.participants (
   expertise_tags TEXT[] DEFAULT '{}',
   image_url TEXT,
   description TEXT,
+  description_el TEXT,
+  description_ru TEXT,
+  description_he TEXT,
   is_verified BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Add localized description columns if table already exists
+ALTER TABLE public.participants ADD COLUMN IF NOT EXISTS description_el TEXT;
+ALTER TABLE public.participants ADD COLUMN IF NOT EXISTS description_ru TEXT;
+ALTER TABLE public.participants ADD COLUMN IF NOT EXISTS description_he TEXT;
 
 -- Create magazines table for Digital Library
 CREATE TABLE IF NOT EXISTS public.magazines (
