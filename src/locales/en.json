@@ -102,5 +102,23 @@
   "footer": {
     "rights": "All rights reserved.",
     "description": "Cyprus All-Energy Network"
+  },
+  "pwa": {
+    "title": "Energeia on your home screen",
+    "description": "Get instant one-tap access to Cyprus energy news, real-time market updates, and the verified professional member directory.",
+    "installButton": "Add to home screen",
+    "skipButton": "Skip and continue to website →",
+    "installGenericAlert": "To install, open your browser options/settings and select 'Add to Home Screen' or 'Install app'.",
+    "iosTitle": "Install on iOS Safari",
+    "iosDescription": "Follow these simple steps in Safari to add Energeia to your device's home screen:",
+    "iosStep1": "Tap the Share button in Safari's bottom toolbar.",
+    "iosStep2": "Scroll down and tap Add to Home Screen.",
+    "iosStep3": "Tap Add in the top-right corner to complete installation.",
+    "iosTapShare": "Tap Share below",
+    "pushTitle": "Never miss breaking energy news",
+    "pushDescription": "Get instant push notifications on your lock screen and timely updates right on your home screen icon.",
+    "enableNotifications": "Enable notifications",
+    "maybeLater": "Maybe later",
+    "pushNotSupported": "Push notifications are not supported by your current browser."
   }
 }

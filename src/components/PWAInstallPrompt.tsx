@@ -9,13 +9,27 @@ import { supabase } from '../lib/supabase';
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BCkeGmEYasE_LQGpB2NoezzfuMk3-3262UPW0JW6pjgPkBOr9IFisbY4K1tpbGMXb7lgwiDZMhrRgpMWCAlBHg0';
 
 export const PWAInstallPrompt: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showPrompt, setShowPrompt] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showIOSInstructions, setShowIOSInstructions] = useState<boolean>(false);
   
   // Standalone Push Notification Prompt State
   const [showPushPrompt, setShowPushPrompt] = useState<boolean>(false);
+
+  // Auto-detect system/browser language immediately on mount if no saved preference
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('energeia_language');
+      if (!saved && navigator.language) {
+        const browserLang = navigator.language.split('-')[0].toLowerCase();
+        const supported = ['en', 'el', 'ru', 'he'];
+        if (supported.includes(browserLang) && i18n.language !== browserLang) {
+          i18n.changeLanguage(browserLang);
+        }
+      }
+    }
+  }, [i18n]);
 
   // Helper check methods
   const isStandalone = (): boolean => {
@@ -158,9 +172,7 @@ export const PWAInstallPrompt: React.FC = () => {
       setDeferredPrompt(null);
       setShowPrompt(false);
     } else {
-      alert(
-        "To install, open your browser options/settings and select 'Add to Home Screen' or 'Install app'."
-      );
+      alert(t('pwa.installGenericAlert'));
     }
   };
 
@@ -182,7 +194,7 @@ export const PWAInstallPrompt: React.FC = () => {
   const handleEnableNotifications = async () => {
     try {
       if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-        alert('Push notifications are not supported by your current browser.');
+        alert(t('pwa.pushNotSupported'));
         setShowPushPrompt(false);
         return;
       }
@@ -265,10 +277,10 @@ export const PWAInstallPrompt: React.FC = () => {
 
           {/* Typography Content */}
           <h2 className="font-bold text-[#111827] dark:text-white tracking-tight" style={{ fontSize: '19px', marginTop: '12px' }}>
-            Never miss breaking energy news
+            {t('pwa.pushTitle')}
           </h2>
           <p className="text-[#6b7280] dark:text-neutral-400" style={{ fontSize: '14px', lineHeight: '1.45', marginTop: '6px', marginBottom: '20px' }}>
-            Get instant push notifications on your lock screen and timely updates right on your home screen icon.
+            {t('pwa.pushDescription')}
           </p>
 
           {/* Buttons */}
@@ -278,7 +290,7 @@ export const PWAInstallPrompt: React.FC = () => {
               className="w-full bg-[#047857] hover:bg-[#035e43] text-white font-semibold flex items-center justify-center cursor-pointer transition-colors shadow-sm focus:outline-none"
               style={{ height: '48px', borderRadius: '12px', fontSize: '15px' }}
             >
-              Enable notifications
+              {t('pwa.enableNotifications')}
             </button>
             
             <button
@@ -286,7 +298,7 @@ export const PWAInstallPrompt: React.FC = () => {
               className="w-full bg-transparent text-[#9ca3af] hover:text-neutral-500 font-medium transition-colors cursor-pointer block border-none outline-none"
               style={{ height: '40px', fontSize: '14px', marginTop: '4px' }}
             >
-              Maybe later
+              {t('pwa.maybeLater')}
             </button>
           </div>
         </div>
@@ -334,10 +346,10 @@ export const PWAInstallPrompt: React.FC = () => {
         {/* Content */}
         <div className="text-center space-y-2 px-1">
           <h2 className="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">
-            Energeia on your home screen
+            {t('pwa.title')}
           </h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-xs mx-auto">
-            Get instant one-tap access to Cyprus energy news, real-time market updates, and the verified professional member directory.
+            {t('pwa.description')}
           </p>
         </div>
 
@@ -348,14 +360,14 @@ export const PWAInstallPrompt: React.FC = () => {
             className="w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-colors shadow-sm focus:outline-none flex items-center justify-center gap-2 cursor-pointer h-[52px]"
             style={{ borderRadius: '14px' }}
           >
-            Add to home screen
+            {t('pwa.installButton')}
           </button>
           
           <button
             onClick={handleSkipClick}
             className="w-full bg-transparent text-[#6b7280] hover:text-neutral-600 font-semibold py-2 text-xs transition-colors cursor-pointer block text-center"
           >
-            Skip and continue to website →
+            {t('pwa.skipButton')}
           </button>
         </div>
 
@@ -371,10 +383,10 @@ export const PWAInstallPrompt: React.FC = () => {
 
             <div className="space-y-4 mt-6">
               <h3 className="text-lg font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                Install on iOS Safari
+                {t('pwa.iosTitle')}
               </h3>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                Follow these simple steps in Safari to add Energeia to your device's home screen:
+                {t('pwa.iosDescription')}
               </p>
 
               <div className="space-y-3 pt-2 text-xs text-neutral-800 dark:text-neutral-250">
@@ -383,7 +395,7 @@ export const PWAInstallPrompt: React.FC = () => {
                     1
                   </div>
                   <p className="leading-relaxed">
-                    Tap the <strong>Share</strong> button in Safari's bottom toolbar.
+                    {t('pwa.iosStep1')}
                   </p>
                 </div>
 
@@ -392,7 +404,7 @@ export const PWAInstallPrompt: React.FC = () => {
                     2
                   </div>
                   <p className="leading-relaxed">
-                    Scroll down and tap <strong>Add to Home Screen</strong>.
+                    {t('pwa.iosStep2')}
                   </p>
                 </div>
 
@@ -401,7 +413,7 @@ export const PWAInstallPrompt: React.FC = () => {
                     3
                   </div>
                   <p className="leading-relaxed">
-                    Tap <strong>Add</strong> in the top-right corner to complete installation.
+                    {t('pwa.iosStep3')}
                   </p>
                 </div>
               </div>
@@ -410,7 +422,7 @@ export const PWAInstallPrompt: React.FC = () => {
             {/* Bottom pulsing indicator pointing down */}
             <div className="flex flex-col items-center justify-center pt-6 text-primary animate-bounce">
               <ArrowDown className="w-6 h-6" />
-              <span className="text-[10px] font-bold uppercase mt-1">Tap Share below</span>
+              <span className="text-[10px] font-bold uppercase mt-1">{t('pwa.iosTapShare')}</span>
             </div>
           </div>
         )}
