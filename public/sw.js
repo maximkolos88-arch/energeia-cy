@@ -2,7 +2,7 @@
  * Energeia - Service Worker for PWA Offline Caching & Push Notifications
  */
 
-const CACHE_NAME = 'energeia-cache-v2';
+const CACHE_NAME = 'energeia-cache-v3';
 const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/apple-touch-icon.png?v=4',
@@ -10,54 +10,60 @@ const ASSETS_TO_CACHE = [
   '/icon-512.png?v=4'
 ];
 
+// Install Event: Activate immediately with skipWaiting()
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting();
 });
 
+// Activate Event: Clear all old caches and claim clients immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      return self.clients.claim();
     })
   );
-  self.clients.claim();
 });
 
-// Network-First for HTML documents, Cache-First for static assets
+// Fetch Event: Network-First for HTML/navigation, Cache-First for static assets
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Network-First for HTML navigation / index.html to guarantee latest build chunks
+  // Network-First for HTML navigation / index.html to guarantee latest deployment assets
   if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          if (response && response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          }
           return response;
         })
         .catch(() => {
-          // Offline fallback to cached page
+          // Offline fallback to cached HTML page
           return caches.match(event.request).then((cached) => cached || caches.match('/index.html'));
         })
     );
     return;
   }
 
-  // Cache-First for static assets
+  // Cache-First with Network fallback for static assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
