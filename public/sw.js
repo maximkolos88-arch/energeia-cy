@@ -2,10 +2,8 @@
  * Energeia - Service Worker for PWA Offline Caching & Push Notifications
  */
 
-const CACHE_NAME = 'energeia-cache-v1';
+const CACHE_NAME = 'energeia-cache-v2';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
   '/manifest.json',
   '/apple-touch-icon.png?v=4',
   '/icon-192.png?v=4',
@@ -36,18 +34,36 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Cache-first fallback to network strategy
+// Network-First for HTML documents, Cache-First for static assets
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  
+
+  const url = new URL(event.request.url);
+
+  // Network-First for HTML navigation / index.html to guarantee latest build chunks
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          return response;
+        })
+        .catch(() => {
+          // Offline fallback to cached page
+          return caches.match(event.request).then((cached) => cached || caches.match('/index.html'));
+        })
+    );
+    return;
+  }
+
+  // Cache-First for static assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).catch(() => {
-        // offline fallback
-      });
+      return fetch(event.request);
     })
   );
 });
