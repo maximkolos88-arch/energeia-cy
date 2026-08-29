@@ -18,6 +18,7 @@ export type NewsCategory =
 export interface NewsItem {
   id: string;
   title: string;
+  slug?: string;
   summary: string;
   content?: string; // Rich Markdown text content
   category: NewsCategory;
@@ -27,6 +28,7 @@ export interface NewsItem {
   publishedAt: string; // ISO date string or formatted date
   createdAt: string;
   status: NewsStatus;
+  isEditorial?: boolean;
   readTimeMinutes?: number;
   readCount?: number;
   viewsCount?: number;

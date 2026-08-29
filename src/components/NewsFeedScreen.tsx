@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
 import { useNewsController } from '../controllers/useNewsController';
 import { NewsItem, NewsCategory } from '../models/types';
+import { NewsRepository } from '../services/repositories/NewsRepository';
 import { 
   ArrowRight, 
   ExternalLink, 
@@ -25,7 +26,8 @@ import {
   ShieldCheck,
   Gift,
   TrendingUp,
-  Layers
+  Layers,
+  Sparkles
 } from 'lucide-react';
 
 interface NewsFeedScreenProps {
@@ -142,6 +144,28 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
   };
 
   const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
+
+  // Check URL pathname for direct /news/[slug] deep-linking
+  useEffect(() => {
+    const handleUrlCheck = async () => {
+      const path = window.location.pathname;
+      if (path.startsWith('/news/') && path.length > 6) {
+        const slug = path.substring(6);
+        try {
+          const item = await NewsRepository.getNewsBySlug(slug);
+          if (item) {
+            setSelectedArticle(item);
+          }
+        } catch (err) {
+          console.error("Failed to load article by slug:", err);
+        }
+      }
+    };
+
+    handleUrlCheck();
+    window.addEventListener('popstate', handleUrlCheck);
+    return () => window.removeEventListener('popstate', handleUrlCheck);
+  }, []);
 
   // Important Network Bulletins State
   const [isNetworkWindowCollapsed, setIsNetworkWindowCollapsed] = useState<boolean>(false);
@@ -322,10 +346,17 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                   <article
                     key={item.id}
                     onClick={() => {
+                      if (item.isEditorial && item.slug) {
+                        window.history.pushState({}, '', `/news/${item.slug}`);
+                      }
                       setSelectedArticle(item);
                       (window as any).trackCustomEvent?.('post_read', item.id);
                     }}
-                    className="bg-white dark:bg-[#1b1c1e] border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 md:p-6 hover:border-primary/80 transition-all duration-200 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-6 justify-between items-stretch"
+                    className={`bg-white dark:bg-[#1b1c1e] border rounded-xl p-5 md:p-6 transition-all duration-200 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-6 justify-between items-stretch ${
+                      item.isEditorial 
+                        ? 'border-emerald-500/50 dark:border-emerald-500/40 shadow-sm hover:shadow-md' 
+                        : 'border-neutral-200 dark:border-neutral-800 hover:border-primary/80'
+                    }`}
                   >
                     <div className="flex-1 flex flex-col justify-between order-2 md:order-1">
                       <div>
@@ -335,7 +366,12 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                             {formatDate(item.publishedAt)}
                           </span>
 
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            {item.isEditorial && (
+                              <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                                <Sparkles className="w-3 h-3" /> Energeia Insight
+                              </span>
+                            )}
                             {getLocalizedCategory(item.category) ? (
                               <span className={`px-2 py-0.5 rounded-md text-[11px] font-medium ${getBadgeStyle(item.category)}`}>
                                 {getLocalizedCategory(item.category)}
@@ -391,12 +427,24 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
       {/* Full Article Modal Reader (Google News Reader Style) */}
       {selectedArticle && (
         <div
-          onClick={(e) => { if (e.target === e.currentTarget) setSelectedArticle(null); }}
+          onClick={(e) => { 
+            if (e.target === e.currentTarget) {
+              setSelectedArticle(null);
+              if (window.location.pathname.startsWith('/news/')) {
+                window.history.pushState({}, '', '/');
+              }
+            }
+          }}
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="bg-white dark:bg-[#202124] rounded-2xl md:rounded-3xl border border-[#dadce0] dark:border-[#3c4043] max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 md:p-6 relative shadow-2xl space-y-5 md:space-y-6">
             <button
-              onClick={() => setSelectedArticle(null)}
+              onClick={() => {
+                setSelectedArticle(null);
+                if (window.location.pathname.startsWith('/news/')) {
+                  window.history.pushState({}, '', '/');
+                }
+              }}
               className="sticky top-0 z-50 float-right p-3 md:p-2 text-[#5f6368] hover:bg-[#f1f3f4]/90 dark:hover:bg-[#3c4043]/90 bg-white/90 dark:bg-[#202124]/90 backdrop-blur-xs rounded-full border border-[#dadce0]/50 dark:border-[#3c4043]/50 shadow-xs"
               style={{ position: 'sticky', top: '0px', float: 'right', zIndex: 50 }}
             >

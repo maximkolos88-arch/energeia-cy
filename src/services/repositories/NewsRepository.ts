@@ -23,10 +23,20 @@ export class NewsRepository {
     return cleaned;
   }
 
+  static slugify(title: string): string {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '') || `news-${Date.now()}`;
+  }
+
   private static mapSupabaseToNewsItem(item: any): NewsItem {
     return {
       id: item.id,
       title: this.cleanTitle(item.title || ''),
+      slug: item.slug || '',
       summary: this.cleanSummary(item.summary || ''),
       content: item.content || '',
       category: item.category || '',
@@ -35,6 +45,7 @@ export class NewsRepository {
       publishedAt: item.published_at || item.created_at || '',
       createdAt: item.created_at || '',
       status: item.status || 'Draft',
+      isEditorial: item.is_editorial ?? false,
       readTimeMinutes: item.read_time_minutes || 3,
       title_el: item.title_el || '',
       title_ru: item.title_ru || '',
@@ -133,6 +144,24 @@ export class NewsRepository {
   }
 
   /**
+   * Fetch a single news item by slug (for Editorial Readers)
+   */
+  static async getNewsBySlug(slug: string): Promise<NewsItem | null> {
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (error) {
+      console.error(`Failed to fetch news item with slug "${slug}":`, error.message);
+      throw error;
+    }
+    if (!data) return null;
+    return this.mapSupabaseToNewsItem(data);
+  }
+
+  /**
    * Create a news item (Admin Panel)
    */
   static async createNewsItem(item: Omit<NewsItem, 'id' | 'createdAt'>): Promise<NewsItem> {
@@ -148,7 +177,7 @@ export class NewsRepository {
       }
     }
 
-    const fullPayload = {
+    const fullPayload: any = {
       title: item.title,
       summary: item.summary,
       content: item.content,
@@ -156,7 +185,9 @@ export class NewsRepository {
       status: item.status,
       image_url: item.imageUrl,
       source_url: item.sourceUrl,
-      published_at: item.publishedAt
+      published_at: item.publishedAt,
+      is_editorial: item.isEditorial ?? false,
+      slug: item.slug || (item.isEditorial ? this.slugify(item.title) : null)
     };
 
     try {
@@ -196,6 +227,8 @@ export class NewsRepository {
     if (item.imageUrl !== undefined) payload.image_url = item.imageUrl;
     if (item.sourceUrl !== undefined) payload.source_url = item.sourceUrl;
     if (item.publishedAt !== undefined) payload.published_at = item.publishedAt;
+    if (item.isEditorial !== undefined) payload.is_editorial = item.isEditorial;
+    if (item.slug !== undefined) payload.slug = item.slug;
 
     try {
       const { data, error } = await supabase

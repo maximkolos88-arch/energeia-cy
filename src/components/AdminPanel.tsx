@@ -232,7 +232,7 @@ Financing and regulatory clearance remain key priorities, with project developer
   const [lastRunTimestamp, setLastRunTimestamp] = useState<string | null>(null);
 
   // News Manager filters
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Draft' | 'Published'>('Draft');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Draft' | 'Published' | 'Editorials'>('Draft');
   const [dateSort, setDateSort] = useState<'newest' | 'oldest'>('newest');
 
   // Clear selections on tab switch
@@ -574,14 +574,19 @@ Financing and regulatory clearance remain key priorities, with project developer
         normalizedCategory = 'Renewables';
       }
 
+      const isEditorial = editingNews.isEditorial ?? false;
+      const slug = isEditorial ? (editingNews.slug?.trim() || NewsRepository.slugify(editingNews.title)) : (editingNews.slug || undefined);
+
       const payload = {
         title: cleanTitle(editingNews.title),
+        slug,
         summary: cleanSummary(editingNews.summary),
         content: editingNews.content || '',
         category: normalizedCategory,
         imageUrl: editingNews.imageUrl || '',
         sourceUrl: editingNews.sourceUrl || '',
         status: editingNews.status || 'Published',
+        isEditorial,
         publishedAt: editingNews.publishedAt || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         readTimeMinutes: Number(editingNews.readTimeMinutes) || 3
       };
@@ -870,6 +875,7 @@ Financing and regulatory clearance remain key priorities, with project developer
   const displayedNews = [...newsList]
     .filter(item => {
       if (statusFilter === 'All') return true;
+      if (statusFilter === 'Editorials') return item.isEditorial === true;
       const isDraft = isNewsDraft(item);
       return statusFilter === 'Draft' ? isDraft : !isDraft;
     })
@@ -1196,7 +1202,14 @@ Financing and regulatory clearance remain key priorities, with project developer
                           <input
                             type="text"
                             value={editingNews.title || ''}
-                            onChange={e => setEditingNews({ ...editingNews, title: e.target.value })}
+                            onChange={e => {
+                              const title = e.target.value;
+                              setEditingNews(prev => ({
+                                ...prev,
+                                title,
+                                slug: prev?.isEditorial && !prev?.id ? NewsRepository.slugify(title) : prev?.slug
+                              }));
+                            }}
                             className="w-full bg-surface border border-outline rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
                             placeholder="Revised Net-Billing Framework Published..."
                             required
@@ -1215,6 +1228,54 @@ Financing and regulatory clearance remain key priorities, with project developer
                             <option value="Grants & Subsidies">Grants & Subsidies</option>
                           </select>
                         </div>
+                      </div>
+
+                      {/* Editorial Toggle & URL Slug */}
+                      <div className="p-3 bg-surface-container rounded-xl border border-outline-variant/60 space-y-3">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-on-surface select-none">
+                          <input
+                            type="checkbox"
+                            checked={editingNews.isEditorial ?? false}
+                            onChange={e => {
+                              const checked = e.target.checked;
+                              setEditingNews(prev => ({
+                                ...prev,
+                                isEditorial: checked,
+                                slug: checked ? (prev?.slug || NewsRepository.slugify(prev?.title || '')) : prev?.slug
+                              }));
+                            }}
+                            className="rounded border-outline text-emerald-600 focus:ring-emerald-500 cursor-pointer w-4 h-4"
+                          />
+                          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                            <Newspaper className="w-4 h-4" /> Mark as Editorial Longread / Exclusive Article
+                          </span>
+                        </label>
+
+                        {editingNews.isEditorial && (
+                          <div className="space-y-1 pt-1">
+                            <label className="text-xs font-label-lg text-on-surface-variant font-semibold">Internal URL Slug (/news/[slug]) *</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={editingNews.slug || ''}
+                                onChange={e => setEditingNews({ ...editingNews, slug: e.target.value })}
+                                className="w-full bg-surface border border-outline rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none font-mono text-xs"
+                                placeholder="cyprus-energy-transition-2026"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (editingNews?.title) {
+                                    setEditingNews({ ...editingNews, slug: NewsRepository.slugify(editingNews.title) });
+                                  }
+                                }}
+                                className="px-3 py-2 bg-surface-container-high hover:bg-surface-container-highest border border-outline rounded-lg text-xs font-semibold text-on-surface shrink-0"
+                              >
+                                Auto-Generate
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-1">
@@ -1386,6 +1447,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                               <option value="All">All Statuses</option>
                               <option value="Draft">Drafts Only</option>
                               <option value="Published">Published Only</option>
+                              <option value="Editorials">Show Editorials Only</option>
                             </select>
                           </div>
 
@@ -1424,6 +1486,18 @@ Financing and regulatory clearance remain key priorities, with project developer
                             }`}
                           >
                             <CheckCircle className="w-3.5 h-3.5" /> Publish Selected ({selectedIds.length})
+                          </button>
+                          <button
+                            onClick={() => setEditingNews({ 
+                              status: 'Published', 
+                              category: 'Renewables', 
+                              readTimeMinutes: 5,
+                              isEditorial: true,
+                              content: ''
+                            })}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-full font-label-lg text-label-lg flex items-center gap-1.5 shadow-xs transition-colors"
+                          >
+                            <Newspaper className="w-3.5 h-3.5" /> + Write Editorial
                           </button>
                           <button
                             onClick={() => setEditingNews({ 
