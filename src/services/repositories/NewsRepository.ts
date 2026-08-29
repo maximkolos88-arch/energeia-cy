@@ -59,13 +59,23 @@ export class NewsRepository {
     };
   }
 
+  private static parseTimestamp(item: NewsItem): number {
+    const rawDate = item.createdAt || item.publishedAt;
+    if (rawDate) {
+      const ts = new Date(rawDate).getTime();
+      if (!isNaN(ts) && ts > 0) return ts;
+    }
+    if (item.publishedAt) {
+      const ts = new Date(item.publishedAt).getTime();
+      if (!isNaN(ts) && ts > 0) return ts;
+    }
+    return 0;
+  }
+
   private static sortByDateDescending(items: NewsItem[]): NewsItem[] {
     return items.sort((a, b) => {
-      const dateA = new Date(a.createdAt || a.publishedAt || 0).getTime();
-      const dateB = new Date(b.createdAt || b.publishedAt || 0).getTime();
-      if (isNaN(dateA) && isNaN(dateB)) return 0;
-      if (isNaN(dateA)) return 1;
-      if (isNaN(dateB)) return -1;
+      const dateA = this.parseTimestamp(a);
+      const dateB = this.parseTimestamp(b);
       return dateB - dateA;
     });
   }
@@ -107,32 +117,14 @@ export class NewsRepository {
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) {
-        console.warn("Supabase ordering by created_at failed, retrying without ordering:", error.message);
-        const fallbackRes = await supabase.from('news').select('*');
-        if (fallbackRes.error) throw fallbackRes.error;
-        
-        const mapped = (fallbackRes.data || []).map(item => this.mapSupabaseToNewsItem(item));
-        const published = mapped.filter(item => {
-          const isDraftStatus = item.status && item.status.toLowerCase() === 'draft';
-          const hasCoreFields = item.title && item.title.trim() !== '' &&
-                               item.summary && item.summary.trim() !== '' &&
-                               item.content && item.content.trim() !== '';
-          return !isDraftStatus && hasCoreFields;
-        });
-        const sorted = this.sortByDateDescending(published);
-        return this.filterLocalNews(sorted, categoryFilter);
-      }
+      const rawData = error ? (await supabase.from('news').select('*')).data || [] : (data || []);
+      const mapped = rawData.map(item => this.mapSupabaseToNewsItem(item));
       
-      const mapped = (data || []).map(item => this.mapSupabaseToNewsItem(item));
-      
-      // Filter out drafts: must have status !== 'Draft' and must have non-empty core fields
+      // Filter out drafts: only exclude items explicitly marked as status === 'Draft' (case-insensitive)
       const published = mapped.filter(item => {
-        const isDraftStatus = item.status && item.status.toLowerCase() === 'draft';
-        const hasCoreFields = item.title && item.title.trim() !== '' &&
-                             item.summary && item.summary.trim() !== '' &&
-                             item.content && item.content.trim() !== '';
-        return !isDraftStatus && hasCoreFields;
+        const isDraftStatus = item.status && item.status.toString().trim().toLowerCase() === 'draft';
+        const hasTitleAndSummary = Boolean(item.title && item.title.trim() !== '');
+        return !isDraftStatus && hasTitleAndSummary;
       });
 
       const sorted = this.sortByDateDescending(published);

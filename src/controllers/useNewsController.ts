@@ -23,7 +23,7 @@ export function useNewsController() {
     error: null,
     empty: false
   });
-  const [visibleCount, setVisibleCount] = useState<number>(5);
+  const [visibleCount, setVisibleCount] = useState<number>(20);
 
   const fetchNews = useCallback(async (category: NewsCategory) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
