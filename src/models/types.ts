@@ -112,3 +112,26 @@ export interface AcademyCourse {
   checkoutUrl: string;
   isPublished: boolean;
 }
+
+export interface ArticleCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  createdAt?: string;
+}
+
+export interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  summary?: string;
+  content: string;
+  coverImage?: string;
+  categoryId?: string;
+  category?: ArticleCategory;
+  isPublished: boolean;
+  publishedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

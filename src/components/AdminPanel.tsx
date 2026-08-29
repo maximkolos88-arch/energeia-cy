@@ -6,14 +6,15 @@ import {
   X, Bot, ShieldCheck, Database, RefreshCw, CheckCircle, 
   Plus, Edit, Trash2, BookOpen, Users, GraduationCap, 
   FileText, Check, AlertCircle, Inbox, BarChart2, LogOut, Lock,
-  Sparkles, Loader2, Menu
+  Sparkles, Loader2, Menu, Newspaper, Search
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { NewsRepository } from '../services/repositories/NewsRepository';
 import { DirectoryRepository, ALL_EXPERTISE_TAGS } from '../services/repositories/DirectoryRepository';
 import { MagazineRepository } from '../services/repositories/MagazineRepository';
 import { CourseRepository } from '../services/repositories/CourseRepository';
-import { NewsItem, DirectoryMember, MagazineIssue, AcademyCourse } from '../models/types';
+import { ArticleRepository } from '../services/repositories/ArticleRepository';
+import { NewsItem, DirectoryMember, MagazineIssue, AcademyCourse, Article, ArticleCategory } from '../models/types';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTag } from '../utils/tagLocalization';
 
@@ -40,7 +41,7 @@ export interface LeadApplication {
   created_at: string;
 }
 
-type AdminModule = 'dashboard' | 'news' | 'directory' | 'magazine' | 'academy' | 'applications' | 'scraper';
+type AdminModule = 'dashboard' | 'news' | 'articles' | 'directory' | 'magazine' | 'academy' | 'applications' | 'scraper';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -56,6 +57,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   // Database Data States
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
+  const [articlesList, setArticlesList] = useState<Article[]>([]);
+  const [articleCategories, setArticleCategories] = useState<ArticleCategory[]>([]);
   const [directoryList, setDirectoryList] = useState<DirectoryMember[]>([]);
   const [magazineList, setMagazineList] = useState<MagazineIssue[]>([]);
   const [coursesList, setCoursesList] = useState<AcademyCourse[]>([]);
@@ -68,13 +71,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   // Forms / Editing States
   const [editingNews, setEditingNews] = useState<Partial<NewsItem> | null>(null);
+  const [editingArticle, setEditingArticle] = useState<Partial<Article> | null>(null);
   const [editingMember, setEditingMember] = useState<Partial<DirectoryMember> | null>(null);
   const [editingMagazine, setEditingMagazine] = useState<Partial<MagazineIssue> | null>(null);
   const [editingCourse, setEditingCourse] = useState<Partial<AcademyCourse> | null>(null);
 
-  
-  // News Editor Markdown Tabs
+  // News & Article Editor Markdown Tabs
   const [editorTab, setEditorTab] = useState<'write' | 'preview'>('write');
+  const [articleEditorTab, setArticleEditorTab] = useState<'write' | 'preview'>('write');
+  const [articleSearch, setArticleSearch] = useState<string>('');
 
   const [customUrl, setCustomUrl] = useState('');
   const [isParsing, setIsParsing] = useState(false);
@@ -246,6 +251,18 @@ Financing and regulatory clearance remain key priorities, with project developer
       setNewsList(n);
     } catch (err) {
       console.error("Failed to load news in Admin Panel:", err);
+    }
+
+    // Load Articles
+    try {
+      const [arts, cats] = await Promise.all([
+        ArticleRepository.getAllArticles(),
+        ArticleRepository.getCategories()
+      ]);
+      setArticlesList(arts);
+      setArticleCategories(cats);
+    } catch (err) {
+      console.error("Failed to load articles in Admin Panel:", err);
     }
 
     // Load Directory/Participants
@@ -496,6 +513,53 @@ Financing and regulatory clearance remain key priorities, with project developer
       cleaned += '.';
     }
     return cleaned;
+  };
+
+  // Article CRUD Handlers
+  const handleSaveArticle = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingArticle?.title || !editingArticle?.content) {
+      alert("Title and Content are required.");
+      return;
+    }
+    try {
+      const slug = editingArticle.slug?.trim() || ArticleRepository.slugify(editingArticle.title);
+      const payload: Partial<Article> = {
+        title: editingArticle.title,
+        slug,
+        summary: editingArticle.summary || '',
+        content: editingArticle.content,
+        coverImage: editingArticle.coverImage || '',
+        categoryId: editingArticle.categoryId || undefined,
+        isPublished: editingArticle.isPublished ?? true,
+        publishedAt: editingArticle.publishedAt || new Date().toISOString()
+      };
+
+      if (editingArticle.id) {
+        await ArticleRepository.updateArticle(editingArticle.id, payload);
+        setSuccessToast("Article updated successfully!");
+      } else {
+        await ArticleRepository.createArticle(payload as Omit<Article, 'id' | 'createdAt'>);
+        setSuccessToast("New editorial article created!");
+      }
+
+      setEditingArticle(null);
+      await loadAllData();
+    } catch (err) {
+      console.error("Failed to save article:", err);
+      alert("Failed to save article. Check title and slug uniqueness.");
+    }
+  };
+
+  const handleDeleteArticle = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this editorial article?")) return;
+    try {
+      await ArticleRepository.deleteArticle(id);
+      setArticlesList(prev => prev.filter(a => a.id !== id));
+      setSuccessToast("Article deleted.");
+    } catch (err) {
+      console.error("Failed to delete article:", err);
+    }
   };
 
   // News CRUD Handlers
@@ -940,6 +1004,7 @@ Financing and regulatory clearance remain key priorities, with project developer
           {[
             { id: 'dashboard', label: 'Dashboard Overview', icon: BarChart2 },
             { id: 'news', label: 'News Updates', icon: FileText, badge: stats.draftNews > 0 ? `${stats.draftNews} Drafts` : null },
+            { id: 'articles', label: 'Editorial Articles', icon: Newspaper },
             { id: 'directory', label: 'Member Directory', icon: Users },
             { id: 'magazine', label: 'Digital Magazine', icon: BookOpen },
             { id: 'academy', label: 'Academy Courses', icon: GraduationCap },
@@ -954,6 +1019,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                 onClick={() => {
                   setActiveModule(item.id as AdminModule);
                   setEditingNews(null);
+                  setEditingArticle(null);
                   setEditingMember(null);
                   setEditingMagazine(null);
                   setEditingCourse(null);
@@ -1486,6 +1552,300 @@ Financing and regulatory clearance remain key priorities, with project developer
                                 </td>
                               </tr>
                             ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ==================== MODULE: EDITORIAL ARTICLES MANAGER (CRUD) ==================== */}
+              {activeModule === 'articles' && (
+                <div className="space-y-6">
+                  {editingArticle ? (
+                    /* Article Editor Form */
+                    <form onSubmit={handleSaveArticle} className="bg-surface-container-low border border-outline-variant p-6 rounded-2xl space-y-4">
+                      <div className="flex justify-between items-center pb-2 border-b border-outline-variant/60">
+                        <h3 className="font-title-lg text-title-lg font-bold text-on-surface flex items-center gap-2">
+                          <Newspaper className="w-5 h-5 text-primary" />
+                          {editingArticle.id ? 'Edit Editorial Article' : 'Create New Editorial Article'}
+                        </h3>
+                        <button 
+                          type="button" 
+                          onClick={() => setEditingArticle(null)}
+                          className="p-1 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-on-surface"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-label-lg text-on-surface-variant font-semibold">Title *</label>
+                          <input
+                            type="text"
+                            required
+                            value={editingArticle.title || ''}
+                            onChange={e => {
+                              const title = e.target.value;
+                              setEditingArticle(prev => ({
+                                ...prev,
+                                title,
+                                slug: prev?.id ? prev.slug : ArticleRepository.slugify(title)
+                              }));
+                            }}
+                            className="w-full bg-surface border border-outline rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+                            placeholder="e.g. Cyprus Energy Transition Outlook 2026"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-xs font-label-lg text-on-surface-variant font-semibold">URL Slug *</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              required
+                              value={editingArticle.slug || ''}
+                              onChange={e => setEditingArticle({ ...editingArticle, slug: e.target.value })}
+                              className="w-full bg-surface border border-outline rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none font-mono"
+                              placeholder="cyprus-energy-transition-2026"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (editingArticle?.title) {
+                                  setEditingArticle({ ...editingArticle, slug: ArticleRepository.slugify(editingArticle.title) });
+                                }
+                              }}
+                              className="px-3 py-2 bg-surface-container-high hover:bg-surface-container-highest border border-outline rounded-lg text-xs font-semibold text-on-surface shrink-0"
+                            >
+                              Auto-Generate
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-label-lg text-on-surface-variant font-semibold">Category</label>
+                          <select
+                            value={editingArticle.categoryId || ''}
+                            onChange={e => setEditingArticle({ ...editingArticle, categoryId: e.target.value || undefined })}
+                            className="w-full bg-surface border border-outline rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+                          >
+                            <option value="">-- Select Category --</option>
+                            {articleCategories.map(cat => (
+                              <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-xs font-label-lg text-on-surface-variant font-semibold">Cover Image URL</label>
+                          <input
+                            type="text"
+                            value={editingArticle.coverImage || ''}
+                            onChange={e => setEditingArticle({ ...editingArticle, coverImage: e.target.value })}
+                            className="w-full bg-surface border border-outline rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+                            placeholder="https://..."
+                          />
+                        </div>
+                      </div>
+
+                      {/* Image Thumbnail Preview */}
+                      {editingArticle.coverImage && (
+                        <div className="relative w-full max-w-xs h-32 rounded-xl overflow-hidden border border-outline-variant bg-surface-container">
+                          <img src={editingArticle.coverImage} alt="Cover Preview" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-label-lg text-on-surface-variant font-semibold">Summary / Excerpt (Short Lead)</label>
+                        <textarea
+                          rows={2}
+                          value={editingArticle.summary || ''}
+                          onChange={e => setEditingArticle({ ...editingArticle, summary: e.target.value })}
+                          className="w-full bg-surface border border-outline rounded-lg p-3 text-sm text-on-surface focus:border-primary focus:outline-none"
+                          placeholder="Brief 1-2 sentence overview of the article for cards and meta descriptions..."
+                        />
+                      </div>
+
+                      {/* Content Markdown / Rich Text Editor */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between border-b border-outline-variant pb-2">
+                          <label className="text-xs font-label-lg text-on-surface-variant font-semibold">Article Content (Markdown Supported) *</label>
+                          <div className="flex gap-1 bg-surface-container p-1 rounded-lg border border-outline-variant">
+                            <button
+                              type="button"
+                              onClick={() => setArticleEditorTab('write')}
+                              className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${
+                                articleEditorTab === 'write'
+                                  ? 'bg-primary text-on-primary shadow-xs'
+                                  : 'text-on-surface-variant hover:text-on-surface'
+                              }`}
+                            >
+                              Write
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setArticleEditorTab('preview')}
+                              className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${
+                                articleEditorTab === 'preview'
+                                  ? 'bg-primary text-on-primary shadow-xs'
+                                  : 'text-on-surface-variant hover:text-on-surface'
+                              }`}
+                            >
+                              Live Preview
+                            </button>
+                          </div>
+                        </div>
+
+                        {articleEditorTab === 'write' ? (
+                          <textarea
+                            required
+                            rows={14}
+                            value={editingArticle.content || ''}
+                            onChange={e => setEditingArticle({ ...editingArticle, content: e.target.value })}
+                            className="w-full bg-surface border border-outline rounded-lg p-3 text-sm text-on-surface focus:border-primary focus:outline-none font-mono"
+                            placeholder="# Article Title&#10;&#10;Write your editorial content using markdown..."
+                          />
+                        ) : (
+                          <div className="w-full min-h-[300px] max-h-[500px] overflow-y-auto bg-surface border border-outline rounded-lg p-4 prose dark:prose-invert max-w-none text-sm">
+                            <ReactMarkdown>{editingArticle.content || '*No content written yet.*'}</ReactMarkdown>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-outline-variant">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
+                          <input
+                            type="checkbox"
+                            checked={editingArticle.isPublished ?? true}
+                            onChange={(e) => setEditingArticle({ ...editingArticle, isPublished: e.target.checked })}
+                            className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
+                          />
+                          Publish article immediately
+                        </label>
+
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setEditingArticle(null)}
+                            className="px-4 py-2 border border-outline hover:bg-surface-container-high rounded-full font-label-lg text-label-lg transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-5 py-2 bg-primary text-on-primary hover:bg-primary/95 rounded-full font-label-lg text-label-lg transition-colors shadow-xs"
+                          >
+                            {editingArticle.id ? 'Update Article' : 'Save & Publish Article'}
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  ) : (
+                    /* Articles Table / List View */
+                    <div className="space-y-4">
+                      {/* Actions & Filters Header */}
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-container-low p-4 rounded-2xl border border-outline-variant">
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                          <div className="relative flex-1 sm:w-64">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+                            <input
+                              type="text"
+                              placeholder="Search editorial articles..."
+                              value={articleSearch}
+                              onChange={e => setArticleSearch(e.target.value)}
+                              className="w-full bg-surface border border-outline rounded-full pl-9 pr-4 py-2 text-xs text-on-surface focus:border-primary focus:outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => setEditingArticle({ title: '', slug: '', content: '', isPublished: true, publishedAt: new Date().toISOString() })}
+                          className="w-full sm:w-auto px-4 py-2 bg-primary text-on-primary hover:bg-primary/95 rounded-full font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-xs transition-colors"
+                        >
+                          <Plus className="w-4 h-4" /> Write New Article
+                        </button>
+                      </div>
+
+                      {/* Table List */}
+                      <div className="bg-surface border border-outline-variant rounded-2xl overflow-hidden">
+                        <table className="w-full text-left border-collapse text-xs">
+                          <thead>
+                            <tr className="bg-surface-container-low border-b border-outline-variant font-label-lg text-on-surface-variant uppercase text-[10px] tracking-wider">
+                              <th className="p-3">Cover</th>
+                              <th className="p-3">Title & Slug</th>
+                              <th className="p-3">Category</th>
+                              <th className="p-3">Status</th>
+                              <th className="p-3">Date</th>
+                              <th className="p-3 text-right">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-outline-variant/60">
+                            {articlesList
+                              .filter(a => !articleSearch || a.title.toLowerCase().includes(articleSearch.toLowerCase()) || a.slug.toLowerCase().includes(articleSearch.toLowerCase()))
+                              .map((article) => (
+                                <tr key={article.id} className="hover:bg-surface-container-lowest/80 transition-colors">
+                                  <td className="p-3">
+                                    {article.coverImage ? (
+                                      <img src={article.coverImage} alt="" className="w-10 h-10 object-cover rounded-lg border border-outline-variant" />
+                                    ) : (
+                                      <div className="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center text-on-surface-variant">
+                                        <Newspaper className="w-5 h-5 opacity-40" />
+                                      </div>
+                                    )}
+                                  </td>
+                                  <td className="p-3">
+                                    <div className="font-bold text-on-surface text-xs line-clamp-1">{article.title}</div>
+                                    <div className="text-[10px] text-on-surface-variant font-mono line-clamp-1">/articles/{article.slug}</div>
+                                  </td>
+                                  <td className="p-3">
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                                      {article.category?.name || 'Editorial'}
+                                    </span>
+                                  </td>
+                                  <td className="p-3">
+                                    {article.isPublished ? (
+                                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                        Published
+                                      </span>
+                                    ) : (
+                                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                        Draft
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="p-3 text-on-surface-variant whitespace-nowrap text-[11px]">
+                                    {new Date(article.publishedAt).toLocaleDateString()}
+                                  </td>
+                                  <td className="p-3 text-right space-x-1 whitespace-nowrap">
+                                    <button
+                                      onClick={() => setEditingArticle(article)}
+                                      className="p-1.5 hover:bg-primary/10 text-primary rounded-lg inline-flex items-center"
+                                      title="Edit Article"
+                                    >
+                                      <Edit className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteArticle(article.id)}
+                                      className="p-1.5 hover:bg-error/10 text-error rounded-lg inline-flex items-center"
+                                      title="Delete Article"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            {articlesList.length === 0 && (
+                              <tr>
+                                <td colSpan={6} className="p-8 text-center text-on-surface-variant">
+                                  No editorial articles found. Click "Write New Article" to create your first post!
+                                </td>
+                              </tr>
+                            )}
                           </tbody>
                         </table>
                       </div>

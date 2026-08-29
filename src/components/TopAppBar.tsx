@@ -21,6 +21,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
 
   const navItems = [
     { id: 'news', label: t('nav.news') },
+    { id: 'articles', label: t('nav.articles') || 'Articles' },
     { id: 'members', label: t('nav.members') },
     { id: 'magazine', label: t('nav.magazine') },
     { id: 'academy', label: t('nav.academy') },
