@@ -12,7 +12,6 @@ import { AcademyScreen } from './components/AcademyScreen';
 import { RegisterScreen } from './components/RegisterScreen';
 import { LoginScreen } from './components/LoginScreen';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
-import { ArticlesScreen } from './components/ArticlesScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +22,6 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [activeTab, setActiveTab] = useState<string>(() => {
     const path = window.location.pathname;
-    if (path.startsWith('/articles')) return 'articles';
     if (path === '/members' || path === '/directory') return 'members';
     if (path === '/magazine') return 'magazine';
     if (path === '/academy') return 'academy';
@@ -106,9 +104,7 @@ export default function App() {
     const handleLocationChange = () => {
       const path = window.location.pathname;
       setIsAdminRoute(path === '/admin' || path.startsWith('/admin'));
-      if (path.startsWith('/articles')) {
-        setActiveTab('articles');
-      } else if (path === '/members' || path === '/directory') {
+      if (path === '/members' || path === '/directory') {
         setActiveTab('members');
       } else if (path === '/magazine') {
         setActiveTab('magazine');
@@ -178,8 +174,6 @@ export default function App() {
     switch (activeTab) {
       case 'news':
         return <NewsFeedScreen key={refreshKey} language={language} />;
-      case 'articles':
-        return <ArticlesScreen />;
       case 'members':
         return <DirectoryScreen />;
       case 'magazine':

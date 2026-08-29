@@ -2,7 +2,7 @@
  * Energeia - Service Worker for PWA Offline Caching & Push Notifications
  */
 
-const CACHE_NAME = 'energeia-cache-v3';
+const CACHE_NAME = 'energeia-cache-v4';
 const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/apple-touch-icon.png?v=4',
