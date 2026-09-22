@@ -355,9 +355,10 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
 
           {/* News Cards Feed */}
           {!loading && !empty && (
-            <div className="space-y-4">
+            <div className="space-y-3.5 md:space-y-4">
               {newsItems.map((item) => {
                 const titleText = getLocalizedValue(item, 'title', language);
+                const isHeroImage = Boolean(item.isEditorial);
                 return (
                   <article
                     key={item.id}
@@ -381,28 +382,30 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                         (window as any).trackCustomEvent?.('post_read', item.id);
                       }
                     }}
-                    className={`bg-white dark:bg-[#1b1c1e] border rounded-xl p-5 md:p-6 transition-all duration-200 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-6 justify-between items-stretch active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-primary ${
+                    className={`bg-white dark:bg-[#1b1c1e] border rounded-xl p-4 md:p-6 transition-all duration-200 ease-in-out group cursor-pointer relative flex ${
+                      isHeroImage ? 'flex-col md:flex-row' : 'flex-row items-center md:items-stretch'
+                    } gap-4 md:gap-6 justify-between active:scale-[0.98] touch-manipulation focus-visible:outline-2 focus-visible:outline-primary ${
                       item.isEditorial 
                         ? 'border-emerald-500/50 dark:border-emerald-500/40 shadow-xs hover:shadow-sm' 
                         : 'border-neutral-200 dark:border-neutral-800 hover:border-primary/80'
                     }`}
                   >
-                    <div className="flex-1 flex flex-col justify-between order-2 md:order-1">
+                    <div className="flex-1 flex flex-col justify-between order-1">
                       <div>
                         {/* Header Row */}
-                        <div className="flex items-center justify-between mb-3 text-xs">
-                          <time dateTime={item.publishedAt} className="text-neutral-500 dark:text-neutral-400 font-medium tabular-nums">
+                        <div className="flex items-center justify-between mb-2 md:mb-3 text-xs">
+                          <time dateTime={item.publishedAt} className="text-neutral-500 dark:text-neutral-400 font-medium tabular-nums text-[11px] md:text-xs">
                             {formatDate(item.publishedAt)}
                           </time>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5 md:gap-2">
                             {item.isEditorial && (
-                              <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                              <span className="px-2 py-0.5 md:px-2.5 rounded-md text-[10px] md:text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
                                 <Sparkles className="w-3 h-3" /> Energeia Insight
                               </span>
                             )}
                             {getLocalizedCategory(item.category) ? (
-                              <span className={`px-2 py-0.5 rounded-md text-[11px] font-medium ${getBadgeStyle(item.category)}`}>
+                              <span className={`px-2 py-0.5 rounded-md text-[10px] md:text-[11px] font-medium ${getBadgeStyle(item.category)}`}>
                                 {getLocalizedCategory(item.category)}
                               </span>
                             ) : null}
@@ -410,19 +413,23 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                         </div>
 
                         {/* Headline */}
-                        <h2 className="text-base md:text-lg font-bold text-neutral-900 dark:text-neutral-100 leading-snug group-hover:text-primary transition-colors mb-2 tracking-tight [text-wrap:balance]">
+                        <h2 className="text-sm md:text-lg font-bold text-neutral-900 dark:text-neutral-100 leading-snug md:leading-snug group-hover:text-primary transition-colors mb-1 md:mb-2 tracking-tight [text-wrap:balance]">
                           {titleText}
                         </h2>
                       </div>
 
                       {/* Article Summary Snippet */}
-                      <p className="text-xs md:text-sm text-neutral-500 dark:text-neutral-400 font-normal line-clamp-2 md:line-clamp-3 leading-relaxed mt-2">
+                      <p className="text-xs md:text-sm text-neutral-500 dark:text-neutral-400 font-normal line-clamp-2 md:line-clamp-3 leading-relaxed mt-1 md:mt-2">
                         {getLocalizedValue(item, 'summary', language) || 'No summary available for this story.'}
                       </p>
                     </div>
 
                     {(item.image_url || item.imageUrl) ? (
-                      <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-neutral-200/60 dark:border-neutral-800/60">
+                      <div className={`${
+                        isHeroImage 
+                          ? 'w-full md:w-32 h-44 md:h-24 order-1 md:order-2' 
+                          : 'w-20 h-20 md:w-32 md:h-24 order-2 aspect-square'
+                      } rounded-xl overflow-hidden shrink-0 border border-neutral-200/60 dark:border-neutral-800/60`}>
                         <img
                           src={item.image_url || item.imageUrl}
                           alt={titleText}
@@ -441,10 +448,10 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
 
           {/* Load More Button */}
           {!loading && hasMore && (
-            <div className="mt-8 text-center">
+            <div className="mt-6 md:mt-8 text-center">
               <button
                 onClick={loadMore}
-                className="px-6 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-primary hover:bg-neutral-50 dark:hover:bg-neutral-750 text-xs font-bold rounded-full transition-all shadow-2xs active:scale-[0.96] cursor-pointer"
+                className="px-6 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-primary hover:bg-neutral-50 dark:hover:bg-neutral-750 text-xs font-bold rounded-full transition-all shadow-2xs active:scale-[0.96] touch-manipulation cursor-pointer"
               >
                 {t('news.loadMore')}
               </button>
@@ -453,7 +460,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
         </div>
       </div>
 
-      {/* Full Article Modal Reader (Google News Reader Style) */}
+      {/* Full Article Bottom Sheet / Modal Reader (Mobile Bottom Sheet & Desktop Dialog) */}
       {selectedArticle && (
         <div
           onClick={(e) => { 
@@ -464,9 +471,12 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
               }
             }
           }}
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4"
         >
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl md:rounded-3xl border border-neutral-200 dark:border-neutral-800 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 md:p-6 relative shadow-2xl space-y-5 md:space-y-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-t-3xl md:rounded-3xl border-t md:border border-neutral-200 dark:border-neutral-800 max-w-2xl w-full h-[92vh] md:h-auto md:max-h-[90vh] overflow-y-auto p-5 md:p-6 relative shadow-2xl space-y-4 md:space-y-6 animate-scale-up">
+            {/* Mobile Sheet Drag Handle Bar */}
+            <div className="md:hidden w-12 h-1 bg-neutral-300 dark:bg-neutral-700 rounded-full mx-auto shrink-0 opacity-80" />
+
             <button
               onClick={() => {
                 setSelectedArticle(null);
@@ -475,7 +485,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                 }
               }}
               aria-label="Close article"
-              className="sticky top-0 z-50 ms-auto float-end p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xs rounded-full border border-neutral-200 dark:border-neutral-800 shadow-xs cursor-pointer"
+              className="sticky top-0 z-50 ms-auto float-end p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xs rounded-full border border-neutral-200 dark:border-neutral-800 shadow-xs cursor-pointer touch-manipulation"
               style={{ position: 'sticky', top: '0px', zIndex: 50 }}
             >
               <X className="w-5 h-5" />
@@ -495,8 +505,8 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
             ) : null}
 
             {/* Article Meta */}
-            <div className="mt-4">
-              <div className="flex items-center gap-2 mb-3">
+            <div className="mt-2 md:mt-4">
+              <div className="flex items-center gap-2 mb-2 md:mb-3">
                 {getLocalizedCategory(selectedArticle.category) ? (
                   <span className={`px-2 py-0.5 rounded text-[11px] ${getBadgeStyle(selectedArticle.category)}`}>
                     {getLocalizedCategory(selectedArticle.category)}
@@ -507,14 +517,14 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                 </time>
               </div>
 
-              <h2 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-white leading-snug mb-3 [text-wrap:balance]">
+              <h2 className="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white leading-snug mb-3 [text-wrap:balance]">
                 {getLocalizedValue(selectedArticle, 'title', language)}
               </h2>
             </div>
 
             {/* Executive Summary Box - Logical Directional Border border-s-4 for RTL support */}
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/60 border-s-4 border-primary rounded-e-xl">
-              <p className="text-sm text-neutral-900 dark:text-neutral-200 italic font-medium">
+            <div className="p-3.5 md:p-4 bg-neutral-50 dark:bg-neutral-800/60 border-s-4 border-primary rounded-e-xl">
+              <p className="text-xs md:text-sm text-neutral-900 dark:text-neutral-200 italic font-medium leading-relaxed">
                 "{getLocalizedValue(selectedArticle, 'summary', language) || 'No summary available for this story.'}"
               </p>
             </div>

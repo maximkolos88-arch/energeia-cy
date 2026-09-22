@@ -38,13 +38,13 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, onTabChan
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`flex flex-col items-center justify-center px-2 py-1 rounded-full text-[11px] font-medium transition-all ${
+            className={`flex flex-col items-center justify-center px-3 py-1 rounded-full text-[11px] font-medium transition-all active:scale-[0.94] touch-manipulation cursor-pointer ${
               isActive
-                ? 'text-[#1CA350] dark:text-[#8ab4f8] font-bold'
-                : 'text-[#5f6368] dark:text-gray-400 hover:text-[#202124]'
+                ? 'text-primary dark:text-emerald-400 font-bold'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
-            <div className={`px-3 py-1 rounded-full ${isActive ? 'bg-[#e8f5e9] dark:bg-[#1CA350]/20' : ''}`}>
+            <div className={`px-4 py-1 rounded-full transition-all ${isActive ? 'bg-primary/10 dark:bg-primary/20' : ''}`}>
               <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
             </div>
             <span className="mt-0.5">{tab.label}</span>
