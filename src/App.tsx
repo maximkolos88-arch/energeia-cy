@@ -15,18 +15,24 @@ import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { useTranslation } from 'react-i18next';
-import './index.css';
+import { FEATURES } from './config/features';
 
 export default function App() {
   const { i18n } = useTranslation();
   const [session, setSession] = useState<Session | null>(null);
   const [activeTab, setActiveTab] = useState<string>(() => {
     const path = window.location.pathname;
-    if (path === '/members' || path === '/directory') return 'members';
-    if (path === '/magazine') return 'magazine';
-    if (path === '/academy') return 'academy';
-    if (path === '/about') return 'about';
-    if (path === '/register') return 'register';
+    if ((path === '/members' || path === '/directory') && FEATURES.enableMembers) return 'members';
+    if (path === '/terminal' && FEATURES.enableTerminal) return 'terminal';
+    if (path === '/magazine' && FEATURES.enableMagazine) return 'magazine';
+    if (path === '/academy' && FEATURES.enableAcademy) return 'academy';
+    if (path === '/about' && FEATURES.enableAbout) return 'about';
+    if (path === '/register' && FEATURES.enableRegister) return 'register';
+    
+    // Redirect unreleased/disabled URLs back to homepage (/)
+    if (typeof window !== 'undefined' && path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news')) {
+      window.history.replaceState({}, '', '/');
+    }
     return 'news';
   });
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(() => {
@@ -104,17 +110,24 @@ export default function App() {
     const handleLocationChange = () => {
       const path = window.location.pathname;
       setIsAdminRoute(path === '/admin' || path.startsWith('/admin'));
-      if (path === '/members' || path === '/directory') {
+      
+      if ((path === '/members' || path === '/directory') && FEATURES.enableMembers) {
         setActiveTab('members');
-      } else if (path === '/magazine') {
+      } else if (path === '/terminal' && FEATURES.enableTerminal) {
+        setActiveTab('terminal');
+      } else if (path === '/magazine' && FEATURES.enableMagazine) {
         setActiveTab('magazine');
-      } else if (path === '/academy') {
+      } else if (path === '/academy' && FEATURES.enableAcademy) {
         setActiveTab('academy');
-      } else if (path === '/about') {
+      } else if (path === '/about' && FEATURES.enableAbout) {
         setActiveTab('about');
-      } else if (path === '/register') {
+      } else if (path === '/register' && FEATURES.enableRegister) {
         setActiveTab('register');
       } else {
+        // If path is not root / or /admin or /news, redirect back to /
+        if (path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news')) {
+          window.history.replaceState({}, '', '/');
+        }
         setActiveTab('news');
       }
     };
@@ -145,8 +158,6 @@ export default function App() {
     setActiveTab(tab);
     if (tab === 'news') {
       window.history.pushState({}, '', '/');
-    } else if (tab === 'members') {
-      window.history.pushState({}, '', '/members');
     } else {
       window.history.pushState({}, '', `/${tab}`);
     }
@@ -175,15 +186,15 @@ export default function App() {
       case 'news':
         return <NewsFeedScreen key={refreshKey} language={language} />;
       case 'members':
-        return <DirectoryScreen />;
+        return FEATURES.enableMembers ? <DirectoryScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
       case 'magazine':
-        return <MagazineScreen />;
+        return FEATURES.enableMagazine ? <MagazineScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
       case 'academy':
-        return <AcademyScreen />;
+        return FEATURES.enableAcademy ? <AcademyScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
       case 'about':
-        return <AboutScreen />;
+        return FEATURES.enableAbout ? <AboutScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
       case 'register':
-        return <RegisterScreen />;
+        return FEATURES.enableRegister ? <RegisterScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
       default:
         return <NewsFeedScreen key={refreshKey} language={language} />;
     }

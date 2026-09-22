@@ -2,6 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Newspaper, Users, GraduationCap, BookOpen, Info } from 'lucide-react';
 
+import { FEATURES } from '../config/features';
+
 interface BottomNavBarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -9,13 +11,15 @@ interface BottomNavBarProps {
 
 export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, onTabChange }) => {
   const { t } = useTranslation();
-  const tabs = [
-    { id: 'news', label: t('nav.news'), icon: Newspaper },
-    { id: 'members', label: t('nav.members'), icon: Users },
-    { id: 'magazine', label: t('nav.magazine'), icon: BookOpen },
-    { id: 'academy', label: t('nav.academy'), icon: GraduationCap },
-    { id: 'about', label: t('nav.about'), icon: Info },
+  const allTabs = [
+    { id: 'news', label: t('nav.news'), icon: Newspaper, enabled: true },
+    { id: 'members', label: t('nav.members'), icon: Users, enabled: FEATURES.enableMembers },
+    { id: 'magazine', label: t('nav.magazine'), icon: BookOpen, enabled: FEATURES.enableMagazine },
+    { id: 'academy', label: t('nav.academy'), icon: GraduationCap, enabled: FEATURES.enableAcademy },
+    { id: 'about', label: t('nav.about'), icon: Info, enabled: FEATURES.enableAbout },
   ];
+
+  const tabs = allTabs.filter(tab => tab.enabled);
 
   return (
     <nav

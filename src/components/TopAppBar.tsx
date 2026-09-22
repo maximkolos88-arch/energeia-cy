@@ -4,6 +4,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { EnergeiaLogo } from './EnergeiaLogo';
 
+import { FEATURES } from '../config/features';
+
 interface TopAppBarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -19,14 +21,17 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const navItems = [
-    { id: 'news', label: t('nav.news') },
-    { id: 'members', label: t('nav.members') },
-    { id: 'magazine', label: t('nav.magazine') },
-    { id: 'academy', label: t('nav.academy') },
-    { id: 'about', label: t('nav.about') },
-    { id: 'register', label: t('nav.register') },
+  const allNavItems = [
+    { id: 'news', label: t('nav.news'), enabled: true },
+    { id: 'terminal', label: t('nav.terminal') || 'Terminal', enabled: FEATURES.enableTerminal },
+    { id: 'members', label: t('nav.members'), enabled: FEATURES.enableMembers },
+    { id: 'magazine', label: t('nav.magazine'), enabled: FEATURES.enableMagazine },
+    { id: 'academy', label: t('nav.academy'), enabled: FEATURES.enableAcademy },
+    { id: 'about', label: t('nav.about'), enabled: FEATURES.enableAbout },
+    { id: 'register', label: t('nav.register'), enabled: FEATURES.enableRegister },
   ];
+
+  const navItems = allNavItems.filter(item => item.enabled);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white dark:bg-[#1b1c1e] border-b border-neutral-200 dark:border-neutral-800 transition-colors shadow-2xs top-app-header">
