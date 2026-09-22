@@ -8,28 +8,89 @@ import { supabase } from '../lib/supabase';
 // Standard VAPID Key Placeholder
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BCkeGmEYasE_LQGpB2NoezzfuMk3-3262UPW0JW6pjgPkBOr9IFisbY4K1tpbGMXb7lgwiDZMhrRgpMWCAlBHg0';
 
+export interface DeviceInfo {
+  os: 'ios' | 'android' | 'other';
+  browser: 'safari' | 'chrome' | 'firefox' | 'other';
+  osName: string;
+  browserName: string;
+}
+
+export const getDeviceInfo = (): DeviceInfo => {
+  if (typeof window === 'undefined') {
+    return { os: 'other', browser: 'other', osName: 'Other', browserName: 'Browser' };
+  }
+
+  const ua = navigator.userAgent || '';
+  const uaLower = ua.toLowerCase();
+
+  const isIOS = /iphone|ipad|ipod/.test(uaLower);
+  const isAndroid = /android/.test(uaLower);
+
+  if (isIOS) {
+    if (/crios/.test(uaLower)) {
+      return { os: 'ios', browser: 'chrome', osName: 'iOS', browserName: 'Google Chrome' };
+    }
+    if (/fxios/.test(uaLower)) {
+      return { os: 'ios', browser: 'firefox', osName: 'iOS', browserName: 'Firefox' };
+    }
+    if (/safari/.test(uaLower) && !/crios|fxios|edgios|opt|brave/.test(uaLower)) {
+      return { os: 'ios', browser: 'safari', osName: 'iOS', browserName: 'Safari' };
+    }
+    return { os: 'ios', browser: 'other', osName: 'iOS', browserName: 'Browser' };
+  }
+
+  if (isAndroid) {
+    if (/firefox|fxios/.test(uaLower)) {
+      return { os: 'android', browser: 'firefox', osName: 'Android', browserName: 'Firefox' };
+    }
+    if (/chrome|chromium|crios/.test(uaLower)) {
+      return { os: 'android', browser: 'chrome', osName: 'Android', browserName: 'Google Chrome' };
+    }
+    return { os: 'android', browser: 'other', osName: 'Android', browserName: 'Browser' };
+  }
+
+  return { os: 'other', browser: 'other', osName: 'Desktop', browserName: 'Browser' };
+};
+
 export const PWAInstallPrompt: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [showPrompt, setShowPrompt] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showIOSInstructions, setShowIOSInstructions] = useState<boolean>(false);
+  const [showInstructions, setShowInstructions] = useState<boolean>(false);
+  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
+    os: 'other',
+    browser: 'other',
+    osName: 'Other',
+    browserName: 'Browser'
+  });
   
   // Standalone Push Notification Prompt State
   const [showPushPrompt, setShowPushPrompt] = useState<boolean>(false);
 
-  // Auto-detect system/browser language immediately on mount if no saved preference
+  // 1. Language auto-detection & strict fallback to English
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('energeia_language');
+      const supported = ['en', 'el', 'ru', 'he'];
+
       if (!saved && navigator.language) {
-        const browserLang = navigator.language.split('-')[0].toLowerCase();
-        const supported = ['en', 'el', 'ru', 'he'];
-        if (supported.includes(browserLang) && i18n.language !== browserLang) {
-          i18n.changeLanguage(browserLang);
+        const rawLang = navigator.language.split('-')[0].toLowerCase();
+        const targetLang = supported.includes(rawLang) ? rawLang : 'en';
+        if (i18n.language !== targetLang) {
+          i18n.changeLanguage(targetLang);
+        }
+      } else if (!saved) {
+        if (!supported.includes(i18n.language)) {
+          i18n.changeLanguage('en');
         }
       }
     }
   }, [i18n]);
+
+  // Detect exact OS & Browser on client mount
+  useEffect(() => {
+    setDeviceInfo(getDeviceInfo());
+  }, []);
 
   // Helper check methods
   const isStandalone = (): boolean => {
@@ -68,12 +129,6 @@ export const PWAInstallPrompt: React.FC = () => {
     }
   };
 
-  const isIOS = (): boolean => {
-    if (typeof window === 'undefined') return false;
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    return /iphone|ipad|ipod/.test(userAgent);
-  };
-
   // Convert VAPID key to Uint8Array helper
   const urlB64ToUint8Array = (base64String: string) => {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -90,7 +145,7 @@ export const PWAInstallPrompt: React.FC = () => {
     return outputArray;
   };
 
-  // 1. Session Storage page views tracker
+  // Session Storage page views tracker
   useEffect(() => {
     try {
       const views = sessionStorage.getItem('pwa_pages_viewed');
@@ -101,7 +156,7 @@ export const PWAInstallPrompt: React.FC = () => {
     }
   }, []);
 
-  // 2. Main workflow effects loader
+  // Main workflow effects loader
   useEffect(() => {
     // Context: Standalone Mode
     if (isStandalone()) {
@@ -163,8 +218,8 @@ export const PWAInstallPrompt: React.FC = () => {
 
   // CTA handler for PWA installation
   const handleInstallClick = async () => {
-    if (isIOS()) {
-      setShowIOSInstructions(true);
+    if (deviceInfo.os === 'ios') {
+      setShowInstructions(true);
     } else if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -172,7 +227,8 @@ export const PWAInstallPrompt: React.FC = () => {
       setDeferredPrompt(null);
       setShowPrompt(false);
     } else {
-      alert(t('pwa.installGenericAlert'));
+      // Fallback instructions drawer for Android or unsupported browsers
+      setShowInstructions(true);
     }
   };
 
@@ -187,7 +243,7 @@ export const PWAInstallPrompt: React.FC = () => {
     }
     
     setShowPrompt(false);
-    setShowIOSInstructions(false);
+    setShowInstructions(false);
   };
 
   // CTA handlers for Push notifications
@@ -250,6 +306,67 @@ export const PWAInstallPrompt: React.FC = () => {
     localStorage.setItem('pwa_push_prompted', 'dismissed');
     setShowPushPrompt(false);
   };
+
+  // Helper to resolve localized instruction text based on exact OS & Browser
+  const getInstructionContent = () => {
+    if (deviceInfo.os === 'ios') {
+      if (deviceInfo.browser === 'chrome') {
+        return {
+          title: t('pwa.iosChromeTitle'),
+          description: t('pwa.iosChromeDescription'),
+          step1: t('pwa.iosChromeStep1'),
+          step2: t('pwa.iosChromeStep2'),
+          step3: t('pwa.iosChromeStep3')
+        };
+      }
+      if (deviceInfo.browser === 'safari') {
+        return {
+          title: t('pwa.iosSafariTitle'),
+          description: t('pwa.iosSafariDescription'),
+          step1: t('pwa.iosSafariStep1'),
+          step2: t('pwa.iosSafariStep2'),
+          step3: t('pwa.iosSafariStep3')
+        };
+      }
+      return {
+        title: t('pwa.iosOtherTitle'),
+        description: t('pwa.iosOtherDescription'),
+        step1: t('pwa.iosOtherStep1'),
+        step2: t('pwa.iosOtherStep2'),
+        step3: t('pwa.iosOtherStep3')
+      };
+    }
+
+    if (deviceInfo.os === 'android') {
+      if (deviceInfo.browser === 'firefox') {
+        return {
+          title: t('pwa.androidFirefoxTitle'),
+          description: t('pwa.androidFirefoxDescription'),
+          step1: t('pwa.androidFirefoxStep1'),
+          step2: t('pwa.androidFirefoxStep2'),
+          step3: t('pwa.androidFirefoxStep3')
+        };
+      }
+      return {
+        title: t('pwa.androidChromeTitle'),
+        description: t('pwa.androidChromeDescription'),
+        step1: t('pwa.androidChromeStep1'),
+        step2: t('pwa.androidChromeStep2'),
+        step3: t('pwa.androidChromeStep3')
+      };
+    }
+
+    // Default fallback
+    return {
+      title: t('pwa.iosSafariTitle'),
+      description: t('pwa.iosSafariDescription'),
+      step1: t('pwa.iosSafariStep1'),
+      step2: t('pwa.iosSafariStep2'),
+      step3: t('pwa.iosSafariStep3')
+    };
+  };
+
+  const instructionContent = getInstructionContent();
 
   // Render Standalone Push Notifications Screen
   if (showPushPrompt) {
@@ -371,58 +488,64 @@ export const PWAInstallPrompt: React.FC = () => {
           </button>
         </div>
 
-        {/* iOS Popover Instructions Drawer overlay */}
-        {showIOSInstructions && (
+        {/* Dynamic OS & Browser Popover Instructions Drawer */}
+        {showInstructions && (
           <div className="absolute inset-0 bg-white dark:bg-[#1b1c1e] z-50 p-6 flex flex-col justify-between animate-fade-in" style={{ borderRadius: '20px' }}>
             <button
-              onClick={() => setShowIOSInstructions(false)}
+              onClick={() => setShowInstructions(false)}
               className="absolute top-4 right-4 p-1.5 text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="space-y-4 mt-6">
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                {t('pwa.iosTitle')}
-              </h3>
+            <div className="space-y-4 mt-4">
+              <div>
+                <h3 className="text-lg font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                  {instructionContent.title}
+                </h3>
+                <p className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  {t('pwa.detectedBrowser', { browser: deviceInfo.browserName, os: deviceInfo.osName })}
+                </p>
+              </div>
+
               <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                {t('pwa.iosDescription')}
+                {instructionContent.description}
               </p>
 
-              <div className="space-y-3 pt-2 text-xs text-neutral-800 dark:text-neutral-250">
+              <div className="space-y-3 pt-1 text-xs text-neutral-800 dark:text-neutral-250">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
                     1
                   </div>
                   <p className="leading-relaxed">
-                    {t('pwa.iosStep1')}
+                    {instructionContent.step1}
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
                     2
                   </div>
                   <p className="leading-relaxed">
-                    {t('pwa.iosStep2')}
+                    {instructionContent.step2}
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
                     3
                   </div>
                   <p className="leading-relaxed">
-                    {t('pwa.iosStep3')}
+                    {instructionContent.step3}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Bottom pulsing indicator pointing down */}
-            <div className="flex flex-col items-center justify-center pt-6 text-primary animate-bounce">
-              <ArrowDown className="w-6 h-6" />
-              <span className="text-[10px] font-bold uppercase mt-1">{t('pwa.iosTapShare')}</span>
+            {/* Bottom pulsing indicator */}
+            <div className="flex flex-col items-center justify-center pt-4 text-emerald-600 dark:text-emerald-400 animate-bounce">
+              <ArrowDown className="w-5 h-5" />
+              <span className="text-[10px] font-bold uppercase mt-0.5">{t('pwa.iosTapShare')}</span>
             </div>
           </div>
         )}
