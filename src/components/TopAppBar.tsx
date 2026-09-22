@@ -40,10 +40,11 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
         {/* Left & Center-Left: Logo & Inline Navigation Tabs */}
         <div className="flex items-center gap-8 flex-1">
           
-          {/* Logo (Static, Black & White) */}
-          <div 
-            className="flex items-center gap-3 cursor-pointer shrink-0 select-none"
+          {/* Logo (Accessible Button control) */}
+          <button 
             onClick={() => onTabChange('news')}
+            aria-label="Energeia Cyprus Home"
+            className="flex items-center gap-3 cursor-pointer shrink-0 select-none text-start bg-transparent border-0 p-0 focus-visible:outline-2 focus-visible:outline-primary rounded-xl"
           >
             <div className="p-2 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center shadow-xs">
               <EnergeiaLogo className="w-6 h-auto" />
@@ -54,7 +55,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
               </div>
               <span className="text-[9px] text-neutral-500 dark:text-neutral-400 font-medium tracking-wide">Cyprus All-Energy Network</span>
             </div>
-          </div>
+          </button>
 
           {/* Navigation Tabs (Relocated inline next to logo - desktop only) */}
           <nav className="hidden md:flex items-center gap-1.5 h-full">
@@ -64,7 +65,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => onTabChange(item.id)}
-                  className={`px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all rounded-lg ${
+                  className={`px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all rounded-lg cursor-pointer ${
                     isActive
                       ? 'bg-primary/10 text-primary font-bold shadow-xs'
                       : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800'
@@ -87,10 +88,17 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
               ru: 'РУ',
               he: 'עב'
             };
+            const fullNameMap: Record<string, string> = {
+              en: 'English',
+              el: 'Greek',
+              ru: 'Russian',
+              he: 'Hebrew'
+            };
             return (
               <button
                 key={lang}
                 onClick={() => onLanguageChange(lang)}
+                aria-label={`Switch language to ${fullNameMap[lang]}`}
                 className={`px-2.5 py-1 text-[10px] font-bold transition-all rounded-md cursor-pointer ${
                   isActive
                     ? 'bg-primary text-white shadow-3xs'

@@ -167,6 +167,21 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     return () => window.removeEventListener('popstate', handleUrlCheck);
   }, []);
 
+  // Keyboard Accessibility: Close article modal on Escape key press
+  useEffect(() => {
+    if (!selectedArticle) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedArticle(null);
+        if (window.location.pathname.startsWith('/news/')) {
+          window.history.pushState({}, '', '/');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedArticle]);
+
   // Important Network Bulletins State
   const [isNetworkWindowCollapsed, setIsNetworkWindowCollapsed] = useState<boolean>(false);
   const [activeBulletinModal, setActiveBulletinModal] = useState<any | null>(null);
@@ -342,9 +357,13 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           {!loading && !empty && (
             <div className="space-y-4">
               {newsItems.map((item) => {
+                const titleText = getLocalizedValue(item, 'title', language);
                 return (
                   <article
                     key={item.id}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Read article: ${titleText}`}
                     onClick={() => {
                       if (item.isEditorial && item.slug) {
                         window.history.pushState({}, '', `/news/${item.slug}`);
@@ -352,9 +371,19 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                       setSelectedArticle(item);
                       (window as any).trackCustomEvent?.('post_read', item.id);
                     }}
-                    className={`bg-white dark:bg-[#1b1c1e] border rounded-xl p-5 md:p-6 transition-all duration-200 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-6 justify-between items-stretch ${
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (item.isEditorial && item.slug) {
+                          window.history.pushState({}, '', `/news/${item.slug}`);
+                        }
+                        setSelectedArticle(item);
+                        (window as any).trackCustomEvent?.('post_read', item.id);
+                      }
+                    }}
+                    className={`bg-white dark:bg-[#1b1c1e] border rounded-xl p-5 md:p-6 transition-all duration-200 ease-in-out group cursor-pointer relative flex flex-col md:flex-row gap-6 justify-between items-stretch active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-primary ${
                       item.isEditorial 
-                        ? 'border-emerald-500/50 dark:border-emerald-500/40 shadow-sm hover:shadow-md' 
+                        ? 'border-emerald-500/50 dark:border-emerald-500/40 shadow-xs hover:shadow-sm' 
                         : 'border-neutral-200 dark:border-neutral-800 hover:border-primary/80'
                     }`}
                   >
@@ -362,9 +391,9 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                       <div>
                         {/* Header Row */}
                         <div className="flex items-center justify-between mb-3 text-xs">
-                          <span className="text-neutral-500 dark:text-neutral-400 font-medium">
+                          <time dateTime={item.publishedAt} className="text-neutral-500 dark:text-neutral-400 font-medium tabular-nums">
                             {formatDate(item.publishedAt)}
-                          </span>
+                          </time>
 
                           <div className="flex items-center gap-2">
                             {item.isEditorial && (
@@ -381,14 +410,14 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                         </div>
 
                         {/* Headline */}
-                        <h2 className="text-base md:text-lg font-bold text-neutral-900 dark:text-neutral-100 leading-snug group-hover:text-primary transition-colors mb-2 tracking-tight">
-                          {getLocalizedValue(item, 'title', language)}
+                        <h2 className="text-base md:text-lg font-bold text-neutral-900 dark:text-neutral-100 leading-snug group-hover:text-primary transition-colors mb-2 tracking-tight [text-wrap:balance]">
+                          {titleText}
                         </h2>
                       </div>
 
                       {/* Article Summary Snippet */}
                       <p className="text-xs md:text-sm text-neutral-500 dark:text-neutral-400 font-normal line-clamp-2 md:line-clamp-3 leading-relaxed mt-2">
-                        {getLocalizedValue(item, 'summary', language) || 'No summary generated yet'}
+                        {getLocalizedValue(item, 'summary', language) || 'No summary available for this story.'}
                       </p>
                     </div>
 
@@ -396,7 +425,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                       <div className="w-full md:w-32 h-48 md:h-24 order-1 md:order-2 rounded-xl overflow-hidden shrink-0 border border-neutral-200/60 dark:border-neutral-800/60">
                         <img
                           src={item.image_url || item.imageUrl}
-                          alt={getLocalizedValue(item, 'title', language)}
+                          alt={titleText}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-in-out"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = 'none';
@@ -415,7 +444,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
             <div className="mt-8 text-center">
               <button
                 onClick={loadMore}
-                className="px-6 py-2.5 bg-white dark:bg-[#2d2e30] border border-neutral-200 dark:border-neutral-800 text-primary hover:bg-[#f8f9fa] text-xs font-bold rounded-full transition-colors shadow-2xs cursor-pointer"
+                className="px-6 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-primary hover:bg-neutral-50 dark:hover:bg-neutral-750 text-xs font-bold rounded-full transition-all shadow-2xs active:scale-[0.96] cursor-pointer"
               >
                 {t('news.loadMore')}
               </button>
@@ -437,7 +466,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           }}
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
         >
-          <div className="bg-white dark:bg-[#202124] rounded-2xl md:rounded-3xl border border-[#dadce0] dark:border-[#3c4043] max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 md:p-6 relative shadow-2xl space-y-5 md:space-y-6">
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl md:rounded-3xl border border-neutral-200 dark:border-neutral-800 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 md:p-6 relative shadow-2xl space-y-5 md:space-y-6">
             <button
               onClick={() => {
                 setSelectedArticle(null);
@@ -445,14 +474,15 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                   window.history.pushState({}, '', '/');
                 }
               }}
-              className="sticky top-0 z-50 float-right p-3 md:p-2 text-[#5f6368] hover:bg-[#f1f3f4]/90 dark:hover:bg-[#3c4043]/90 bg-white/90 dark:bg-[#202124]/90 backdrop-blur-xs rounded-full border border-[#dadce0]/50 dark:border-[#3c4043]/50 shadow-xs"
-              style={{ position: 'sticky', top: '0px', float: 'right', zIndex: 50 }}
+              aria-label="Close article"
+              className="sticky top-0 z-50 ms-auto float-end p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xs rounded-full border border-neutral-200 dark:border-neutral-800 shadow-xs cursor-pointer"
+              style={{ position: 'sticky', top: '0px', zIndex: 50 }}
             >
               <X className="w-5 h-5" />
             </button>
 
             {(selectedArticle.image_url || selectedArticle.imageUrl) ? (
-              <div className="w-full h-48 md:h-64 rounded-xl md:rounded-2xl overflow-hidden border border-[#dadce0]/50 dark:border-[#3c4043]/50">
+              <div className="w-full h-48 md:h-64 rounded-xl md:rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800">
                 <img
                   src={selectedArticle.image_url || selectedArticle.imageUrl}
                   alt={getLocalizedValue(selectedArticle, 'title', language)}
@@ -472,37 +502,37 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                     {getLocalizedCategory(selectedArticle.category)}
                   </span>
                 ) : null}
-                <span className="text-xs text-[#5f6368]">
+                <time dateTime={selectedArticle.publishedAt} className="text-xs text-neutral-500 dark:text-neutral-400 tabular-nums font-mono">
                   {formatDate(selectedArticle.publishedAt)}
-                </span>
+                </time>
               </div>
 
-              <h2 className="text-xl md:text-2xl font-bold md:font-medium text-[#202124] dark:text-white leading-snug mb-3">
+              <h2 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-white leading-snug mb-3 [text-wrap:balance]">
                 {getLocalizedValue(selectedArticle, 'title', language)}
               </h2>
             </div>
 
-            {/* Executive Summary Box */}
-            <div className="p-4 bg-[#f8f9fa] dark:bg-[#2d2e30] border-l-4 border-[#1CA350] rounded-r-xl">
-              <p className="text-sm text-[#202124] dark:text-gray-200 italic font-medium">
-                "{getLocalizedValue(selectedArticle, 'summary', language) || 'No summary generated yet'}"
+            {/* Executive Summary Box - Logical Directional Border border-s-4 for RTL support */}
+            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/60 border-s-4 border-primary rounded-e-xl">
+              <p className="text-sm text-neutral-900 dark:text-neutral-200 italic font-medium">
+                "{getLocalizedValue(selectedArticle, 'summary', language) || 'No summary available for this story.'}"
               </p>
             </div>
 
             {/* Markdown Content */}
-            <div className="prose prose-sm dark:prose-invert max-w-none text-[#202124] dark:text-gray-200 leading-relaxed space-y-3 pt-2">
+            <div className="prose prose-sm dark:prose-invert max-w-none text-neutral-800 dark:text-neutral-200 leading-relaxed space-y-3 pt-2">
               <ReactMarkdown>
-                {getLocalizedValue(selectedArticle, 'content', language) || getLocalizedValue(selectedArticle, 'summary', language) || 'No content or summary available.'}
+                {getLocalizedValue(selectedArticle, 'content', language) || getLocalizedValue(selectedArticle, 'summary', language) || 'Full article text is being prepared for this publication.'}
               </ReactMarkdown>
             </div>
 
             {selectedArticle.sourceUrl && (
-              <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end items-center">
+              <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 flex justify-end items-center">
                 <a
                   href={selectedArticle.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 bg-primary text-white rounded-full font-medium text-xs inline-flex items-center gap-1.5 hover:bg-primary-hover transition-colors"
+                  className="px-4 py-2 bg-primary text-white rounded-full font-medium text-xs inline-flex items-center gap-1.5 hover:bg-primary-hover transition-colors cursor-pointer"
                 >
                   {t('news.viewFiling')} <ExternalLink className="w-3.5 h-3.5" />
                 </a>
