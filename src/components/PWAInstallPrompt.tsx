@@ -20,33 +20,38 @@ export const getDeviceInfo = (): DeviceInfo => {
     return { os: 'other', browser: 'other', osName: 'Other', browserName: 'Browser' };
   }
 
-  const ua = navigator.userAgent || '';
-  const uaLower = ua.toLowerCase();
+  const ua = (navigator.userAgent || navigator.vendor || (window as any).opera || '').toLowerCase();
 
-  const isIOS = /iphone|ipad|ipod/.test(uaLower);
-  const isAndroid = /android/.test(uaLower);
+  const isIOS = /iphone|ipad|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /android/.test(ua);
 
   if (isIOS) {
-    if (/crios/.test(uaLower)) {
+    // Chrome on iOS contains 'crios' (or 'chrome' / 'gsa' / 'cros')
+    const isChromeIOS = ua.includes('crios') || ua.includes('chrome') || ua.includes('gsa') || ua.includes('cros');
+    if (isChromeIOS) {
       return { os: 'ios', browser: 'chrome', osName: 'iOS', browserName: 'Google Chrome' };
     }
-    if (/fxios/.test(uaLower)) {
+
+    const isFirefoxIOS = ua.includes('fxios') || ua.includes('firefox');
+    if (isFirefoxIOS) {
       return { os: 'ios', browser: 'firefox', osName: 'iOS', browserName: 'Firefox' };
     }
-    if (/safari/.test(uaLower) && !/crios|fxios|edgios|opt|brave/.test(uaLower)) {
+
+    // Pure Safari on iOS has 'safari' AND NO 'crios', 'fxios', 'edgios', 'opios', 'brave'
+    const isSafariPure = ua.includes('safari') && !ua.includes('crios') && !ua.includes('fxios') && !ua.includes('edgios') && !ua.includes('opios');
+    if (isSafariPure) {
       return { os: 'ios', browser: 'safari', osName: 'iOS', browserName: 'Safari' };
     }
-    return { os: 'ios', browser: 'other', osName: 'iOS', browserName: 'Browser' };
+
+    // Default iOS fallback for any non-Safari browser on iOS: Chrome / iOS instructions
+    return { os: 'ios', browser: 'chrome', osName: 'iOS', browserName: 'Google Chrome' };
   }
 
   if (isAndroid) {
-    if (/firefox|fxios/.test(uaLower)) {
+    if (ua.includes('firefox') || ua.includes('fxios')) {
       return { os: 'android', browser: 'firefox', osName: 'Android', browserName: 'Firefox' };
     }
-    if (/chrome|chromium|crios/.test(uaLower)) {
-      return { os: 'android', browser: 'chrome', osName: 'Android', browserName: 'Google Chrome' };
-    }
-    return { os: 'android', browser: 'other', osName: 'Android', browserName: 'Browser' };
+    return { os: 'android', browser: 'chrome', osName: 'Android', browserName: 'Google Chrome' };
   }
 
   return { os: 'other', browser: 'other', osName: 'Desktop', browserName: 'Browser' };
@@ -57,15 +62,12 @@ export const PWAInstallPrompt: React.FC = () => {
   const [showPrompt, setShowPrompt] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
-  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
-    os: 'other',
-    browser: 'other',
-    osName: 'Other',
-    browserName: 'Browser'
-  });
   
   // Standalone Push Notification Prompt State
   const [showPushPrompt, setShowPushPrompt] = useState<boolean>(false);
+
+  // Live device info evaluation
+  const deviceInfo = getDeviceInfo();
 
   // 1. Language auto-detection & strict fallback to English
   useEffect(() => {
@@ -86,11 +88,6 @@ export const PWAInstallPrompt: React.FC = () => {
       }
     }
   }, [i18n]);
-
-  // Detect exact OS & Browser on client mount
-  useEffect(() => {
-    setDeviceInfo(getDeviceInfo());
-  }, []);
 
   // Helper check methods
   const isStandalone = (): boolean => {
@@ -164,7 +161,6 @@ export const PWAInstallPrompt: React.FC = () => {
       const hasDefaultPermission = 'Notification' in window && Notification.permission === 'default';
 
       if (!alreadyPrompted && hasDefaultPermission) {
-        // Trigger push prompt after 2.5 seconds first standalone session load
         const pushTimer = setTimeout(() => {
           setShowPushPrompt(true);
         }, 2500);
@@ -218,7 +214,8 @@ export const PWAInstallPrompt: React.FC = () => {
 
   // CTA handler for PWA installation
   const handleInstallClick = async () => {
-    if (deviceInfo.os === 'ios') {
+    const liveDevice = getDeviceInfo();
+    if (liveDevice.os === 'ios') {
       setShowInstructions(true);
     } else if (deferredPrompt) {
       deferredPrompt.prompt();
@@ -227,7 +224,6 @@ export const PWAInstallPrompt: React.FC = () => {
       setDeferredPrompt(null);
       setShowPrompt(false);
     } else {
-      // Fallback instructions drawer for Android or unsupported browsers
       setShowInstructions(true);
     }
   };
@@ -266,14 +262,12 @@ export const PWAInstallPrompt: React.FC = () => {
             applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY)
           });
           
-          // Post subscription to Express API
           await fetch('/api/push/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(subscription)
           });
 
-          // Post subscription to Supabase push_subscriptions table
           try {
             await supabase
               .from('push_subscriptions')
@@ -288,7 +282,6 @@ export const PWAInstallPrompt: React.FC = () => {
           console.warn('SW Push subscription failed (granted, fallback):', subErr);
         }
 
-        // Clear icon badges on prompt validation
         if ('clearAppBadge' in navigator) {
           (navigator as any).clearAppBadge().catch(() => {});
         }
@@ -309,17 +302,9 @@ export const PWAInstallPrompt: React.FC = () => {
 
   // Helper to resolve localized instruction text based on exact OS & Browser
   const getInstructionContent = () => {
-    if (deviceInfo.os === 'ios') {
-      if (deviceInfo.browser === 'chrome') {
-        return {
-          title: t('pwa.iosChromeTitle'),
-          description: t('pwa.iosChromeDescription'),
-          step1: t('pwa.iosChromeStep1'),
-          step2: t('pwa.iosChromeStep2'),
-          step3: t('pwa.iosChromeStep3')
-        };
-      }
-      if (deviceInfo.browser === 'safari') {
+    const info = getDeviceInfo();
+    if (info.os === 'ios') {
+      if (info.browser === 'safari') {
         return {
           title: t('pwa.iosSafariTitle'),
           description: t('pwa.iosSafariDescription'),
@@ -328,17 +313,18 @@ export const PWAInstallPrompt: React.FC = () => {
           step3: t('pwa.iosSafariStep3')
         };
       }
+      // Chrome or any non-Safari browser on iOS
       return {
-        title: t('pwa.iosOtherTitle'),
-        description: t('pwa.iosOtherDescription'),
-        step1: t('pwa.iosOtherStep1'),
-        step2: t('pwa.iosOtherStep2'),
-        step3: t('pwa.iosOtherStep3')
+        title: t('pwa.iosChromeTitle'),
+        description: t('pwa.iosChromeDescription'),
+        step1: t('pwa.iosChromeStep1'),
+        step2: t('pwa.iosChromeStep2'),
+        step3: t('pwa.iosChromeStep3')
       };
     }
 
-    if (deviceInfo.os === 'android') {
-      if (deviceInfo.browser === 'firefox') {
+    if (info.os === 'android') {
+      if (info.browser === 'firefox') {
         return {
           title: t('pwa.androidFirefoxTitle'),
           description: t('pwa.androidFirefoxDescription'),
@@ -356,13 +342,13 @@ export const PWAInstallPrompt: React.FC = () => {
       };
     }
 
-    // Default fallback
+    // Default fallback for iOS Chrome
     return {
-      title: t('pwa.iosSafariTitle'),
-      description: t('pwa.iosSafariDescription'),
-      step1: t('pwa.iosSafariStep1'),
-      step2: t('pwa.iosSafariStep2'),
-      step3: t('pwa.iosSafariStep3')
+      title: t('pwa.iosChromeTitle'),
+      description: t('pwa.iosChromeDescription'),
+      step1: t('pwa.iosChromeStep1'),
+      step2: t('pwa.iosChromeStep2'),
+      step3: t('pwa.iosChromeStep3')
     };
   };
 
@@ -376,7 +362,6 @@ export const PWAInstallPrompt: React.FC = () => {
           className="bg-white dark:bg-[#1b1c1e] w-[calc(100%-32px)] max-w-[380px] p-6 relative animate-scale-up overflow-hidden border border-black/[0.06] dark:border-neutral-800 pb-6 text-center push-modal-card"
           style={{ borderRadius: '24px', boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.12)' }}
         >
-          {/* Dismiss Button */}
           <button
             onClick={handleMaybeLaterClick}
             className="absolute top-4 right-4 p-1.5 text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer"
@@ -384,7 +369,6 @@ export const PWAInstallPrompt: React.FC = () => {
             <X className="w-5 h-5" />
           </button>
 
-          {/* Centered bell notification icon container */}
           <div className="w-12 h-12 rounded-full bg-[#ecfdf5] dark:bg-emerald-950/30 flex items-center justify-center relative mx-auto mt-2">
             <span className="material-symbols-outlined text-[#047857] text-2xl select-none">
               notifications
@@ -392,7 +376,6 @@ export const PWAInstallPrompt: React.FC = () => {
             <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 border-2 border-[#ecfdf5] dark:border-neutral-900 rounded-full" />
           </div>
 
-          {/* Typography Content */}
           <h2 className="font-bold text-[#111827] dark:text-white tracking-tight" style={{ fontSize: '19px', marginTop: '12px' }}>
             {t('pwa.pushTitle')}
           </h2>
@@ -400,7 +383,6 @@ export const PWAInstallPrompt: React.FC = () => {
             {t('pwa.pushDescription')}
           </p>
 
-          {/* Buttons */}
           <div className="space-y-1">
             <button
               onClick={handleEnableNotifications}
@@ -434,7 +416,6 @@ export const PWAInstallPrompt: React.FC = () => {
         style={{ borderRadius: '20px' }}
       >
         
-        {/* Dismiss Button */}
         <button
           onClick={handleSkipClick}
           className="absolute top-4 right-4 p-1.5 text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer"
@@ -442,7 +423,6 @@ export const PWAInstallPrompt: React.FC = () => {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Minimalist Vector App Icon Graphic with Glow */}
         <div className="relative w-40 h-40 mx-auto flex items-center justify-center mb-2 mt-4">
           <div className="absolute w-24 h-24 rounded-full bg-emerald-500/20 dark:bg-emerald-500/10 blur-xl animate-pulse" />
           <div className="absolute w-16 h-16 rounded-full bg-primary/30 dark:bg-primary/20 blur-lg" />
@@ -452,7 +432,6 @@ export const PWAInstallPrompt: React.FC = () => {
             <circle cx="50" cy="50" r="34" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2 2" />
           </svg>
 
-          {/* Premium Logo box - 16px rounding */}
           <div className="relative w-16 h-16 bg-gradient-to-br from-[#16a34a] to-[#15823f] rounded-2xl flex items-center justify-center shadow-lg border border-[#14532d]/25 z-10">
             <span className="material-symbols-outlined text-white text-3xl select-none" style={{ fontVariationSettings: '"FILL" 1, "wght" 600, "GRAD" 0, "opsz" 24' }}>
               power_input
@@ -460,7 +439,6 @@ export const PWAInstallPrompt: React.FC = () => {
           </div>
         </div>
 
-        {/* Content */}
         <div className="text-center space-y-2 px-1">
           <h2 className="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">
             {t('pwa.title')}
@@ -470,7 +448,6 @@ export const PWAInstallPrompt: React.FC = () => {
           </p>
         </div>
 
-        {/* CTA Buttons block */}
         <div className="mt-6 space-y-3">
           <button
             onClick={handleInstallClick}
@@ -542,7 +519,6 @@ export const PWAInstallPrompt: React.FC = () => {
               </div>
             </div>
 
-            {/* Bottom pulsing indicator */}
             <div className="flex flex-col items-center justify-center pt-4 text-emerald-600 dark:text-emerald-400 animate-bounce">
               <ArrowDown className="w-5 h-5" />
               <span className="text-[10px] font-bold uppercase mt-0.5">{t('pwa.iosTapShare')}</span>
