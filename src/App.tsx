@@ -90,6 +90,37 @@ export default function App() {
     console.log('App successfully mounted on client');
   }, []);
 
+  // App Badging API Manager: Clear home screen icon badge on App Open & Visibility Change
+  useEffect(() => {
+    const clearBadge = async () => {
+      try {
+        if (typeof window !== 'undefined' && 'clearAppBadge' in navigator) {
+          await (navigator as any).clearAppBadge();
+        } else if (typeof window !== 'undefined' && 'setAppBadge' in navigator) {
+          await (navigator as any).setAppBadge(0);
+        }
+      } catch (e) {
+        // Ignore unsupported platforms
+      }
+    };
+
+    clearBadge();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        clearBadge();
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', clearBadge);
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', clearBadge);
+    };
+  }, []);
+
   // Monitor Supabase Auth Session
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

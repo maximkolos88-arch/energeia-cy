@@ -75,6 +75,8 @@ self.addEventListener('fetch', (event) => {
 });
 
 // Push notification event listener
+let unreadPushCount = 0;
+
 self.addEventListener('push', (event) => {
   let data = { 
     title: 'Energeia Cyprus', 
@@ -94,9 +96,11 @@ self.addEventListener('push', (event) => {
     }
   }
 
+  unreadPushCount += (data.unread_count || 1);
+
   // App Badging API synchronization
   if (self.navigator && 'setAppBadge' in self.navigator) {
-    self.navigator.setAppBadge(data.unread_count || 1);
+    self.navigator.setAppBadge(unreadPushCount).catch(() => {});
   }
 
   const options = {
@@ -117,6 +121,15 @@ self.addEventListener('push', (event) => {
 // Notification click handler
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  unreadPushCount = 0;
+
+  // Reset/Clear App Badge on notification click
+  if (self.navigator && 'clearAppBadge' in self.navigator) {
+    self.navigator.clearAppBadge().catch(() => {});
+  } else if (self.navigator && 'setAppBadge' in self.navigator) {
+    self.navigator.setAppBadge(0).catch(() => {});
+  }
+
   event.waitUntil(
     self.clients.matchAll({ type: 'window' }).then((clientList) => {
       for (const client of clientList) {
