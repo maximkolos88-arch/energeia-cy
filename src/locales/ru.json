@@ -5,7 +5,8 @@
     "magazine": "Журнал",
     "academy": "Академия",
     "about": "О проекте",
-    "register": "Регистрация"
+    "register": "Регистрация",
+    "subscribeNews": "Подписаться на новости"
   },
   "categories": {
     "allNews": "Все Новости",
