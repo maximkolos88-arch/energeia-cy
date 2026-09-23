@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNewsController } from '../controllers/useNewsController';
 import { NewsItem, NewsCategory } from '../models/types';
 import { NewsRepository } from '../services/repositories/NewsRepository';
+import { SEOManager } from './seo/SEOManager';
 import { 
   ArrowRight, 
   ExternalLink, 
@@ -252,6 +253,10 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-6 pb-24 md:pb-12">
+      <SEOManager article={selectedArticle} />
+      {!selectedArticle && (
+        <h1 className="sr-only">Energeia - Cyprus Energy News</h1>
+      )}
       {/* Major Energy Pillar Filter Chips Wrapper */}
       <div className="relative w-full mb-6 categories-wrapper">
         {/* Fade Mask & Scroll Button */}
@@ -473,7 +478,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           }}
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4"
         >
-          <div className="bg-white dark:bg-neutral-900 rounded-t-3xl md:rounded-3xl border-t md:border border-neutral-200 dark:border-neutral-800 max-w-2xl w-full h-[92vh] md:h-auto md:max-h-[90vh] overflow-y-auto p-5 md:p-6 relative shadow-2xl space-y-4 md:space-y-6 animate-scale-up">
+          <article className="bg-white dark:bg-neutral-900 rounded-t-3xl md:rounded-3xl border-t md:border border-neutral-200 dark:border-neutral-800 max-w-2xl w-full h-[92vh] md:h-auto md:max-h-[90vh] overflow-y-auto p-5 md:p-6 relative shadow-2xl space-y-4 md:space-y-6 animate-scale-up">
             {/* Mobile Sheet Drag Handle Bar */}
             <div className="md:hidden w-12 h-1 bg-neutral-300 dark:bg-neutral-700 rounded-full mx-auto shrink-0 opacity-80" />
 
@@ -512,14 +517,14 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                     {getLocalizedCategory(selectedArticle.category)}
                   </span>
                 ) : null}
-                <time dateTime={selectedArticle.publishedAt} className="text-xs text-neutral-500 dark:text-neutral-400 tabular-nums font-mono">
+                <time dateTime={selectedArticle.publishedAt || selectedArticle.createdAt || new Date().toISOString()} className="text-xs text-neutral-500 dark:text-neutral-400 tabular-nums font-mono">
                   {formatDate(selectedArticle.publishedAt)}
                 </time>
               </div>
 
-              <h2 className="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white leading-snug mb-3 [text-wrap:balance]">
+              <h1 className="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white leading-snug mb-3 [text-wrap:balance]">
                 {getLocalizedValue(selectedArticle, 'title', language)}
-              </h2>
+              </h1>
             </div>
 
             {/* Executive Summary Box - Logical Directional Border border-s-4 for RTL support */}
@@ -549,7 +554,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
               </div>
             )}
 
-          </div>
+          </article>
         </div>
       )}
       {/* Network Bulletin Detail Modal */}

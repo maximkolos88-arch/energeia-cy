@@ -1,0 +1,18 @@
+# Energeia Cyprus - Robots Exclusion Standard
+User-agent: *
+Allow: /
+Allow: /news/
+Allow: /about
+
+# Explicitly Disallow hidden/unreleased feature-flagged modules
+Disallow: /terminal
+Disallow: /members
+Disallow: /directory
+Disallow: /magazine
+Disallow: /academy
+Disallow: /register
+Disallow: /admin
+Disallow: /login
+
+# XML Sitemap Location
+Sitemap: https://energeia.cy/sitemap.xml
