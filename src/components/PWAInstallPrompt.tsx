@@ -5,9 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { X, ArrowDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-// Standard VAPID Key Placeholder
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BCkeGmEYasE_LQGpB2NoezzfuMk3-3262UPW0JW6pjgPkBOr9IFisbY4K1tpbGMXb7lgwiDZMhrRgpMWCAlBHg0';
-
 export interface DeviceInfo {
   os: 'ios' | 'android' | 'other';
   browser: 'safari' | 'chrome' | 'firefox' | 'other';
@@ -126,21 +123,6 @@ export const PWAInstallPrompt: React.FC = () => {
     }
   };
 
-  // Convert VAPID key to Uint8Array helper
-  const urlB64ToUint8Array = (base64String: string) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/\-/g, '+')
-      .replace(/_/g, '/');
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  };
 
   // Session Storage page views tracker
   useEffect(() => {
@@ -155,18 +137,9 @@ export const PWAInstallPrompt: React.FC = () => {
 
   // Main workflow effects loader
   useEffect(() => {
-    // Context: Standalone Mode
+    // Context: Standalone Mode - Do not render PWA install prompt in standalone
     if (isStandalone()) {
-      const alreadyPrompted = localStorage.getItem('pwa_push_prompted');
-      const hasDefaultPermission = 'Notification' in window && Notification.permission === 'default';
-
-      if (!alreadyPrompted && hasDefaultPermission) {
-        const pushTimer = setTimeout(() => {
-          setShowPushPrompt(true);
-        }, 2500);
-        return () => clearTimeout(pushTimer);
-      }
-      return; // Do not render PWA install prompt in standalone
+      return;
     }
 
     // Context: Mobile Browser Mode (PWA Install Prompt)
@@ -242,29 +215,6 @@ export const PWAInstallPrompt: React.FC = () => {
     setShowInstructions(false);
   };
 
-  // CTA handlers for Push notifications
-  const handleEnableNotifications = async () => {
-    try {
-      if (typeof window !== 'undefined') {
-        const windowObj = window as any;
-        windowObj.OneSignalDeferred = windowObj.OneSignalDeferred || [];
-        windowObj.OneSignalDeferred.push(async function(OneSignal: any) {
-          await OneSignal.Slidedown.promptPush();
-        });
-      }
-      localStorage.setItem('pwa_push_prompted', 'granted');
-    } catch (err) {
-      console.error('Error enabling push notifications:', err);
-    } finally {
-      setShowPushPrompt(false);
-    }
-  };
-
-  const handleMaybeLaterClick = () => {
-    localStorage.setItem('pwa_push_prompted', 'dismissed');
-    setShowPushPrompt(false);
-  };
-
   // Helper to resolve localized instruction text based on exact OS & Browser
   const getInstructionContent = () => {
     const info = getDeviceInfo();
@@ -318,57 +268,6 @@ export const PWAInstallPrompt: React.FC = () => {
   };
 
   const instructionContent = getInstructionContent();
-
-  // Render Standalone Push Notifications Screen
-  if (showPushPrompt) {
-    return (
-      <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-[#0f172a]/40 backdrop-blur-[8px] animate-fade-in">
-        <div 
-          className="bg-white dark:bg-[#1b1c1e] w-[calc(100%-32px)] max-w-[380px] p-6 relative animate-scale-up overflow-hidden border border-black/[0.06] dark:border-neutral-800 pb-6 text-center push-modal-card"
-          style={{ borderRadius: '24px', boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.12)' }}
-        >
-          <button
-            onClick={handleMaybeLaterClick}
-            className="absolute top-4 right-4 p-1.5 text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-
-          <div className="w-12 h-12 rounded-full bg-[#ecfdf5] dark:bg-emerald-950/30 flex items-center justify-center relative mx-auto mt-2">
-            <span className="material-symbols-outlined text-[#047857] text-2xl select-none">
-              notifications
-            </span>
-            <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 border-2 border-[#ecfdf5] dark:border-neutral-900 rounded-full" />
-          </div>
-
-          <h2 className="font-bold text-[#111827] dark:text-white tracking-tight" style={{ fontSize: '19px', marginTop: '12px' }}>
-            {t('pwa.pushTitle')}
-          </h2>
-          <p className="text-[#6b7280] dark:text-neutral-400" style={{ fontSize: '14px', lineHeight: '1.45', marginTop: '6px', marginBottom: '20px' }}>
-            {t('pwa.pushDescription')}
-          </p>
-
-          <div className="space-y-1">
-            <button
-              onClick={handleEnableNotifications}
-              className="w-full bg-[#047857] hover:bg-[#035e43] text-white font-semibold flex items-center justify-center cursor-pointer transition-colors shadow-sm focus:outline-none"
-              style={{ height: '48px', borderRadius: '12px', fontSize: '15px' }}
-            >
-              {t('pwa.enableNotifications')}
-            </button>
-            
-            <button
-              onClick={handleMaybeLaterClick}
-              className="w-full bg-transparent text-[#9ca3af] hover:text-neutral-500 font-medium transition-colors cursor-pointer block border-none outline-none"
-              style={{ height: '40px', fontSize: '14px', marginTop: '4px' }}
-            >
-              {t('pwa.maybeLater')}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Render browser PWA installation screen
   if (!showPrompt) return null;

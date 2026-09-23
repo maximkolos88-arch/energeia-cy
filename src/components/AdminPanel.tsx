@@ -85,25 +85,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [isParsing, setIsParsing] = useState(false);
   const [enrichingId, setEnrichingId] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
-  const [sendPush, setSendPush] = useState<boolean>(true);
-
-  const triggerPushNotification = async (payload: { title: string; body: string; url: string; type: 'news' | 'member' | 'magazine' | 'academy' }) => {
-    try {
-      const response = await fetch('/api/push/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) {
-        console.warn('Failed to send push notification:', await response.text());
-      } else {
-        const result = await response.json();
-        console.log('Push notification dispatched:', result);
-      }
-    } catch (err) {
-      console.warn('Push notification trigger error:', err);
-    }
-  };
 
   const handleEnrichDraft = (item: NewsItem) => {
     const lowerTitle = (item.title || '').toLowerCase();
@@ -598,14 +579,6 @@ Financing and regulatory clearance remain key priorities, with project developer
         createdNews = await NewsRepository.createNewsItem(payload);
       }
 
-      if (!editingNews.id && sendPush) {
-        await triggerPushNotification({
-          title: "Breaking Energy News",
-          body: payload.title,
-          url: createdNews?.id ? `/news/${createdNews.id}` : "/news",
-          type: "news"
-        });
-      }
       setEditingNews(null);
       await loadAllData();
     } catch (err) {
@@ -647,14 +620,6 @@ Financing and regulatory clearance remain key priorities, with project developer
         await MagazineRepository.createIssue(payload);
       }
 
-      if (!editingMagazine.id && sendPush) {
-        await triggerPushNotification({
-          title: "New Magazine Issue Released",
-          body: `"${payload.title}" is now available to read.`,
-          url: "/magazine",
-          type: "magazine"
-        });
-      }
       setEditingMagazine(null);
       await loadAllData();
     } catch (err) {
@@ -696,14 +661,6 @@ Financing and regulatory clearance remain key priorities, with project developer
         await CourseRepository.createCourse(payload);
       }
 
-      if (!editingCourse.id && sendPush) {
-        await triggerPushNotification({
-          title: "New Academy Course",
-          body: `"${payload.title}" is now open for enrollment.`,
-          url: "/academy",
-          type: "academy"
-        });
-      }
       setEditingCourse(null);
       await loadAllData();
     } catch (err) {
@@ -778,14 +735,6 @@ Financing and regulatory clearance remain key priorities, with project developer
         setSuccessToast('Member created successfully.');
       }
 
-      if (!editingMember.id && sendPush) {
-        await triggerPushNotification({
-          title: "New Member Directory Profile",
-          body: `"${payload.name}" has joined the Energeia Network.`,
-          url: "/members",
-          type: "member"
-        });
-      }
       setEditingMember(null);
       await loadAllData();
       setTimeout(() => setSuccessToast(null), 3000);
@@ -1401,18 +1350,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                         />
                       </div>
 
-                      <div className="flex items-center justify-between gap-4 pt-4 border-t border-outline-variant">
-                        {!editingNews.id ? (
-                          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
-                            <input
-                              type="checkbox"
-                              checked={sendPush}
-                              onChange={(e) => setSendPush(e.target.checked)}
-                              className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
-                            />
-                            Send push notification to all subscribers
-                          </label>
-                        ) : <div />}
+                      <div className="flex items-center justify-end gap-4 pt-4 border-t border-outline-variant">
                         <div className="flex gap-2">
                           <button
                             type="button"
@@ -2379,18 +2317,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between gap-4 pt-4 border-t border-outline-variant">
-                        {!editingMember.id ? (
-                          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
-                            <input
-                              type="checkbox"
-                              checked={sendPush}
-                              onChange={(e) => setSendPush(e.target.checked)}
-                              className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
-                            />
-                            Send push notification to all subscribers
-                          </label>
-                        ) : <div />}
+                      <div className="flex items-center justify-end gap-4 pt-4 border-t border-outline-variant">
                         <div className="flex gap-2">
                           <button
                             type="button"
@@ -2637,18 +2564,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                           />
                         </div>
 
-                        <div className="flex items-center justify-between gap-4 pt-4 border-t border-outline-variant">
-                          {!editingMagazine.id ? (
-                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
-                              <input
-                                type="checkbox"
-                                checked={sendPush}
-                                onChange={(e) => setSendPush(e.target.checked)}
-                                className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
-                              />
-                              Send push notification to all subscribers
-                            </label>
-                          ) : <div />}
+                        <div className="flex items-center justify-end gap-4 pt-4 border-t border-outline-variant">
                           <div className="flex gap-3">
                             <button
                               type="button"
@@ -2916,18 +2832,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                           />
                         </div>
 
-                        <div className="flex items-center justify-between gap-4 pt-4 border-t border-outline-variant">
-                          {!editingCourse.id ? (
-                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-on-surface-variant select-none">
-                              <input
-                                type="checkbox"
-                                checked={sendPush}
-                                onChange={(e) => setSendPush(e.target.checked)}
-                                className="rounded border-outline text-primary focus:ring-primary cursor-pointer w-4 h-4"
-                              />
-                              Send push notification to all subscribers
-                            </label>
-                          ) : <div />}
+                        <div className="flex items-center justify-end gap-4 pt-4 border-t border-outline-variant">
                           <div className="flex gap-3">
                             <button
                               type="button"

@@ -94,10 +94,10 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
             onClick={handleSubscribeClick}
             aria-label={t('nav.subscribeNews') || 'Subscribe to News'}
             title={t('nav.subscribeNews') || 'Subscribe to News'}
-            className="px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer border border-emerald-500/30 shadow-2xs touch-manipulation active:scale-[0.96] shrink-0"
+            className="p-2 md:px-3 md:py-1.5 text-[11px] md:text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer border border-emerald-500/30 shadow-2xs touch-manipulation active:scale-[0.96] shrink-0"
           >
-            <Bell className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span>{t('nav.subscribeNews') || 'Subscribe to News'}</span>
+            <Bell className="w-4 h-4 md:w-3.5 md:h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="hidden md:inline">{t('nav.subscribeNews') || 'Subscribe to News'}</span>
           </button>
 
           {/* Language Switcher */}
