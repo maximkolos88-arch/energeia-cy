@@ -265,7 +265,8 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
             <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#fafafa] via-[#fafafa]/80 to-transparent dark:from-[#1b1c1e] dark:via-[#1b1c1e]/80 dark:to-transparent z-10 pointer-events-none rounded-r-xl" />
             <button
               onClick={handleScrollRight}
-              className="absolute right-1 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#2d2e30] border border-neutral-200 dark:border-neutral-800 shadow-md hover:shadow-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer category-scroll-btn"
+              aria-label="Scroll categories right"
+              className="absolute right-1 top-0 bottom-2 my-auto z-20 w-8 h-8 rounded-full bg-white dark:bg-[#2d2e30] border border-neutral-200 dark:border-neutral-800 shadow-md hover:shadow-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer category-scroll-btn"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

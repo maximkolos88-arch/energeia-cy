@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, ArrowDown } from 'lucide-react';
+import { X, Share2, MoreVertical, PlusSquare, Upload } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export interface DeviceInfo {
@@ -339,12 +339,12 @@ export const PWAInstallPrompt: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="space-y-4 mt-4">
+            <div className="space-y-4 mt-2 overflow-y-auto">
               <div>
-                <h3 className="text-lg font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
                   {instructionContent.title}
                 </h3>
-                <p className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">
+                <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 inline-block px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 rounded-md">
                   {t('pwa.detectedBrowser', { browser: deviceInfo.browserName, os: deviceInfo.osName })}
                 </p>
               </div>
@@ -353,39 +353,61 @@ export const PWAInstallPrompt: React.FC = () => {
                 {instructionContent.description}
               </p>
 
-              <div className="space-y-3 pt-1 text-xs text-neutral-800 dark:text-neutral-250">
+              <div className="space-y-3.5 pt-1 text-xs text-neutral-800 dark:text-neutral-250">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                     1
                   </div>
-                  <p className="leading-relaxed">
-                    {instructionContent.step1}
-                  </p>
+                  <div className="flex-1 leading-relaxed">
+                    <span>{instructionContent.step1}</span>
+                    {deviceInfo.os === 'ios' && deviceInfo.browser === 'safari' && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 ms-1.5 text-[10px] font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded border border-neutral-200 dark:border-neutral-700">
+                        <Upload className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Share
+                      </span>
+                    )}
+                    {deviceInfo.os === 'ios' && deviceInfo.browser === 'chrome' && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 ms-1.5 text-[10px] font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded border border-neutral-200 dark:border-neutral-700">
+                        <Share2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Share
+                      </span>
+                    )}
+                    {deviceInfo.os === 'android' && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 ms-1.5 text-[10px] font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded border border-neutral-200 dark:border-neutral-700">
+                        <MoreVertical className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Menu
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                     2
                   </div>
-                  <p className="leading-relaxed">
-                    {instructionContent.step2}
-                  </p>
+                  <div className="flex-1 leading-relaxed">
+                    <span>{instructionContent.step2}</span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 ms-1.5 text-[10px] font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded border border-neutral-200 dark:border-neutral-700">
+                      <PlusSquare className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Add to Home
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                     3
                   </div>
-                  <p className="leading-relaxed">
-                    {instructionContent.step3}
-                  </p>
+                  <div className="flex-1 leading-relaxed">
+                    <span>{instructionContent.step3}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col items-center justify-center pt-4 text-emerald-600 dark:text-emerald-400 animate-bounce">
-              <ArrowDown className="w-5 h-5" />
-              <span className="text-[10px] font-bold uppercase mt-0.5">{t('pwa.iosTapShare')}</span>
+            <div className="pt-3 border-t border-neutral-100 dark:border-neutral-800 mt-2">
+              <button
+                onClick={() => setShowInstructions(false)}
+                className="w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm cursor-pointer"
+              >
+                {t('common.done') || 'Got it'}
+              </button>
             </div>
           </div>
         )}
