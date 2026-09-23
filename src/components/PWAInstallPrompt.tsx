@@ -245,49 +245,14 @@ export const PWAInstallPrompt: React.FC = () => {
   // CTA handlers for Push notifications
   const handleEnableNotifications = async () => {
     try {
-      if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-        alert(t('pwa.pushNotSupported'));
-        setShowPushPrompt(false);
-        return;
+      if (typeof window !== 'undefined') {
+        const windowObj = window as any;
+        windowObj.OneSignalDeferred = windowObj.OneSignalDeferred || [];
+        windowObj.OneSignalDeferred.push(async function(OneSignal: any) {
+          await OneSignal.Slidedown.promptPush();
+        });
       }
-
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        localStorage.setItem('pwa_push_prompted', 'granted');
-        
-        const registration = await navigator.serviceWorker.ready;
-        try {
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY)
-          });
-          
-          await fetch('/api/push/subscribe', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(subscription)
-          });
-
-          try {
-            await supabase
-              .from('push_subscriptions')
-              .insert([{ 
-                subscription: subscription,
-                created_at: new Date().toISOString()
-              }]);
-          } catch (e) {
-            console.warn('Failed saving to Supabase push_subscriptions:', e);
-          }
-        } catch (subErr) {
-          console.warn('SW Push subscription failed (granted, fallback):', subErr);
-        }
-
-        if ('clearAppBadge' in navigator) {
-          (navigator as any).clearAppBadge().catch(() => {});
-        }
-      } else {
-        localStorage.setItem('pwa_push_prompted', 'dismissed');
-      }
+      localStorage.setItem('pwa_push_prompted', 'granted');
     } catch (err) {
       console.error('Error enabling push notifications:', err);
     } finally {

@@ -1,9 +1,7 @@
-'use client';
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Bell } from 'lucide-react';
 import { EnergeiaLogo } from './EnergeiaLogo';
-
 import { FEATURES } from '../config/features';
 
 interface TopAppBarProps {
@@ -20,6 +18,16 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   onLanguageChange
 }) => {
   const { t } = useTranslation();
+
+  const handleSubscribeClick = () => {
+    if (typeof window !== 'undefined') {
+      const windowObj = window as any;
+      windowObj.OneSignalDeferred = windowObj.OneSignalDeferred || [];
+      windowObj.OneSignalDeferred.push(async function(OneSignal: any) {
+        await OneSignal.Slidedown.promptPush();
+      });
+    }
+  };
 
   const allNavItems = [
     { id: 'news', label: t('nav.news'), enabled: true },
@@ -78,37 +86,51 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </nav>
         </div>
 
-        {/* Right Section: Language Switcher */}
-        <div className="flex items-center gap-0.5 border border-neutral-200 dark:border-neutral-850 rounded-lg p-0.5 bg-neutral-50 dark:bg-neutral-900 shrink-0">
-          {(['en', 'el', 'ru', 'he'] as const).map((lang) => {
-            const isActive = language === lang;
-            const labelMap: Record<string, string> = {
-              en: 'EN',
-              el: 'ΕΛ',
-              ru: 'РУ',
-              he: 'עב'
-            };
-            const fullNameMap: Record<string, string> = {
-              en: 'English',
-              el: 'Greek',
-              ru: 'Russian',
-              he: 'Hebrew'
-            };
-            return (
-              <button
-                key={lang}
-                onClick={() => onLanguageChange(lang)}
-                aria-label={`Switch language to ${fullNameMap[lang]}`}
-                className={`px-2 py-1 sm:px-2.5 min-h-[32px] text-[10px] font-bold transition-all rounded-md cursor-pointer touch-manipulation flex items-center justify-center ${
-                  isActive
-                    ? 'bg-primary text-white shadow-3xs'
-                    : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
-                }`}
-              >
-                {labelMap[lang]}
-              </button>
-            );
-          })}
+        {/* Right Section: Notification Subscribe Button & Language Switcher */}
+        <div className="flex items-center gap-2">
+          {/* Custom OneSignal Subscribe Button */}
+          <button
+            id="subscribe-news-btn"
+            onClick={handleSubscribeClick}
+            aria-label="Subscribe to News Notifications"
+            title="Subscribe to News"
+            className="p-1.5 min-h-[36px] min-w-[36px] text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-emerald-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors flex items-center justify-center cursor-pointer border border-neutral-200/80 dark:border-neutral-800"
+          >
+            <Bell className="w-4 h-4" />
+          </button>
+
+          {/* Language Switcher */}
+          <div className="flex items-center gap-0.5 border border-neutral-200 dark:border-neutral-850 rounded-lg p-0.5 bg-neutral-50 dark:bg-neutral-900 shrink-0">
+            {(['en', 'el', 'ru', 'he'] as const).map((lang) => {
+              const isActive = language === lang;
+              const labelMap: Record<string, string> = {
+                en: 'EN',
+                el: 'ΕΛ',
+                ru: 'РУ',
+                he: 'עב'
+              };
+              const fullNameMap: Record<string, string> = {
+                en: 'English',
+                el: 'Greek',
+                ru: 'Russian',
+                he: 'Hebrew'
+              };
+              return (
+                <button
+                  key={lang}
+                  onClick={() => onLanguageChange(lang)}
+                  aria-label={`Switch language to ${fullNameMap[lang]}`}
+                  className={`px-2 py-1 sm:px-2.5 min-h-[32px] text-[10px] font-bold transition-all rounded-md cursor-pointer touch-manipulation flex items-center justify-center ${
+                    isActive
+                      ? 'bg-primary text-white shadow-3xs'
+                      : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                  }`}
+                >
+                  {labelMap[lang]}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
       </div>
