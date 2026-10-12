@@ -564,7 +564,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           <div className="bg-white dark:bg-[#202124] rounded-3xl border border-[#dadce0] dark:border-[#3c4043] max-w-lg w-full p-6 relative shadow-2xl space-y-5">
             <button
               onClick={() => setActiveBulletinModal(null)}
-              className="absolute top-4 right-4 p-2 text-[#5f6368] hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043] rounded-full"
+              aria-label="Close bulletin" className="absolute top-4 right-4 p-2 text-[#5f6368] hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043] rounded-full"
             >
               <X className="w-5 h-5" />
             </button>

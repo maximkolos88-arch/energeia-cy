@@ -107,7 +107,7 @@ export const DirectoryScreen: React.FC = () => {
         {searchQuery && (
           <button
             onClick={() => setSearchQuery('')}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 cursor-pointer"
+            aria-label="Clear search" className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -210,7 +210,7 @@ export const DirectoryScreen: React.FC = () => {
                   {/* Close button (✕) */}
                   <button
                     onClick={closeMemberContact}
-                    className="absolute top-4 right-4 p-2 text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer"
+                    aria-label="Close modal" className="absolute top-4 right-4 p-2 text-neutral-450 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
