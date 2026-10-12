@@ -918,7 +918,7 @@ Financing and regulatory clearance remain key priorities, with project developer
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 text-on-surface hover:bg-surface-container-high rounded-lg"
+          aria-label="Toggle menu" className="p-2 text-on-surface hover:bg-surface-container-high rounded-lg"
         >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -1011,7 +1011,7 @@ Financing and regulatory clearance remain key priorities, with project developer
             </div>
             <button 
               onClick={onClose}
-              className="p-1 hover:bg-surface-container-high rounded-full text-on-surface-variant"
+              aria-label="Close" className="p-1 hover:bg-surface-container-high rounded-full text-on-surface-variant"
               title="Exit Panel"
             >
               <X className="w-4.5 h-4.5" />
@@ -1139,7 +1139,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                         <button 
                           type="button" 
                           onClick={() => setEditingNews(null)}
-                          className="p-1 hover:bg-surface-container-high rounded-full"
+                          aria-label="Close" className="p-1 hover:bg-surface-container-high rounded-full"
                         >
                           <X className="w-5 h-5" />
                         </button>
@@ -1586,7 +1586,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                         <button 
                           type="button" 
                           onClick={() => setEditingArticle(null)}
-                          className="p-1 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-on-surface"
+                          aria-label="Close" className="p-1 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-on-surface"
                         >
                           <X className="w-5 h-5" />
                         </button>
@@ -1879,7 +1879,7 @@ Financing and regulatory clearance remain key priorities, with project developer
                         <button 
                           type="button" 
                           onClick={() => setEditingMember(null)}
-                          className="p-1 hover:bg-surface-container-high rounded-full"
+                          aria-label="Close" className="p-1 hover:bg-surface-container-high rounded-full"
                         >
                           <X className="w-5 h-5" />
                         </button>
