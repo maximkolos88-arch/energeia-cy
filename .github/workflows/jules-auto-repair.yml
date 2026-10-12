@@ -1,0 +1,30 @@
+name: Jules Auto-Repair Trigger
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_prompt:
+        description: "Описание задачи для Jules"
+        required: true
+        default: "Audit locales/ and sync missing translation keys across en, el, ru, he. Verify with AGENTS.md rules."
+
+jobs:
+  dispatch-to-jules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Session via Jules REST API
+        run: |
+          curl -s -X POST "https://jules.googleapis.com/v1alpha/sessions" \
+            -H "Content-Type: application/json" \
+            -H "X-Goog-Api-Key: ${{ secrets.JULES_API_KEY }}" \
+            -d '{
+              "title": "manual-dispatch-repair",
+              "prompt": "${{ github.event.inputs.issue_prompt }}",
+              "sourceContext": {
+                "source": "sources/github/maximkolos88-arch/energeia-cy",
+                "githubRepoContext": {
+                  "startingBranch": "main"
+                }
+              },
+              "automationMode": "AUTO_CREATE_PR"
+            }'
