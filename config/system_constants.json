@@ -1,0 +1,13 @@
+{
+  "supported_locales": [
+    "en",
+    "el",
+    "ru",
+    "he"
+  ],
+  "regulatory_entities": {
+    "EAC": "Electricity Authority of Cyprus",
+    "CERA": "Cyprus Energy Regulatory Authority",
+    "TSOC": "Transmission System Operator of Cyprus"
+  }
+}
