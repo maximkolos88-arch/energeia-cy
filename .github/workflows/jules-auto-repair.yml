@@ -26,36 +26,7 @@ jobs:
 
       - name: Trigger Jules Self-Healing on Test Failure
         if: failure()
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
         run: |
-          ERROR_LOG=$(tail -n 35 test_output.log)
-          PROMPT=$(cat <<PROMPT_EOF
-The scraping contract tests in tests/test_scrapers.py failed with:
-
-$ERROR_LOG
-
-Please inspect src/cloud_functions/newsAggregator.ts and tests/test_scrapers.py:
-1. Fix the EAC URL/endpoint (it currently returns 404).
-2. Update the regex or parsing logic for CERA to match the live markup so articles are extracted.
-3. Verify all tests in tests/ pass.
-PROMPT_EOF
-          )
-
-          PAYLOAD=$(node -e '
-            const prompt = process.argv[1];
-            console.log(JSON.stringify({
-              title: "self-healing-scraper-failure",
-              prompt: prompt,
-              sourceContext: {
-                source: "sources/github/maximkolos88-arch/energeia-cy",
-                githubRepoContext: {
-                  startingBranch: "main"
-                }
-              },
-              automationMode: "AUTO_CREATE_PR"
-            }));
-          ' "$PROMPT")
-
-          curl -s -X POST "https://jules.googleapis.com/v1alpha/sessions" \
-            -H "Content-Type: application/json" \
-            -H "X-Goog-Api-Key: ${{ secrets.JULES_API_KEY }}" \
-            -d "$PAYLOAD"
+          python3 scripts/trigger_jules.py
