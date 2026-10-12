@@ -14,7 +14,7 @@ export interface FeatureFlags {
 
 export const FEATURES: FeatureFlags = {
   enableTerminal: false,
-  enableMembers: false,
+  enableMembers: true,
   enableMagazine: false,
   enableAcademy: false,
   enableAbout: true,
