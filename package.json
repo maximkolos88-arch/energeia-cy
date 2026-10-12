@@ -8,6 +8,7 @@
     "prebuild": "node scripts/generate-sitemap.js",
     "build": "rm -rf dist && vite build",
     "sitemap": "node scripts/generate-sitemap.js",
+    "autopilot": "node scripts/autopilot.js",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"

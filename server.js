@@ -1907,7 +1907,7 @@ app.get('*', (req, res) => {
   }
 });
 
-// Schedule: Runs every 4 hours
+// Schedule: Runs every 4 hours for News Aggregator
 cron.schedule('0 */4 * * *', async () => {
   console.log('⏰ Starting scheduled news crawler run...');
   try {
@@ -1917,6 +1917,18 @@ cron.schedule('0 */4 * * *', async () => {
     console.log(`✅ Scheduled news crawler completed successfully. Inserted drafts: ${result.insertedCount}`);
   } catch (error) {
     console.error('❌ Scheduled news crawler failed:', error.message);
+  }
+});
+
+// Schedule: Runs Autopilot Self-Improvement Agent daily at 2:00 AM
+cron.schedule('0 2 * * *', async () => {
+  console.log('🤖 Starting scheduled Autopilot self-improvement cycle...');
+  try {
+    // Dynamic import to prevent syntax issues if the file is moved
+    const { runAutopilot } = await import('./scripts/autopilot.js');
+    await runAutopilot();
+  } catch (error) {
+    console.error('❌ Scheduled Autopilot failed:', error.message);
   }
 });
 
