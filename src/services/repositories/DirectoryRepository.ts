@@ -141,6 +141,11 @@ export class DirectoryRepository {
         member.roleOrCategory.toLowerCase().includes(trimmedQuery) ||
         (member.location && member.location.toLowerCase().includes(trimmedQuery)) ||
         (member.description && member.description.toLowerCase().includes(trimmedQuery)) ||
+      (member.description_el && member.description_el.toLowerCase().includes(trimmedQuery)) ||
+      (member.description_ru && member.description_ru.toLowerCase().includes(trimmedQuery)) ||
+      (member.description_he && member.description_he.toLowerCase().includes(trimmedQuery)) ||
+      (member.notableProjects && member.notableProjects.toLowerCase().includes(trimmedQuery)) ||
+      (member.certifications && member.certifications.toLowerCase().includes(trimmedQuery)) ||
         member.email.toLowerCase().includes(trimmedQuery) ||
         member.expertiseTags.some(tag => tag.toLowerCase().includes(trimmedQuery));
 

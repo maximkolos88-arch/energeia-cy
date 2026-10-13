@@ -229,7 +229,7 @@ export const DirectoryScreen: React.FC = () => {
                           <h3 className="text-xs font-bold text-neutral-900 dark:text-white border-b border-neutral-200 dark:border-neutral-800 pb-1.5 uppercase tracking-wider">
                             {t('directory.about')}
                           </h3>
-                          <p className="text-xs text-neutral-600 dark:text-neutral-450 leading-relaxed whitespace-pre-wrap">
+                          <p className="text-xs text-neutral-600 dark:text-neutral-450 leading-relaxed whitespace-pre-wrap" dir={i18n.language === "he" ? "rtl" : "ltr"}>
                             {getLocalizedDescription(selectedMember)}
                           </p>
                         </div>
@@ -305,7 +305,7 @@ export const DirectoryScreen: React.FC = () => {
                               <span className="text-[10px] uppercase font-bold text-neutral-500 dark:text-neutral-450 block">{t('directory.location')}</span>
                               <div className="flex items-center gap-2">
                                 <MapPin className="w-4 h-4 text-primary shrink-0" />
-                                <span className="font-medium text-neutral-700 dark:text-neutral-300">{selectedMember.location}, Cyprus</span>
+                                <span className="font-medium text-neutral-700 dark:text-neutral-300">{selectedMember.location.replace(/,\s*Cyprus\s*$/i, "")}, Cyprus</span>
                               </div>
                             </div>
                           )}
