@@ -1185,7 +1185,10 @@ export class DirectoryRepository {
         .order('id', { ascending: false });
 
       if (!error && data && data.length > 0) {
-        return data.map(item => this.mapSupabaseToMember(item));
+        const supabaseMembers = data.map(item => this.mapSupabaseToMember(item));
+        const supabaseIds = new Set(supabaseMembers.map(m => m.id));
+        const missingStatic = INITIAL_DIRECTORY_MEMBERS.filter(m => !supabaseIds.has(m.id));
+        return [...supabaseMembers, ...missingStatic];
       }
     } catch (err) {
       console.warn("Failed to fetch participants from Supabase, falling back to static directory:", err);
