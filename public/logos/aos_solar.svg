@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" rx="40" fill="#111827"/>
+  <circle cx="100" cy="100" r="60" fill="none" stroke="#F59E0B" stroke-width="8"/>
+  <polygon points="100,45 120,85 160,100 120,115 100,155 80,115 40,100 80,85" fill="#10B981"/>
+  <text x="100" y="180" font-family="Arial, sans-serif" font-weight="800" font-size="16" fill="#F3F4F6" text-anchor="middle">AOS SOLAR</text>
+</svg>
