@@ -177,7 +177,7 @@ export const ArticlesScreen: React.FC = () => {
         {/* Hero Section */}
         <header className="max-w-4xl mx-auto px-4 pt-8 pb-6 space-y-6">
           <div className="flex flex-wrap items-center gap-3">
-            {currentArticle.category && (
+            {typeof currentArticle.category === "object" && currentArticle.category?.name && (
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
                 {currentArticle.category.name}
               </span>
@@ -327,7 +327,7 @@ export const ArticlesScreen: React.FC = () => {
                       <Newspaper className="w-12 h-12 opacity-30" />
                     </div>
                   )}
-                  {article.category && (
+                  {typeof article.category === "object" && article.category?.name && (
                     <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
                       {article.category.name}
                     </span>

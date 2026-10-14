@@ -24,10 +24,13 @@ export interface NewsItem {
   category: NewsCategory;
   imageUrl?: string; // Main article/OpenGraph image URL
   image_url?: string; // Database column fallback alias
+  source?: string;
   sourceUrl?: string;
+  originalUrl?: string;
   publishedAt: string; // ISO date string or formatted date
   createdAt: string;
   status: NewsStatus;
+  isDraft?: boolean;
   isEditorial?: boolean;
   readTimeMinutes?: number;
   readCount?: number;
@@ -55,6 +58,8 @@ export interface DirectoryMember {
   viewsCount?: number;
   location?: string; // e.g. 'Nicosia', 'Limassol', 'Larnaca'
   category?: "Oil & Gas" | "Renewables" | "Electricity & Trading" | "Maritime & Offshore" | "Engineering & EPC" | "Professional Services" | "Government & Associations" | string;
+  subcategories?: string[];
+  tier?: 'Partner' | 'Sponsor' | 'Standard' | 'Observer' | string;
   expertiseTags: string[]; // e.g., ['Solar', 'Wind', 'Storage', 'Policy', 'ESG', 'Grid', 'ESG Auditors', 'Solar Installers']
   imageUrl?: string;
   description?: string;
@@ -67,6 +72,7 @@ export interface DirectoryMember {
   website?: string;
   linkedin?: string;
   keyContactName?: string;
+  keyContactRole?: string;
   showDescription?: boolean;
   showLocation?: boolean;
   showWebsite?: boolean;
@@ -96,10 +102,15 @@ export interface MagazineIssue {
   id: string;
   title: string;
   issueNumber: number;
+  issue_number?: string;
   publishDate: string;
+  publication_date?: string;
   coverImageUrl: string;
+  cover_image_url?: string;
   pdfUrl: string;
+  pdf_url?: string;
   description: string;
+  summary?: string;
   isPublished: boolean;
 }
 
@@ -113,6 +124,9 @@ export interface AcademyCourse {
   imageUrl: string;
   checkoutUrl: string;
   isPublished: boolean;
+  category?: string;
+  instructor?: string;
+  modulesCount?: number;
 }
 
 export interface ArticleCategory {
@@ -128,12 +142,19 @@ export interface Article {
   title: string;
   slug: string;
   summary?: string;
+  excerpt?: string;
   content: string;
   coverImage?: string;
+  image_url?: string;
   categoryId?: string;
-  category?: ArticleCategory;
+  category?: ArticleCategory | string;
+  author_name?: string;
+  author_role?: string;
+  read_time_minutes?: number;
   isPublished: boolean;
+  published?: boolean;
   publishedAt: string;
   createdAt?: string;
+  created_at?: string;
   updatedAt?: string;
 }
