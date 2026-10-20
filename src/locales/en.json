@@ -6,7 +6,11 @@
     "academy": "Academy",
     "about": "About",
     "register": "Join Us",
-    "subscribeNews": "Subscribe to News"
+    "subscribeNews": "Subscribe to News",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "disclosures": "Statutory Corporate Disclosures"
   },
   "categories": {
     "allNews": "All News",
@@ -102,7 +106,15 @@
   },
   "footer": {
     "rights": "All rights reserved.",
-    "description": "Cyprus All-Energy Network"
+    "description": "Cyprus All-Energy Network",
+    "legal": "Terms & Conditions",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "disclosures": "Statutory Corporate Disclosures",
+    "corporateDetails": "M3J2 LTD • Reg HE 438859 • VAT CY10438859X",
+    "address": "Leoforos Panioti 20, Germasogeia 4044, Lemesos, Cyprus",
+    "email": "admin@energeia.cy"
   },
   "pwa": {
     "title": "Energeia on your home screen",
@@ -173,5 +185,69 @@
     "policy": "Policy",
     "esgAuditors": "ESG Auditors",
     "solarInstallers": "Solar Installers"
+  },
+  "terms": {
+    "title": "Terms & Conditions",
+    "subtitle": "Terms of Service & Platform Usage Policy",
+    "lastUpdated": "Last updated: March 2025",
+    "s1_title": "1. Acceptance of Terms",
+    "s1_text": "By accessing or using the Energeia platform (www.energeia.cy), you agree to be bound by these Terms and Conditions and all applicable laws and regulations of the Republic of Cyprus and the European Union. If you do not agree with any of these terms, you are prohibited from using or accessing this site.",
+    "s2_title": "2. Electronic Commerce & Service Provider Details",
+    "s2_text": "In compliance with the Cyprus Electronic Commerce Law 156(I)/2004 and Directive 2000/31/EC, the service provider of Energeia is M3J2 LTD, a limited liability company incorporated under the laws of the Republic of Cyprus (Registration Number: HE 438859, Registered Office: Leoforos Panioti, 20, Germasogeia 4044, Lemesos, Cyprus, VAT ID: CY10438859X, Contact: admin@energeia.cy).",
+    "s3_title": "3. Intellectual Property Rights",
+    "s3_text": "All digital materials, news aggregations, market reports, graphics, and logos displayed on Energeia are owned by or licensed to M3J2 LTD and protected by Cyprus copyright law and international treaties. Unauthorised reproduction or distribution of proprietary market insights is prohibited.",
+    "s4_title": "4. Disclaimer & Market Analytics",
+    "s4_text": "Energeia publishes energy news, regulatory updates from CERA, TSOC grid telemetry, and market analytics for informational purposes only. The information provided does not constitute formal legal or financial investment advice.",
+    "s5_title": "5. Limitation of Liability",
+    "s5_text": "M3J2 LTD shall not be liable for any direct, indirect, or consequential damages resulting from the use or inability to use the platform services, website content, or third-party links.",
+    "s6_title": "6. Governing Law & Jurisdiction",
+    "s6_text": "These Terms shall be governed by and construed in accordance with the laws of the Republic of Cyprus. Any disputes arising out of or in connection with these terms shall be subject to the exclusive jurisdiction of the courts of Lemesos, Cyprus."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "GDPR & Data Protection Compliance Notice",
+    "lastUpdated": "Last updated: March 2025",
+    "s1_title": "1. Commitment to Privacy",
+    "s1_text": "Energeia, operated by M3J2 LTD (HE 438859), is fully committed to protecting your personal data in accordance with the EU General Data Protection Regulation (GDPR 2016/679) and the Cyprus Law Providing for the Protection of Natural Persons with regard to the Processing of Personal Data (Law 125(I)/2018).",
+    "s2_title": "2. Data Controller Details",
+    "s2_text": "Data Controller: M3J2 LTD\nRegistration Number: HE 438859\nRegistered Address: Leoforos Panioti, 20, Germasogeia 4044, Lemesos, Cyprus\nElectronic Contact: admin@energeia.cy\nVAT ID: CY10438859X",
+    "s3_title": "3. Information We Collect",
+    "s3_text": "We collect technical analytical data (IP address, browser user-agent, device characteristics) and voluntary information submitted through registration forms or contact requests (name, professional email address, company details).",
+    "s4_title": "4. Legal Basis & Purposes of Processing",
+    "s4_text": "We process personal data based on your explicit consent, legitimate business interests in maintaining platform security, and performance of statutory directory services for Cyprus clean energy sector participants.",
+    "s5_title": "5. Data Subject Rights",
+    "s5_text": "Under GDPR, you have the right to request access to, rectification, erasure, or restriction of your personal data, as well as the right to data portability and the right to object to processing. To exercise your rights, contact admin@energeia.cy.",
+    "s6_title": "6. Supervisory Authority",
+    "s6_text": "You have the right to lodge a complaint with the Office of the Commissioner for Personal Data Protection in Cyprus (http://www.dataprotection.gov.cy)."
+  },
+  "cookies": {
+    "title": "Cookie Policy",
+    "subtitle": "Information on Cookies & Web Analytics",
+    "lastUpdated": "Last updated: March 2025",
+    "s1_title": "1. What Are Cookies",
+    "s1_text": "Cookies are small text files stored on your browser or device when visiting web portals. They ensure smooth navigation, preserve user preferences, and help us analyze platform traffic.",
+    "s2_title": "2. Types of Cookies We Use",
+    "s2_text": "Essential Cookies: Required for fundamental site navigation and language localization settings (e.g. app_lang choice).\nAnalytics Cookies: Aggregated, anonymized statistical measurements on site traffic and article reads.\nFunctional Cookies: Remember display choices and progressive web app (PWA) installation preferences.",
+    "s3_title": "3. Cookie Management & Consent",
+    "s3_text": "You can control, block, or delete cookies at any time via your browser settings. Disabling essential cookies may impact certain interface functionality.",
+    "s4_title": "4. Third-Party Analytics",
+    "s4_text": "Energeia utilizes privacy-focused, GDPR-compliant analytics engines to optimize performance without sharing raw personal data with third parties.",
+    "s5_title": "5. Contact Information",
+    "s5_text": "For questions regarding our Cookie Policy, reach us directly at admin@energeia.cy."
+  },
+  "disclosures": {
+    "title": "Statutory Corporate Disclosures",
+    "subtitle": "Official Company Profile & Regulatory Compliance Data",
+    "lastUpdated": "Last updated: March 2025",
+    "s1_title": "1. Legal Entity Identification",
+    "s1_text": "Full Corporate Name: M3J2 LTD\nEntity Type: Private Limited Liability Company\nOfficial HE Registration Number: HE 438859\nRegistration Date: 30/09/2022\nJurisdiction of Incorporation: Republic of Cyprus",
+    "s2_title": "2. Registered Office & Operating Address",
+    "s2_text": "Registered Office: Leoforos Panioti, 20, Germasogeia 4044, Lemesos, Cyprus\nOfficial Website: https://www.energeia.cy\nOfficial Domain Name: energeia.cy",
+    "s3_title": "3. Tax & Value Added Tax (VAT) Identification",
+    "s3_text": "VAT Identification Number: CY10438859X\nTax Jurisdiction: Republic of Cyprus Tax Department",
+    "s4_title": "4. Electronic Contact Channels",
+    "s4_text": "General Inquiries & Administration: admin@energeia.cy\nData Protection Officer: admin@energeia.cy\nLegal & Statutory Notices: admin@energeia.cy",
+    "s5_title": "5. Regulatory & Statutory Framework",
+    "s5_text": "Energeia operates strictly under Cyprus Electronic Commerce Law 156(I)/2004, the EU General Data Protection Regulation (GDPR 2016/679), and Republic of Cyprus commercial regulations."
   }
 }

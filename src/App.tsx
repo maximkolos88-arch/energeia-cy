@@ -1,3 +1,7 @@
+import { TermsScreen } from './components/legal/TermsScreen';
+import { PrivacyScreen } from './components/legal/PrivacyScreen';
+import { CookieScreen } from './components/legal/CookieScreen';
+import { CorporateDisclosuresScreen } from './components/legal/CorporateDisclosuresScreen';
 import React, { useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
@@ -38,9 +42,13 @@ export default function App({ path: propPath, initialData }: AppProps) {
     if (path === '/academy' && FEATURES.enableAcademy) return 'academy';
     if (path === '/about' && FEATURES.enableAbout) return 'about';
     if (path === '/register' && FEATURES.enableRegister) return 'register';
+    if (path === '/terms') return 'terms';
+    if (path === '/privacy') return 'privacy';
+    if (path === '/cookies') return 'cookies';
+    if (path === '/disclosures') return 'disclosures';
     
     // Redirect unreleased/disabled URLs back to homepage (/)
-    if (typeof window !== 'undefined' && path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news') && !path.startsWith('/articles')) {
+    if (typeof window !== 'undefined' && path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news') && !path.startsWith('/articles') && !['/terms', '/privacy', '/cookies', '/disclosures'].includes(path)) {
       window.history.replaceState({}, '', '/');
     }
     return 'news';
@@ -60,7 +68,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
       // Priority 1: Check manual choice in app_lang or fallback energeia_language
       const saved = localStorage.getItem('app_lang') || localStorage.getItem('energeia_language');
       if (saved && supportedLangs.includes(saved)) {
-        i18n.changeLanguage(saved);
+        if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage(saved);
         return saved;
       }
 
@@ -69,18 +77,18 @@ export default function App({ path: propPath, initialData }: AppProps) {
       for (const lang of userLangs) {
         const code = lang.toLowerCase().split('-')[0];
         if (code === 'iw') {
-          i18n.changeLanguage('he');
+          if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage('he');
           return 'he';
         }
         if (supportedLangs.includes(code)) {
-          i18n.changeLanguage(code);
+          if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage(code);
           return code;
         }
       }
     }
 
     // Priority 3: Fallback default
-    i18n.changeLanguage('en');
+    if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage('en');
     return 'en';
   });
 
@@ -90,7 +98,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
       localStorage.setItem('app_lang', lang);
       localStorage.setItem('energeia_language', lang); // compatibility backup
     }
-    i18n.changeLanguage(lang);
+    if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage(lang);
   };
 
   // Synchronize HTML attributes (RTL dir and lang locale)
@@ -176,6 +184,14 @@ export default function App({ path: propPath, initialData }: AppProps) {
         setActiveTab('about');
       } else if (path === '/register' && FEATURES.enableRegister) {
         setActiveTab('register');
+      } else if (path === '/terms') {
+        setActiveTab('terms');
+      } else if (path === '/privacy') {
+        setActiveTab('privacy');
+      } else if (path === '/cookies') {
+        setActiveTab('cookies');
+      } else if (path === '/disclosures') {
+        setActiveTab('disclosures');
       } else {
         // If path is not root / or /admin or /news or /articles, redirect back to /
         if (path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news') && !path.startsWith('/articles')) {
@@ -255,6 +271,14 @@ export default function App({ path: propPath, initialData }: AppProps) {
         return FEATURES.enableAbout ? <AboutScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       case 'register':
         return FEATURES.enableRegister ? <RegisterScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
+      case 'terms':
+        return <TermsScreen />;
+      case 'privacy':
+        return <PrivacyScreen />;
+      case 'cookies':
+        return <CookieScreen />;
+      case 'disclosures':
+        return <CorporateDisclosuresScreen />;
       default:
         return <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
     }
