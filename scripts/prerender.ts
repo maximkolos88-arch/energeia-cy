@@ -244,6 +244,38 @@ async function prerender() {
         description: 'Access exclusive Cyprus energy market issue digests, regulatory reports, and interview archives.',
         url: `${SITE_URL}/magazine`
       }
+    },
+    {
+      route: '/terms',
+      meta: {
+        title: 'Terms & Conditions | Energeia Cyprus',
+        description: 'Terms of service, platform usage rules, and legal conditions for Energeia Cyprus energy portal.',
+        url: `${SITE_URL}/terms`
+      }
+    },
+    {
+      route: '/privacy',
+      meta: {
+        title: 'Privacy Policy | Energeia Cyprus',
+        description: 'EU GDPR compliance, personal data protection details, and data subject rights for Energeia Cyprus.',
+        url: `${SITE_URL}/privacy`
+      }
+    },
+    {
+      route: '/cookies',
+      meta: {
+        title: 'Cookie Policy | Energeia Cyprus',
+        description: 'Information on cookie usage, technical web analytics, and user consent management on Energeia.',
+        url: `${SITE_URL}/cookies`
+      }
+    },
+    {
+      route: '/disclosures',
+      meta: {
+        title: 'Statutory Corporate Disclosures | Energeia Cyprus',
+        description: 'Official corporate profile, HE 438859 registration details, VAT CY10438859X, address, and legal disclosures.',
+        url: `${SITE_URL}/disclosures`
+      }
     }
   ];
 
