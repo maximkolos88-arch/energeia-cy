@@ -15,4 +15,4 @@ Disallow: /admin
 Disallow: /login
 
 # XML Sitemap Location
-Sitemap: https://energeia.cy/sitemap.xml
+Sitemap: https://www.energeia.cy/sitemap.xml

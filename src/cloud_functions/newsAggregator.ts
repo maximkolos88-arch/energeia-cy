@@ -62,7 +62,7 @@ async function fetchAndParseUrl(source: typeof TARGET_SOURCES[0]): Promise<Scrap
     // In production environment Node runtime, fetch standard response:
     const response = await fetch(source.url, {
       headers: {
-        'User-Agent': 'Energeia-Aggregator-Bot/1.0 (+https://energeia.cy)'
+        'User-Agent': 'Energeia-Aggregator-Bot/1.0 (+https://www.energeia.cy)'
       }
     });
 

@@ -13,7 +13,7 @@ class TestEnergyScrapers(unittest.TestCase):
         
         cls.pattern_str = regex_match.group(1)
         cls.compiled_regex = re.compile(cls.pattern_str, re.IGNORECASE)
-        cls.headers = {"User-Agent": "Energeia-Aggregator-Bot/1.0 (+https://energeia.cy)"}
+        cls.headers = {"User-Agent": "Energeia-Aggregator-Bot/1.0 (+https://www.energeia.cy)"}
 
     def _fetch_html(self, url: str) -> str:
         req = urllib.request.Request(url, headers=self.headers)

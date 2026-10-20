@@ -43,7 +43,7 @@ export const AdminAcademyView: React.FC<AdminAcademyViewProps> = ({
             instructor: 'Dr. Andreas Constantinou',
             level: 'Advanced',
             price: 'Free / Partner',
-            checkoutUrl: 'https://energeia.cy/academy',
+            checkoutUrl: 'https://www.energeia.cy/academy',
             isPublished: true,
             imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800'
           })}
