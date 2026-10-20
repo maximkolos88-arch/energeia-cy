@@ -10,7 +10,7 @@ const supabaseUrl = 'https://spbszwdlcedeanvpsmpa.supabase.co';
 const supabaseKey = 'sb_publishable_PUr7qZ5OhSgsLNcZ6WLlgQ_Z1XPpN_m';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const SITE_URL = 'https://energeia.cy';
+const SITE_URL = 'https://www.energeia.cy';
 
 async function generateSitemap() {
   console.log('Generating dynamic XML sitemap for Energeia...');
