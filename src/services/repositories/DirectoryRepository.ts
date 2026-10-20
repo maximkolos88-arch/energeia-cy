@@ -1178,6 +1178,7 @@ export class DirectoryRepository {
    * Fetch all participants (unfiltered, for admin dashboard)
    */
   static async getAllParticipants(): Promise<DirectoryMember[]> {
+    let remoteMembers: DirectoryMember[] = [];
     try {
       const { data, error } = await supabase
         .from('participants')
@@ -1185,13 +1186,28 @@ export class DirectoryRepository {
         .order('id', { ascending: false });
 
       if (!error && data && data.length > 0) {
-        return data.map(item => this.mapSupabaseToMember(item));
+        remoteMembers = data.map(item => this.mapSupabaseToMember(item));
       }
     } catch (err) {
-      console.warn("Failed to fetch participants from Supabase, falling back to static directory:", err);
+      console.warn("Failed to fetch participants from Supabase, merging with static directory:", err);
     }
 
-    return INITIAL_DIRECTORY_MEMBERS;
+    // Merge Supabase records with INITIAL_DIRECTORY_MEMBERS, avoiding duplicates by id or name
+    const memberMap = new Map<string, DirectoryMember>();
+
+    // First add static initial members
+    for (const member of INITIAL_DIRECTORY_MEMBERS) {
+      const key = String(member.id || member.name).toLowerCase();
+      memberMap.set(key, member);
+    }
+
+    // Remote (Supabase) records override initial static members if ID or name matches
+    for (const member of remoteMembers) {
+      const key = String(member.id || member.name).toLowerCase();
+      memberMap.set(key, member);
+    }
+
+    return Array.from(memberMap.values());
   }
 
   /**
