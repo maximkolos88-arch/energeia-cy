@@ -3,22 +3,36 @@
  * Manages search filter queries, expertise tags, and member list state
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { DirectoryMember, AsyncState } from '../models/types';
 import { DirectoryRepository, ALL_EXPERTISE_TAGS } from '../services/repositories/DirectoryRepository';
+import { useInitialData } from '../context/InitialDataContext';
 
 export function useDirectoryController() {
+  const initialData = useInitialData();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [tagMatchMode, setTagMatchMode] = useState<'ALL' | 'ANY'>('ANY');
   const [selectedMember, setSelectedMember] = useState<DirectoryMember | null>(null);
 
-  const [state, setState] = useState<AsyncState<DirectoryMember[]>>({
-    data: [],
-    loading: true,
-    error: null,
-    empty: false
+  const [state, setState] = useState<AsyncState<DirectoryMember[]>>(() => {
+    if (initialData?.directoryMembers && initialData.directoryMembers.length > 0) {
+      return {
+        data: initialData.directoryMembers,
+        loading: false,
+        error: null,
+        empty: false
+      };
+    }
+    return {
+      data: [],
+      loading: true,
+      error: null,
+      empty: false
+    };
   });
+
+  const initialDataUsed = useRef(Boolean(initialData?.directoryMembers && initialData.directoryMembers.length > 0));
 
   const fetchDirectory = useCallback(async (queryStr: string, tags: string[], matchMode: 'ALL' | 'ANY') => {
     setState(prev => ({ ...prev, loading: true, error: null }));
@@ -41,6 +55,11 @@ export function useDirectoryController() {
   }, []);
 
   useEffect(() => {
+    if (initialDataUsed.current && !searchQuery && selectedTags.length === 0) {
+      initialDataUsed.current = false;
+      return;
+    }
+
     const timer = setTimeout(() => {
       fetchDirectory(searchQuery, selectedTags, tagMatchMode);
     }, 200); // Debounce search input
@@ -89,4 +108,3 @@ export function useDirectoryController() {
     refresh: () => fetchDirectory(searchQuery, selectedTags, tagMatchMode)
   };
 }
-

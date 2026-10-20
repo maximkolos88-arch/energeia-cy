@@ -3,9 +3,10 @@
  * Manages category filtering, fetching, pagination, and UI state
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { NewsItem, NewsCategory, AsyncState } from '../models/types';
 import { NewsRepository } from '../services/repositories/NewsRepository';
+import { useInitialData } from '../context/InitialDataContext';
 
 export const NEWS_CATEGORIES: NewsCategory[] = [
   'All Updates',
@@ -16,14 +17,26 @@ export const NEWS_CATEGORIES: NewsCategory[] = [
 ];
 
 export function useNewsController() {
+  const initialData = useInitialData();
   const [activeCategory, setActiveCategory] = useState<NewsCategory>('All Updates');
-  const [state, setState] = useState<AsyncState<NewsItem[]>>({
-    data: [],
-    loading: true,
-    error: null,
-    empty: false
+  const [state, setState] = useState<AsyncState<NewsItem[]>>(() => {
+    if (initialData?.newsItems && initialData.newsItems.length > 0) {
+      return {
+        data: initialData.newsItems,
+        loading: false,
+        error: null,
+        empty: false
+      };
+    }
+    return {
+      data: [],
+      loading: true,
+      error: null,
+      empty: false
+    };
   });
   const [visibleCount, setVisibleCount] = useState<number>(20);
+  const initialDataUsed = useRef(Boolean(initialData?.newsItems && initialData.newsItems.length > 0));
 
   const fetchNews = useCallback(async (category: NewsCategory) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
@@ -46,6 +59,11 @@ export function useNewsController() {
   }, []);
 
   useEffect(() => {
+    // If we initialized with SSG initial data and haven't switched categories yet, skip initial client refetch
+    if (initialDataUsed.current && activeCategory === 'All Updates') {
+      initialDataUsed.current = false;
+      return;
+    }
     fetchNews(activeCategory);
   }, [activeCategory, fetchNews]);
 
@@ -79,4 +97,3 @@ export function useNewsController() {
     refresh
   };
 }
-

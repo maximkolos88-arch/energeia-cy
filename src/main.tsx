@@ -1,26 +1,36 @@
-import {StrictMode} from 'react';
-import {createRoot} from 'react-dom/client';
+import { StrictMode } from 'react';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import './lib/i18n';
+import { InitialData } from './context/InitialDataContext';
 
 document.documentElement.classList.remove('dark');
 document.documentElement.classList.add('light');
 document.documentElement.setAttribute('data-theme', 'light');
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root')!;
+const initialData: InitialData | undefined = (window as any).__INITIAL_DATA__;
+
+const appComponent = (
   <StrictMode>
-    <App />
-  </StrictMode>,
+    <App initialData={initialData} />
+  </StrictMode>
 );
 
+if (rootElement.hasChildNodes() && rootElement.children.length > 0) {
+  hydrateRoot(rootElement, appComponent);
+} else {
+  createRoot(rootElement).render(appComponent);
+}
+
 // Clear app badge when application opens
-if (navigator && 'clearAppBadge' in navigator) {
+if (typeof navigator !== 'undefined' && 'clearAppBadge' in navigator) {
   navigator.clearAppBadge().catch((e) => console.warn('Failed to clear app badge:', e));
 }
 
 // Register service worker with immediate update checking and controller change auto-reload
-if ('serviceWorker' in navigator) {
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   let refreshing = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!refreshing) {

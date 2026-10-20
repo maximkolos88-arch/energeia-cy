@@ -1,17 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from './PageHeader';
 import { CourseCard } from './CourseCard';
 import { AcademyCourse } from '../models/types';
 import { CourseRepository } from '../services/repositories/CourseRepository';
+import { useInitialData } from '../context/InitialDataContext';
 
 export const AcademyScreen: React.FC = () => {
   const { t } = useTranslation();
-  const [courses, setCourses] = useState<AcademyCourse[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const initialData = useInitialData();
+  const [courses, setCourses] = useState<AcademyCourse[]>(() => {
+    if (initialData?.courses && initialData.courses.length > 0) {
+      return initialData.courses.filter(course => course.isPublished);
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState<boolean>(() => !(initialData?.courses && initialData.courses.length > 0));
   const [error, setError] = useState<string | null>(null);
+  const initialDataUsed = useRef(Boolean(initialData?.courses && initialData.courses.length > 0));
 
   useEffect(() => {
+    if (initialDataUsed.current) {
+      initialDataUsed.current = false;
+      return;
+    }
     const fetchCourses = async () => {
       try {
         setLoading(true);
