@@ -3,6 +3,7 @@ import { Session } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
 import { TopAppBar } from './components/TopAppBar';
 import { BottomNavBar } from './components/BottomNavBar';
+import { Footer } from './components/Footer';
 import { NewsFeedScreen } from './components/NewsFeedScreen';
 import { DirectoryScreen } from './components/DirectoryScreen';
 import { AboutScreen } from './components/AboutScreen';
@@ -16,12 +17,21 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { useTranslation } from 'react-i18next';
 import { FEATURES } from './config/features';
+import { InitialDataProvider, InitialData } from './context/InitialDataContext';
 
-export default function App() {
+export interface AppProps {
+  path?: string;
+  initialData?: InitialData;
+}
+
+export default function App({ path: propPath, initialData }: AppProps) {
   const { i18n } = useTranslation();
   const [session, setSession] = useState<Session | null>(null);
+
+  const currentPath = propPath ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
+
   const [activeTab, setActiveTab] = useState<string>(() => {
-    const path = window.location.pathname;
+    const path = currentPath;
     if ((path === '/members' || path === '/directory') && FEATURES.enableMembers) return 'members';
     if (path === '/terminal' && FEATURES.enableTerminal) return 'terminal';
     if (path === '/magazine' && FEATURES.enableMagazine) return 'magazine';
@@ -30,14 +40,16 @@ export default function App() {
     if (path === '/register' && FEATURES.enableRegister) return 'register';
     
     // Redirect unreleased/disabled URLs back to homepage (/)
-    if (typeof window !== 'undefined' && path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news')) {
+    if (typeof window !== 'undefined' && path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news') && !path.startsWith('/articles')) {
       window.history.replaceState({}, '', '/');
     }
     return 'news';
   });
+
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(() => {
-    return window.location.pathname.startsWith('/admin');
+    return currentPath.startsWith('/admin');
   });
+
   const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Language state controller (Default to browser language or 'en', save to localStorage)
@@ -74,15 +86,19 @@ export default function App() {
 
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
-    localStorage.setItem('app_lang', lang);
-    localStorage.setItem('energeia_language', lang); // compatibility backup
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('app_lang', lang);
+      localStorage.setItem('energeia_language', lang); // compatibility backup
+    }
     i18n.changeLanguage(lang);
   };
 
   // Synchronize HTML attributes (RTL dir and lang locale)
   useEffect(() => {
-    document.documentElement.lang = language;
-    document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language;
+      document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+    }
   }, [language]);
 
   // Client mount detection log
@@ -107,17 +123,21 @@ export default function App() {
     clearBadge();
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
         clearBadge();
       }
     };
 
-    window.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', clearBadge);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('focus', clearBadge);
+    }
 
     return () => {
-      window.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', clearBadge);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('focus', clearBadge);
+      }
     };
   }, []);
 
@@ -138,6 +158,8 @@ export default function App() {
 
   // Monitor browser history state changes for SPA routing fallback
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const handleLocationChange = () => {
       const path = window.location.pathname;
       setIsAdminRoute(path === '/admin' || path.startsWith('/admin'));
@@ -155,8 +177,8 @@ export default function App() {
       } else if (path === '/register' && FEATURES.enableRegister) {
         setActiveTab('register');
       } else {
-        // If path is not root / or /admin or /news, redirect back to /
-        if (path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news')) {
+        // If path is not root / or /admin or /news or /articles, redirect back to /
+        if (path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news') && !path.startsWith('/articles')) {
           window.history.replaceState({}, '', '/');
         }
         setActiveTab('news');
@@ -187,78 +209,90 @@ export default function App() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    if (tab === 'news') {
-      window.history.pushState({}, '', '/');
-    } else {
-      window.history.pushState({}, '', `/${tab}`);
+    if (typeof window !== 'undefined') {
+      if (tab === 'news') {
+        window.history.pushState({}, '', '/');
+      } else {
+        window.history.pushState({}, '', `/${tab}`);
+      }
     }
   };
 
-  const navigateToAdmin = () => {
-    window.history.pushState({}, '', '/admin');
-    window.dispatchEvent(new Event('popstate'));
-  };
-
   const navigateToHome = () => {
-    window.history.pushState({}, '', '/');
-    window.dispatchEvent(new Event('popstate'));
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', '/');
+      window.dispatchEvent(new Event('popstate'));
+    }
     setRefreshKey(prev => prev + 1); // reload news
   };
 
   if (isAdminRoute) {
     if (!session) {
-      return <LoginScreen onSuccess={() => setIsAdminRoute(true)} />;
+      return (
+        <InitialDataProvider value={initialData}>
+          <LoginScreen onSuccess={() => setIsAdminRoute(true)} />
+        </InitialDataProvider>
+      );
     }
-    return <AdminPanel onClose={navigateToHome} />;
+    return (
+      <InitialDataProvider value={initialData}>
+        <AdminPanel onClose={navigateToHome} />
+      </InitialDataProvider>
+    );
   }
 
   const renderActiveScreen = () => {
     switch (activeTab) {
       case 'news':
-        return <NewsFeedScreen key={refreshKey} language={language} />;
+        return <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       case 'members':
-        return FEATURES.enableMembers ? <DirectoryScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
+        return FEATURES.enableMembers ? <DirectoryScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       case 'magazine':
-        return FEATURES.enableMagazine ? <MagazineScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
+        return FEATURES.enableMagazine ? <MagazineScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       case 'academy':
-        return FEATURES.enableAcademy ? <AcademyScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
+        return FEATURES.enableAcademy ? <AcademyScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       case 'about':
-        return FEATURES.enableAbout ? <AboutScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
+        return FEATURES.enableAbout ? <AboutScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       case 'register':
-        return FEATURES.enableRegister ? <RegisterScreen /> : <NewsFeedScreen key={refreshKey} language={language} />;
+        return FEATURES.enableRegister ? <RegisterScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       default:
-        return <NewsFeedScreen key={refreshKey} language={language} />;
+        return <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-background flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
-      <ScrollToTop trigger={activeTab} />
-      {/* Sticky Top App Bar */}
-      <TopAppBar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        language={language}
-        onLanguageChange={handleLanguageChange}
-      />
+    <InitialDataProvider value={initialData}>
+      <div className="min-h-screen bg-background text-on-background flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
+        <ScrollToTop trigger={activeTab} />
+        {/* Sticky Top App Bar */}
+        <TopAppBar
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          language={language}
+          onLanguageChange={handleLanguageChange}
+        />
 
-      {/* Main View Area */}
-      <main className="flex-1 w-full flex flex-col main-content">
+        {/* Main View Area */}
+        <main className="flex-1 w-full flex flex-col main-content pt-16">
+          <ErrorBoundary>
+            {renderActiveScreen()}
+          </ErrorBoundary>
+        </main>
+
+        {/* Global Footer */}
+        <Footer />
+
+        {/* Mobile Bottom Navigation Bar */}
+        <BottomNavBar
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
+
+        {/* PWA Home Screen Onboarding Prompt */}
         <ErrorBoundary>
-          {renderActiveScreen()}
+          <PWAInstallPrompt />
         </ErrorBoundary>
-      </main>
-
-      {/* Mobile Bottom Navigation Bar */}
-      <BottomNavBar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-      />
-
-      {/* PWA Home Screen Onboarding Prompt */}
-      <ErrorBoundary>
-        <PWAInstallPrompt />
-      </ErrorBoundary>
-    </div>
+      </div>
+    </InitialDataProvider>
   );
 }

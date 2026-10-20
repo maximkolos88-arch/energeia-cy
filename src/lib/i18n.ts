@@ -6,11 +6,16 @@ import ru from '../locales/ru.json';
 import he from '../locales/he.json';
 
 const getSavedLanguage = (): string => {
-  const saved = localStorage.getItem('energeia_language');
-  if (saved) return saved;
-  const browserLang = navigator.language.split('-')[0].toLowerCase();
-  const supported = ['en', 'el', 'ru', 'he'];
-  return supported.includes(browserLang) ? browserLang : 'en';
+  if (typeof window === 'undefined') return 'en';
+  try {
+    const saved = localStorage.getItem('energeia_language') || localStorage.getItem('app_lang');
+    if (saved) return saved;
+    const browserLang = typeof navigator !== 'undefined' && navigator.language ? navigator.language.split('-')[0].toLowerCase() : 'en';
+    const supported = ['en', 'el', 'ru', 'he'];
+    return supported.includes(browserLang) ? browserLang : 'en';
+  } catch (e) {
+    return 'en';
+  }
 };
 
 i18n

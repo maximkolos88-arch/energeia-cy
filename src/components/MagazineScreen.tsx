@@ -1,18 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MagazineIssue } from '../models/types';
 import { MagazineRepository } from '../services/repositories/MagazineRepository';
-import { BookOpen, Calendar, ArrowUpRight, HelpCircle } from 'lucide-react';
 import PageHeader from './PageHeader';
 import MagazineCard from './MagazineCard';
+import { useInitialData } from '../context/InitialDataContext';
 
 export const MagazineScreen: React.FC = () => {
   const { t } = useTranslation();
-  const [issues, setIssues] = useState<MagazineIssue[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initialData = useInitialData();
+  const [issues, setIssues] = useState<MagazineIssue[]>(() => {
+    if (initialData?.magazines && initialData.magazines.length > 0) {
+      return initialData.magazines.filter(issue => issue.isPublished);
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState<boolean>(() => !(initialData?.magazines && initialData.magazines.length > 0));
   const [error, setError] = useState<string | null>(null);
+  const initialDataUsed = useRef(Boolean(initialData?.magazines && initialData.magazines.length > 0));
 
   useEffect(() => {
+    if (initialDataUsed.current) {
+      initialDataUsed.current = false;
+      return;
+    }
     const fetchIssues = async () => {
       try {
         setLoading(true);

@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "prebuild": "node scripts/generate-sitemap.js",
-    "build": "rm -rf dist && vite build",
+    "build:client": "vite build",
+    "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "prerender": "tsx scripts/prerender.ts",
+    "build": "rm -rf dist && vite build && vite build --ssr src/entry-server.tsx --outDir dist/server && tsx scripts/prerender.ts && node scripts/generate-sitemap.js",
     "sitemap": "node scripts/generate-sitemap.js",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",

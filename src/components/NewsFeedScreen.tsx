@@ -5,6 +5,7 @@ import { useNewsController } from '../controllers/useNewsController';
 import { NewsItem, NewsCategory } from '../models/types';
 import { NewsRepository } from '../services/repositories/NewsRepository';
 import { SEOManager } from './seo/SEOManager';
+import { useInitialData } from '../context/InitialDataContext';
 import { 
   ArrowRight, 
   ExternalLink, 
@@ -33,10 +34,12 @@ import {
 
 interface NewsFeedScreenProps {
   language?: string;
+  path?: string;
 }
 
-export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' }) => {
+export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en', path: propPath }) => {
   const { t } = useTranslation();
+  const initialData = useInitialData();
   const {
     category,
     categories,
@@ -65,10 +68,14 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     checkScrollable();
     // Add small delay to ensure rendering completes
     const timer = setTimeout(checkScrollable, 200);
-    window.addEventListener('resize', checkScrollable);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', checkScrollable);
+    }
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('resize', checkScrollable);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', checkScrollable);
+      }
     };
   }, [categories, newsItems]);
 
@@ -81,10 +88,6 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     if (el) {
       el.scrollBy({ left: 160, behavior: 'smooth' });
     }
-  };
-
-  const getProxyImageUrl = (url: string) => {
-    return url || '';
   };
 
   const getLocalizedValue = (item: NewsItem, field: 'title' | 'summary' | 'content', lang: string): string => {
@@ -144,10 +147,15 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     return dateStr;
   };
 
-  const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(() => {
+    if (initialData?.selectedArticle) return initialData.selectedArticle;
+    return null;
+  });
 
-  // Check URL pathname for direct /news/[slug] deep-linking
+  // Check URL pathname for direct /news/[slug] deep-linking on client side
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const handleUrlCheck = async () => {
       const path = window.location.pathname;
       if (path.startsWith('/news/') && path.length > 6) {
@@ -163,14 +171,16 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
       }
     };
 
-    handleUrlCheck();
+    if (!selectedArticle) {
+      handleUrlCheck();
+    }
     window.addEventListener('popstate', handleUrlCheck);
     return () => window.removeEventListener('popstate', handleUrlCheck);
   }, []);
 
   // Keyboard Accessibility: Close article modal on Escape key press
   useEffect(() => {
-    if (!selectedArticle) return;
+    if (!selectedArticle || typeof window === 'undefined') return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setSelectedArticle(null);
@@ -182,54 +192,6 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedArticle]);
-
-  // Important Network Bulletins State
-  const [isNetworkWindowCollapsed, setIsNetworkWindowCollapsed] = useState<boolean>(false);
-  const [activeBulletinModal, setActiveBulletinModal] = useState<any | null>(null);
-  const [networkBulletins] = useState([
-    {
-      id: 'nb-1',
-      title: 'Mandatory Technical Directive 04/2026: Renewable Grid Synchronization & Telemetry',
-      priority: 'URGENT DIRECTIVE',
-      date: 'Today',
-      badgeStyle: 'bg-[#fce8e6] text-[#c5221f]',
-      summary: 'All certified energy engineers and solar contractors must update telemetry hardware protocols for PV installations exceeding 150 kW by Q3 2026 as mandated by CERA & EAC.',
-      details: 'In accordance with CERA Regulatory Decision No. 18/2026, all grid-tied solar photovoltaic systems and commercial battery storage installations operating within Cyprus must incorporate standardized telemetry nodes. Registered directory partners can review compliance standards and download verification tools directly.'
-    },
-    {
-      id: 'nb-2',
-      title: 'Ministry of Energy (MECI) Opens €30M Solar Battery Storage Subsidy Scheme',
-      priority: 'GOVERNMENT GRANT',
-      date: 'Yesterday',
-      badgeStyle: 'bg-[#e6f4ea] text-[#137333]',
-      summary: 'Fast-track application portal launched for residential and commercial energy storage retrofits with subsidies up to €1,000 / kWh.',
-      details: 'The Cyprus Ministry of Energy, Commerce and Industry (MECI) has officially inaugurated the 2026 Energy Independence Subsidy Pool. Registered ESG auditors and solar contractors in the Energeia Directory are authorized to process fast-track applicant certifications.'
-    },
-    {
-      id: 'nb-3',
-      title: 'Cyprus All-Energy Network 2026 Member Synchronization & Annual Assembly',
-      priority: 'NETWORK BULLETIN',
-      date: '2 days ago',
-      badgeStyle: 'bg-[#e8f5e9] text-[#1CA350]',
-      summary: 'Registration open for all verified engineers, suppliers, and energy market participants across Cyprus.',
-      details: 'Join the annual summit in Nicosia featuring keynotes from CERA commissioners, EAC grid operators, and international clean energy delegates. Verified network members receive complimentary technical workshop passes.'
-    }
-  ]);
-
-
-  const formatCategoryDisplay = (cat?: string): string => {
-    if (!cat) return '';
-    const trimmed = cat.trim();
-    if (trimmed.toLowerCase() === 'uncategorized') return '';
-    
-    const lower = trimmed.toLowerCase();
-    if (lower === 'renewables') return 'Renewables';
-    if (lower === 'oil & gas') return 'Oil & Gas';
-    if (lower === 'government & policy') return 'Government & Policy';
-    if (lower === 'grants & subsidies') return 'Grants & Subsidies';
-    
-    return trimmed.replace(/\b\w/g, c => c.toUpperCase());
-  };
 
   const getBadgeStyle = (categoryOrBadge?: string) => {
     const c = categoryOrBadge?.toLowerCase() || '';
@@ -372,20 +334,24 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                     role="button"
                     aria-label={`Read article: ${titleText}`}
                     onClick={() => {
-                      if (item.isEditorial && item.slug) {
+                      if (item.isEditorial && item.slug && typeof window !== 'undefined') {
                         window.history.pushState({}, '', `/news/${item.slug}`);
                       }
                       setSelectedArticle(item);
-                      (window as any).trackCustomEvent?.('post_read', item.id);
+                      if (typeof window !== 'undefined') {
+                        (window as any).trackCustomEvent?.('post_read', item.id);
+                      }
                     }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        if (item.isEditorial && item.slug) {
+                        if (item.isEditorial && item.slug && typeof window !== 'undefined') {
                           window.history.pushState({}, '', `/news/${item.slug}`);
                         }
                         setSelectedArticle(item);
-                        (window as any).trackCustomEvent?.('post_read', item.id);
+                        if (typeof window !== 'undefined') {
+                          (window as any).trackCustomEvent?.('post_read', item.id);
+                        }
                       }
                     }}
                     className={`bg-white dark:bg-[#1b1c1e] border rounded-xl p-4 md:p-6 transition-all duration-200 ease-in-out group cursor-pointer relative flex ${
@@ -472,7 +438,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           onClick={(e) => { 
             if (e.target === e.currentTarget) {
               setSelectedArticle(null);
-              if (window.location.pathname.startsWith('/news/')) {
+              if (typeof window !== 'undefined' && window.location.pathname.startsWith('/news/')) {
                 window.history.pushState({}, '', '/');
               }
             }
@@ -486,7 +452,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
             <button
               onClick={() => {
                 setSelectedArticle(null);
-                if (window.location.pathname.startsWith('/news/')) {
+                if (typeof window !== 'undefined' && window.location.pathname.startsWith('/news/')) {
                   window.history.pushState({}, '', '/');
                 }
               }}
@@ -558,53 +524,6 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           </article>
         </div>
       )}
-      {/* Network Bulletin Detail Modal */}
-      {activeBulletinModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#202124] rounded-3xl border border-[#dadce0] dark:border-[#3c4043] max-w-lg w-full p-6 relative shadow-2xl space-y-5">
-            <button
-              onClick={() => setActiveBulletinModal(null)}
-              aria-label="Close bulletin" className="absolute top-4 right-4 p-2 text-[#5f6368] hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043] rounded-full"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-2">
-              <span className={`px-2.5 py-0.5 rounded text-xs font-bold ${activeBulletinModal.badgeStyle}`}>
-                {activeBulletinModal.priority}
-              </span>
-              <span className="text-xs text-[#5f6368]">
-                {activeBulletinModal.date}
-              </span>
-            </div>
-
-            <h2 className="text-xl font-medium text-[#202124] dark:text-white leading-snug">
-              {activeBulletinModal.title}
-            </h2>
-
-            <div className="p-4 bg-[#f8f9fa] dark:bg-[#2d2e30] border-l-4 border-[#1CA350] rounded-r-xl">
-              <p className="text-xs text-[#202124] dark:text-gray-200 leading-relaxed font-medium">
-                "{activeBulletinModal.summary}"
-              </p>
-            </div>
-
-            <p className="text-xs text-[#5f6368] dark:text-gray-300 leading-relaxed">
-              {activeBulletinModal.details}
-            </p>
-
-            <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
-              <button
-                onClick={() => setActiveBulletinModal(null)}
-                className="px-5 py-2 bg-[#1CA350] text-white rounded-full text-xs font-medium hover:bg-[#15823f]"
-              >
-                Acknowledge Directive
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
-
-
