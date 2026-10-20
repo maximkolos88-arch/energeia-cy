@@ -31,6 +31,15 @@ const DB_FILE = path.join(__dirname, 'db.json');
 app.use(cors());
 app.use(express.json());
 
+// Host redirect and canonical header enforcement middleware
+app.use((req, res, next) => {
+  const host = (req.headers["x-forwarded-host"] || req.headers.host || "").toLowerCase();
+  if (host === "energeia.cy") {
+    return res.redirect(301, `https://www.energeia.cy${req.originalUrl}`);
+  }
+  next();
+});
+
 const formatDateBackend = (dateStr) => {
   if (!dateStr) return 'Just now';
   try {

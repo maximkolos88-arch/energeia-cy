@@ -5,6 +5,19 @@
       "schedule": "0 0 * * *"
     }
   ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "energeia.cy"
+        }
+      ],
+      "destination": "https://www.energeia.cy/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*\\.html)",

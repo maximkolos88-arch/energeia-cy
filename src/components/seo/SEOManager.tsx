@@ -13,8 +13,8 @@ interface SEOProps {
 export const SEOManager: React.FC<SEOProps> = ({
   title = 'Energeia - Cyprus Energy News & Market Intelligence',
   description = 'Cyprus energy news, renewable market intelligence, regulatory policy updates, and clean energy analytics.',
-  url = 'https://energeia.cy',
-  image = 'https://energeia.cy/apple-touch-icon-180x180.png',
+  url = 'https://www.energeia.cy',
+  image = 'https://www.energeia.cy/apple-touch-icon-180x180.png',
   article = null,
   siteName = 'Energeia Cyprus All-Energy Network'
 }) => {
@@ -23,7 +23,7 @@ export const SEOManager: React.FC<SEOProps> = ({
     const articleTitle = article?.title || title;
     const fullTitle = article ? `${articleTitle} | Energeia` : title;
     const metaDescription = article?.summary || article?.content?.slice(0, 160) || description;
-    const currentUrl = article?.slug ? `https://energeia.cy/news/${article.slug}` : url;
+    const currentUrl = article?.slug ? `https://www.energeia.cy/news/${article.slug}` : url;
     const imageUrl = article?.image_url || article?.imageUrl || image;
     const publishedDate = article?.publishedAt || article?.createdAt || new Date().toISOString();
 
@@ -91,15 +91,15 @@ export const SEOManager: React.FC<SEOProps> = ({
         'author': {
           '@type': 'Organization',
           'name': 'Energeia Editorial Team',
-          'url': 'https://energeia.cy'
+          'url': 'https://www.energeia.cy'
         },
         'publisher': {
           '@type': 'Organization',
           'name': 'Energeia',
-          'url': 'https://energeia.cy',
+          'url': 'https://www.energeia.cy',
           'logo': {
             '@type': 'ImageObject',
-            'url': 'https://energeia.cy/apple-touch-icon-180x180.png'
+            'url': 'https://www.energeia.cy/apple-touch-icon-180x180.png'
           }
         }
       };
@@ -110,7 +110,7 @@ export const SEOManager: React.FC<SEOProps> = ({
         '@type': 'WebSite',
         'name': 'Energeia',
         'alternateName': 'Energeia Cyprus All-Energy Network',
-        'url': 'https://energeia.cy',
+        'url': 'https://www.energeia.cy',
         'description': description
       };
       scriptTag.text = JSON.stringify(websiteSchema);
