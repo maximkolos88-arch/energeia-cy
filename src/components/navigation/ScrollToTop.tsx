@@ -12,9 +12,7 @@ export default function ScrollToTop({ trigger }: ScrollToTopProps) {
   useEffect(() => {
     if (isFirstMount.current) {
       isFirstMount.current = false;
-      if (typeof window !== 'undefined' && window.scrollY === 0) {
-        return;
-      }
+      return;
     }
 
     window.scrollTo({

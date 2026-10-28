@@ -234,7 +234,18 @@ async function prerender() {
     process.exit(1);
   }
 
-  const indexTemplate = fs.readFileSync(templatePath, 'utf8');
+  let indexTemplate = fs.readFileSync(templatePath, 'utf8');
+  indexTemplate = indexTemplate.replace(
+    /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
+    (match, cssHref) => {
+      const cssFilePath = path.join(distPath, cssHref);
+      if (fs.existsSync(cssFilePath)) {
+        const cssContent = fs.readFileSync(cssFilePath, 'utf8');
+        return `<style>${cssContent}</style>`;
+      }
+      return match;
+    }
+  );
 
   // Import entry-server module dynamically
   const entryServerPath = path.resolve(distPath, 'server/entry-server.js');

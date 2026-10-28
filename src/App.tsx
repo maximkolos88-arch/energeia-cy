@@ -358,14 +358,12 @@ export default function App({ path: propPath, initialData }: AppProps) {
         </a>
         <ScrollToTop trigger={activeTab} />
         {/* Sticky Top App Bar */}
-        <Suspense fallback={null}>
-          <TopAppBar
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            language={language}
-            onLanguageChange={handleLanguageChange}
-          />
-        </Suspense>
+        <TopAppBar
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          language={language}
+          onLanguageChange={handleLanguageChange}
+        />
 
         {/* Main View Area */}
         <main id="main-content" tabIndex={-1} className="flex-1 w-full flex flex-col main-content pt-16 focus:outline-none">
@@ -377,13 +375,11 @@ export default function App({ path: propPath, initialData }: AppProps) {
         </main>
 
         {/* Global Footer & Mobile Bottom Navigation Bar */}
-        <Suspense fallback={null}>
-          <Footer />
-          <BottomNavBar
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-          />
-        </Suspense>
+        <Footer />
+        <BottomNavBar
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
 
         {/* PWA Home Screen Onboarding Prompt */}
         {mountDeferredUI && (
