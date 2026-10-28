@@ -2,25 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
     <loc>https://www.energeia.cy/</loc>
-    <lastmod>2026-10-28T09:45:53.187Z</lastmod>
+    <lastmod>2026-10-28T11:26:41.952Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.energeia.cy/about</loc>
-    <lastmod>2026-10-28T09:45:53.187Z</lastmod>
+    <lastmod>2026-10-28T11:26:41.952Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/096db1c7-aaa3-40d3-83a7-d150a4185fc8</loc>
-    <lastmod>2026-10-19T15:14:41.960Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.energeia.cy/news/2146c212-2801-4772-afe2-7f6431f814d6</loc>
-    <lastmod>2026-10-25T08:31:20.624Z</lastmod>
+    <loc>https://www.energeia.cy/news/8c28cbd4-8d34-4de6-b88b-64cc164f3360</loc>
+    <lastmod>2026-10-19T15:14:54.597Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -31,20 +25,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.energeia.cy/news/0e54d21c-593a-4f29-bb74-d7a7551dec16</loc>
+    <lastmod>2026-10-15T01:08:06.536Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.energeia.cy/news/ed1b29d0-c76f-4607-94cd-3279ff36ebd7</loc>
     <lastmod>2026-10-15T01:08:14.207Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/8c28cbd4-8d34-4de6-b88b-64cc164f3360</loc>
-    <lastmod>2026-10-19T15:14:54.597Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.energeia.cy/news/5f72f4f3-5d11-4e06-a214-99f8b7fd705c</loc>
-    <lastmod>2026-10-25T08:31:03.367Z</lastmod>
+    <loc>https://www.energeia.cy/news/2146c212-2801-4772-afe2-7f6431f814d6</loc>
+    <lastmod>2026-10-25T08:31:20.624Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -55,8 +49,8 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/0e54d21c-593a-4f29-bb74-d7a7551dec16</loc>
-    <lastmod>2026-10-15T01:08:06.536Z</lastmod>
+    <loc>https://www.energeia.cy/news/096db1c7-aaa3-40d3-83a7-d150a4185fc8</loc>
+    <lastmod>2026-10-19T15:14:41.960Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -139,13 +133,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/0d0a7abc-35a5-486e-85ef-41393b23e3bf</loc>
+    <loc>https://www.energeia.cy/news/67097367-7256-449d-a0cb-a623dc1df259</loc>
     <lastmod>2026-09-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/67097367-7256-449d-a0cb-a623dc1df259</loc>
+    <loc>https://www.energeia.cy/news/0d0a7abc-35a5-486e-85ef-41393b23e3bf</loc>
     <lastmod>2026-09-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -175,13 +169,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/ee19717a-b56d-4e71-a13f-d284092c8f06</loc>
+    <loc>https://www.energeia.cy/news/0d0c80fe-5971-4be2-bd8f-e521c5ef3ebf</loc>
     <lastmod>2026-09-09T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/0d0c80fe-5971-4be2-bd8f-e521c5ef3ebf</loc>
+    <loc>https://www.energeia.cy/news/ee19717a-b56d-4e71-a13f-d284092c8f06</loc>
     <lastmod>2026-09-09T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -193,7 +187,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/db8c13e9-328a-4133-b376-41723505593e</loc>
+    <loc>https://www.energeia.cy/news/d0ff3ae4-7f8a-436f-bcf8-c7cc84b8320c</loc>
     <lastmod>2026-09-07T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -205,7 +199,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/d0ff3ae4-7f8a-436f-bcf8-c7cc84b8320c</loc>
+    <loc>https://www.energeia.cy/news/db8c13e9-328a-4133-b376-41723505593e</loc>
     <lastmod>2026-09-07T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -223,13 +217,49 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/4cd81519-72e2-4048-9b53-cbca58f24766</loc>
+    <loc>https://www.energeia.cy/news/dcee58e6-a172-497f-ad14-23b855909d80</loc>
+    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.energeia.cy/news/d5d4d4dd-dc82-4d92-9c3d-fd4fe81be4e3</loc>
     <lastmod>2026-09-04T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.energeia.cy/news/d306856f-222a-489f-97a5-2b4ab8f65d1b</loc>
+    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.energeia.cy/news/3e66ccc3-561e-43a5-86e6-e371f0d4525d</loc>
+    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.energeia.cy/news/7966e6ce-e1a1-4859-9f3c-6b89a117dfb8</loc>
+    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.energeia.cy/news/b6d81f89-5cde-41c3-b1a6-ed8ee4e96f40</loc>
+    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.energeia.cy/news/4cd81519-72e2-4048-9b53-cbca58f24766</loc>
+    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.energeia.cy/news/881a91d5-0755-4909-b6c0-d2fbcefe7a04</loc>
     <lastmod>2026-09-04T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -242,42 +272,6 @@
   </url>
   <url>
     <loc>https://www.energeia.cy/news/1388a3ac-e46e-4723-b40c-a4fe06a24374</loc>
-    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.energeia.cy/news/d5d4d4dd-dc82-4d92-9c3d-fd4fe81be4e3</loc>
-    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.energeia.cy/news/b6d81f89-5cde-41c3-b1a6-ed8ee4e96f40</loc>
-    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.energeia.cy/news/7966e6ce-e1a1-4859-9f3c-6b89a117dfb8</loc>
-    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.energeia.cy/news/881a91d5-0755-4909-b6c0-d2fbcefe7a04</loc>
-    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.energeia.cy/news/3e66ccc3-561e-43a5-86e6-e371f0d4525d</loc>
-    <lastmod>2026-09-04T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.energeia.cy/news/dcee58e6-a172-497f-ad14-23b855909d80</loc>
     <lastmod>2026-09-04T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -373,13 +367,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/da21c48b-3e01-487e-86fa-8115333dfe92</loc>
+    <loc>https://www.energeia.cy/news/3ad2639f-40f3-42a9-a1db-8c4605cee2e4</loc>
     <lastmod>2026-08-09T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.energeia.cy/news/3ad2639f-40f3-42a9-a1db-8c4605cee2e4</loc>
+    <loc>https://www.energeia.cy/news/da21c48b-3e01-487e-86fa-8115333dfe92</loc>
     <lastmod>2026-08-09T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

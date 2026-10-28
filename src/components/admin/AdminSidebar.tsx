@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  BarChart2, Newspaper, FileText, Users, BookOpen, GraduationCap, Inbox, Bot, ChevronLeft, ChevronRight, ShieldCheck, X
+  BarChart2, Newspaper, FileText, Users, BookOpen, GraduationCap, Inbox, ChevronLeft, ChevronRight, ShieldCheck, X
 } from 'lucide-react';
 
-export type AdminModule = 'dashboard' | 'news' | 'articles' | 'directory' | 'magazine' | 'academy' | 'applications' | 'scraper';
+export type AdminModule = 'dashboard' | 'news' | 'articles' | 'directory' | 'magazine' | 'academy' | 'applications';
 
 interface AdminSidebarProps {
   activeModule: AdminModule;
@@ -39,7 +39,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'magazine', label: 'Magazines', icon: <BookOpen className="w-4 h-4" />, badge: counts.magazine },
     { id: 'academy', label: 'Academy', icon: <GraduationCap className="w-4 h-4" />, badge: counts.academy },
     { id: 'applications', label: 'Lead Inquiries', icon: <Inbox className="w-4 h-4" />, badge: counts.applications },
-    { id: 'scraper', label: 'Auto Scraper', icon: <Bot className="w-4 h-4" /> },
   ];
 
   const sidebarContent = (
