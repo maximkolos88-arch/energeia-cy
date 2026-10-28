@@ -25,7 +25,7 @@ export interface ScrapedNewsDraft {
   sourceUrl: string;
   category: 'CERA' | 'EAC' | 'Grants' | 'Tariffs' | 'Market' | 'EU Directives';
   publishedAt: string;
-  status: 'Draft';
+  status: 'Published' | 'Draft';
   createdAt: string;
 }
 
@@ -104,7 +104,7 @@ async function fetchAndParseUrl(source: typeof TARGET_SOURCES[0]): Promise<Scrap
           sourceUrl: fullLink,
           category: source.category,
           publishedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-          status: 'Draft',
+          status: 'Published',
           createdAt: new Date().toISOString(),
         });
         count++;
@@ -119,7 +119,7 @@ async function fetchAndParseUrl(source: typeof TARGET_SOURCES[0]): Promise<Scrap
         sourceUrl: source.url,
         category: source.category,
         publishedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        status: 'Draft',
+        status: 'Published',
         createdAt: new Date().toISOString(),
       });
     }
