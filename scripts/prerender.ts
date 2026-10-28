@@ -12,6 +12,28 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://spbszwdlcedeanvpsm
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_PUr7qZ5OhSgsLNcZ6WLlgQ_Z1XPpN_m';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+function parseTimestamp(m: any): number {
+  if (m.publishedAt || m.published_at) {
+    const ts = new Date(m.publishedAt || m.published_at).getTime();
+    if (!isNaN(ts) && ts > 0) return ts;
+  }
+  if (m.createdAt || m.created_at) {
+    const ts = new Date(m.createdAt || m.created_at).getTime();
+    if (!isNaN(ts) && ts > 0) return ts;
+  }
+  return 0;
+}
+
+function filterAndSortPublishedNews(items: any[]): any[] {
+  const published = items.filter(item => {
+    const isDraftStatus = item.status && item.status.toString().trim().toLowerCase() === 'draft';
+    const hasTitle = Boolean(item.title && item.title.trim() !== '');
+    return !isDraftStatus && hasTitle;
+  });
+
+  return published.sort((a, b) => parseTimestamp(b) - parseTimestamp(a));
+}
+
 async function loadData() {
   let newsItems: any[] = [];
   let directoryMembers: any[] = [];
@@ -58,6 +80,8 @@ async function loadData() {
   } catch (err) {
     console.warn('Supabase news fetch warning during prerender:', err);
   }
+
+  newsItems = filterAndSortPublishedNews(newsItems);
 
   try {
     const { data: partData, error: partErr } = await supabase
