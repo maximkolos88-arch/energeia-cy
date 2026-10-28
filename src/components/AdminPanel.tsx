@@ -17,7 +17,6 @@ import { AdminDirectoryView } from './admin/AdminDirectoryView';
 import { AdminMagazineView } from './admin/AdminMagazineView';
 import { AdminAcademyView } from './admin/AdminAcademyView';
 import { AdminApplicationsView } from './admin/AdminApplicationsView';
-import { AdminScraperView } from './admin/AdminScraperView';
 import { AdminArticle, AdminDirectoryMember, AdminNewsItem, AdminMagazineIssue, AdminAcademyCourse } from './admin/adminTypes';
 
 interface AdminPanelProps {
@@ -456,29 +455,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
-  // Run Scraper Engine
-  const handleRunScraper = async () => {
-    setRunningScraper(true);
-    setScraperLog(["Initializing Cyprus news aggregator scraper..."]);
-
-    try {
-      const response = await axios.post('/api/run-scraper');
-      setScraperLog(response.data.logs || ["Aggregation complete. Draft entries generated."]);
-      showToast("Scraper completed feed execution.");
-      loadAllData();
-    } catch (err: any) {
-      setScraperLog([
-        "Scraper execution simulated for local environment.",
-        "Scraped 4 target feeds: InBusinessNews, StockWatch, Philenews, FinancialMirror.",
-        "Created 3 draft entries pending review."
-      ]);
-      showToast("Scraper pipeline completed.");
-      loadAllData();
-    } finally {
-      setRunningScraper(false);
-    }
-  };
-
   // Unauthenticated Portal View
   if (!isAuthenticated) {
     return (
@@ -547,8 +523,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     directory: 'Directory Members',
     magazine: 'Digital Magazines',
     academy: 'Academy Catalog',
-    applications: 'Lead Proposals',
-    scraper: 'News Aggregator Engine'
+    applications: 'Lead Proposals'
   };
 
   return (
@@ -593,7 +568,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             isDark={isDark}
             onToggleTheme={handleToggleTheme}
             dbStatus={dbStatus}
-            isScraperActive={runningScraper}
             lastSyncTime={lastSyncTime}
             onRefreshData={loadAllData}
             isRefreshing={isRefreshing}
@@ -717,15 +691,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   />
                 )}
 
-                {activeModule === 'scraper' && (
-                  <AdminScraperView
-                    runningScraper={runningScraper}
-                    onRunScraper={handleRunScraper}
-                    scraperLog={scraperLog}
-                    scrapedDraftsCount={newsList.filter(n => n.status === 'Draft' || n.status === 'DRAFT').length}
-                    lastRunTimestamp={lastSyncTime}
-                  />
-                )}
               </>
             )}
           </main>

@@ -1087,6 +1087,32 @@ export const INITIAL_DIRECTORY_MEMBERS: DirectoryMember[] = [
   }
 ];
 
+const DELETED_MEMBERS_KEY = "energeia_deleted_directory_members";
+
+function getDeletedMemberIds(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(DELETED_MEMBERS_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function recordDeletedMember(id: string, name?: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const set = getDeletedMemberIds();
+    set.add(id);
+    if (name) {
+      set.add(`name:${name.toLowerCase()}`);
+    }
+    localStorage.setItem(DELETED_MEMBERS_KEY, JSON.stringify(Array.from(set)));
+  } catch (err) {
+    console.error("Failed to persist deleted member ID:", err);
+  }
+}
+
 export class DirectoryRepository {
   private static mapSupabaseToMember(item: any): DirectoryMember {
     return {
@@ -1192,17 +1218,25 @@ export class DirectoryRepository {
       console.warn("Failed to fetch participants from Supabase, merging with static directory:", err);
     }
 
+    const deletedSet = getDeletedMemberIds();
+
     // Merge Supabase records with INITIAL_DIRECTORY_MEMBERS, avoiding duplicates by id or name
     const memberMap = new Map<string, DirectoryMember>();
 
     // First add static initial members
     for (const member of INITIAL_DIRECTORY_MEMBERS) {
+      if (deletedSet.has(member.id) || (member.name && deletedSet.has(`name:${member.name.toLowerCase()}`))) {
+        continue;
+      }
       const key = String(member.id || member.name).toLowerCase();
       memberMap.set(key, member);
     }
 
     // Remote (Supabase) records override initial static members if ID or name matches
     for (const member of remoteMembers) {
+      if (deletedSet.has(member.id) || (member.name && deletedSet.has(`name:${member.name.toLowerCase()}`))) {
+        continue;
+      }
       const key = String(member.id || member.name).toLowerCase();
       memberMap.set(key, member);
     }
@@ -1311,27 +1345,37 @@ export class DirectoryRepository {
    * Delete a member (Admin Panel CRUD)
    */
   static async deleteMember(id: string): Promise<DirectoryMember> {
-    const { data, error } = await supabase
-      .from('participants')
-      .delete()
-      .eq('id', id)
-      .select();
-    if (error) {
-      console.error("Failed to delete participant from Supabase:", error.message);
-      throw error;
+    const staticMatch = INITIAL_DIRECTORY_MEMBERS.find(m => m.id === id);
+    recordDeletedMember(id, staticMatch?.name);
+
+    let deletedMember: DirectoryMember | null = null;
+    try {
+      const { data, error } = await supabase
+        .from('participants')
+        .delete()
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error("Failed to delete participant from Supabase:", error.message);
+      } else if (data && data.length > 0) {
+        deletedMember = this.mapSupabaseToMember(data[0]);
+        if (deletedMember.name) {
+          recordDeletedMember(id, deletedMember.name);
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase participant deletion warning:", err);
     }
-    if (!data || data.length === 0) {
-      // If deleted item wasn't returned or was a static/initial member, return fallback representation
-      return {
-        id,
-        name: 'Deleted Member',
-        type: 'Individual',
-        roleOrCategory: '',
-        email: '',
-        category: '',
-        expertiseTags: []
-      };
-    }
-    return this.mapSupabaseToMember(data[0]);
+
+    return deletedMember || staticMatch || {
+      id,
+      name: 'Deleted Member',
+      type: 'Individual',
+      roleOrCategory: '',
+      email: '',
+      category: '',
+      expertiseTags: []
+    };
   }
 }

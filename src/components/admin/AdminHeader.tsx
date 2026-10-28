@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Search, Sun, Moon, Database, Bot, RefreshCw, X, Menu, LogOut, ShieldCheck, Sparkles, CheckCircle
+  Search, Sun, Moon, Database, RefreshCw, X, Menu, LogOut, ShieldCheck, Sparkles, CheckCircle
 } from 'lucide-react';
 
 interface AdminHeaderProps {
@@ -9,7 +9,6 @@ interface AdminHeaderProps {
   isDark: boolean;
   onToggleTheme: () => void;
   dbStatus: 'connected' | 'connecting' | 'error';
-  isScraperActive: boolean;
   lastSyncTime: string | null;
   onRefreshData: () => void;
   isRefreshing: boolean;
@@ -25,7 +24,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   isDark,
   onToggleTheme,
   dbStatus,
-  isScraperActive,
   lastSyncTime,
   onRefreshData,
   isRefreshing,
@@ -102,16 +100,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
             <span className="hidden md:inline">Supabase</span>
           </div>
 
-          {/* Scraper Indicator */}
-          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/60 text-[11px] font-medium text-zinc-700 dark:text-zinc-300">
-            <Bot className={`w-3.5 h-3.5 ${isScraperActive ? 'text-emerald-500 animate-pulse' : 'text-zinc-400'}`} />
-            <span>Aggregator</span>
-            <span className={`px-1.5 py-0.2 text-[9px] rounded font-bold uppercase ${
-              isScraperActive ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500'
-            }`}>
-              {isScraperActive ? 'Active' : 'Idle'}
-            </span>
-          </div>
+
 
           {/* Refresh Action */}
           <button

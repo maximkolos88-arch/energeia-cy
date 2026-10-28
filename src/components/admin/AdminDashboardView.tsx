@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Newspaper, FileText, Users, Inbox, ArrowUpRight, Plus, CheckCircle2, Bot
+  Newspaper, FileText, Users, Inbox, ArrowUpRight, Plus, CheckCircle2
 } from 'lucide-react';
 import { NewsItem, Article, DirectoryMember, MagazineIssue, AcademyCourse } from '../../models/types';
 import { LeadApplication } from '../AdminPanel';
@@ -195,27 +195,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         {/* Right Column (1 col): Automated Scraper Status & Quick Modules */}
         <div className="space-y-6">
 
-          {/* Scraper Status Box */}
-          <div className="rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">News Aggregator</span>
-              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                <CheckCircle2 className="w-3 h-3 text-emerald-500" /> Operational
-              </span>
-            </div>
 
-            <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-              Automated scraper fetches Cyprus energy news from InBusinessNews, StockWatch, Philenews, and FinancialMirror.
-            </p>
-
-            <button
-              onClick={() => onNavigateModule('scraper')}
-              className="w-full py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Bot className="w-4 h-4 text-emerald-500" />
-              Launch Scraper Engine
-            </button>
-          </div>
 
           {/* Quick Ecosystem Metrics */}
           <div className="rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 space-y-3 shadow-sm">
