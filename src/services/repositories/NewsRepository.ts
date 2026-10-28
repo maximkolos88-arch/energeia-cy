@@ -44,7 +44,7 @@ export class NewsRepository {
       sourceUrl: item.source_url || '',
       publishedAt: item.published_at || item.created_at || '',
       createdAt: item.created_at || '',
-      status: item.status || 'Draft',
+      status: item.status || 'Published',
       isEditorial: item.is_editorial ?? false,
       readTimeMinutes: item.read_time_minutes || 3,
       title_el: item.title_el || '',
@@ -279,7 +279,7 @@ export class NewsRepository {
       summary: item.summary,
       content: item.content,
       category: item.category,
-      status: 'Draft',
+      status: item.status || 'Published',
       image_url: item.imageUrl,
       source_url: item.sourceUrl,
       published_at: item.publishedAt

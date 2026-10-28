@@ -404,7 +404,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           content: response.data.content || response.data.text || '',
           sourceUrl: customUrl,
           category: 'Government & Policy',
-          status: 'Draft',
+          status: 'Published',
           publishedAt: new Date().toISOString(),
           imageUrl: response.data.imageUrl || 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&q=80&w=1200'
         });
@@ -419,7 +419,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         title: 'Scraped Article - ' + new Date().toLocaleDateString(),
         sourceUrl: customUrl,
         category: 'Government & Policy',
-        status: 'Draft',
+        status: 'Published',
         publishedAt: new Date().toISOString()
       });
       setActiveModule('news');

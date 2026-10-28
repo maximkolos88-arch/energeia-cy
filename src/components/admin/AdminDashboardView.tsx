@@ -32,8 +32,8 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   onOpenNewArticle,
   onOpenNewMember
 }) => {
-  const publishedNewsCount = newsList.filter(n => n.status === 'Published' || n.status === 'PUBLISHED').length;
-  const draftNewsCount = newsList.length - publishedNewsCount;
+  const draftNewsCount = newsList.filter(n => n.status && n.status.toString().trim().toLowerCase() === 'draft').length;
+  const publishedNewsCount = newsList.length - draftNewsCount;
   const publishedArticlesCount = articlesList.filter(a => a.isPublished || a.published).length;
   const partnerMembersCount = directoryList.filter(m => m.tier === 'Partner' || m.tier === 'Sponsor').length;
 
@@ -41,7 +41,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     {
       title: 'News Feed Items',
       value: newsList.length,
-      subtext: `${publishedNewsCount} published, ${draftNewsCount} drafts`,
+      subtext: draftNewsCount === 0 ? `${publishedNewsCount} active published articles` : `${publishedNewsCount} published, ${draftNewsCount} pending drafts`,
       icon: <Newspaper className="w-5 h-5 text-emerald-500" />,
       actionModule: 'news',
     },
