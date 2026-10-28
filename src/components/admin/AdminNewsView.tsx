@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Newspaper, Plus, Search, Edit, Trash2, CheckSquare, Square, RefreshCw, Sparkles, Globe
+  Newspaper, Plus, Search, Edit, Trash2, CheckSquare, Square, Sparkles
 } from 'lucide-react';
 import { NewsItem } from '../../models/types';
 import ReactMarkdown from 'react-markdown';
@@ -15,10 +15,6 @@ interface AdminNewsViewProps {
   setEditingNews: (item: Partial<NewsItem> | null) => void;
   editorTab: 'write' | 'preview';
   setEditorTab: (tab: 'write' | 'preview') => void;
-  customUrl: string;
-  setCustomUrl: (url: string) => void;
-  isParsing: boolean;
-  onFetchArticleFromUrl: () => Promise<void>;
   enrichingId: string | null;
   onEnrichDraft: (item: NewsItem) => void;
 }
@@ -33,10 +29,6 @@ export const AdminNewsView: React.FC<AdminNewsViewProps> = ({
   setEditingNews,
   editorTab,
   setEditorTab,
-  customUrl,
-  setCustomUrl,
-  isParsing,
-  onFetchArticleFromUrl,
   enrichingId,
   onEnrichDraft
 }) => {
@@ -46,8 +38,9 @@ export const AdminNewsView: React.FC<AdminNewsViewProps> = ({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isProcessingBatch, setIsProcessingBatch] = useState(false);
 
-  // Helper to check if item is draft
-  const isDraftItem = (item: NewsItem | Partial<NewsItem>) => item.status === 'Draft' || item.status === 'DRAFT';
+  // Helper to check if item is draft (case-insensitive)
+  const isDraftItem = (item: NewsItem | Partial<NewsItem>) =>
+    (item.status || '').toString().trim().toLowerCase() === 'draft';
 
   // Filter News
   const filteredNews = newsList.filter(item => {
@@ -129,34 +122,6 @@ export const AdminNewsView: React.FC<AdminNewsViewProps> = ({
           <Plus className="w-4 h-4" />
           New Announcement
         </button>
-      </div>
-
-      {/* URL Ingestion Tool Bar */}
-      <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 text-white space-y-3 shadow-md">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold flex items-center gap-2 text-emerald-400">
-            <Globe className="w-4 h-4" /> Quick Scrape & Parse Article URL
-          </span>
-          <span className="text-[10px] text-zinc-400">Supports InBusinessNews, StockWatch, Philenews</span>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center gap-2">
-          <input
-            type="url"
-            value={customUrl}
-            onChange={(e) => setCustomUrl(e.target.value)}
-            placeholder="Paste news article URL to scrape title, metadata and full text..."
-            className="flex-1 w-full px-3.5 py-2 text-xs rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
-          />
-          <button
-            onClick={onFetchArticleFromUrl}
-            disabled={isParsing || !customUrl.trim()}
-            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer shrink-0"
-          >
-            {isParsing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            Scrape & Open Editor
-          </button>
-        </div>
       </div>
 
       {/* Filters & Batch Controls */}

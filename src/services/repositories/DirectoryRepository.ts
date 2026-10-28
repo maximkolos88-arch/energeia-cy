@@ -1088,18 +1088,37 @@ export const INITIAL_DIRECTORY_MEMBERS: DirectoryMember[] = [
 ];
 
 const DELETED_MEMBERS_KEY = "energeia_deleted_directory_members";
+const IN_MEMORY_DELETED_MEMBERS = new Set<string>();
 
 function getDeletedMemberIds(): Set<string> {
-  if (typeof window === "undefined") return new Set();
+  const combined = new Set<string>(IN_MEMORY_DELETED_MEMBERS);
+  if (typeof window === "undefined") return combined;
   try {
     const raw = localStorage.getItem(DELETED_MEMBERS_KEY);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        for (const id of parsed) {
+          combined.add(String(id));
+          IN_MEMORY_DELETED_MEMBERS.add(String(id));
+        }
+      }
+    }
   } catch {
-    return new Set();
+    // ignore storage errors
   }
+  return combined;
 }
 
 function recordDeletedMember(id: string, name?: string): void {
+  IN_MEMORY_DELETED_MEMBERS.add(id);
+  if (name) {
+    IN_MEMORY_DELETED_MEMBERS.add(`name:${name.toLowerCase()}`);
+  }
+  const idx = INITIAL_DIRECTORY_MEMBERS.findIndex(m => m.id === id || (name && m.name.toLowerCase() === name.toLowerCase()));
+  if (idx !== -1) {
+    INITIAL_DIRECTORY_MEMBERS.splice(idx, 1);
+  }
   if (typeof window === "undefined") return;
   try {
     const set = getDeletedMemberIds();
@@ -1257,11 +1276,10 @@ export class DirectoryRepository {
       results = await this.getAllParticipants();
     } catch (err) {
       console.error("Supabase directory fetch failed, returning initial member list:", err);
-      results = INITIAL_DIRECTORY_MEMBERS;
-    }
-
-    if (!results || results.length === 0) {
-      results = INITIAL_DIRECTORY_MEMBERS;
+      const deletedSet = getDeletedMemberIds();
+      results = INITIAL_DIRECTORY_MEMBERS.filter(
+        m => !deletedSet.has(m.id) && (!m.name || !deletedSet.has(`name:${m.name.toLowerCase()}`))
+      );
     }
 
     const trimmedQuery = searchQuery.trim().toLowerCase();

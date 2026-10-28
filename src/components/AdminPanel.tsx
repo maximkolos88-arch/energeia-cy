@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { supabase } from '../lib/supabase';
 import { ShieldCheck, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { NewsRepository } from '../services/repositories/NewsRepository';
@@ -73,13 +72,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   const [editorTab, setEditorTab] = useState<'write' | 'preview'>('write');
   const [articleEditorTab, setArticleEditorTab] = useState<'write' | 'preview'>('write');
-
-  // Scraper Engine States
-  const [customUrl, setCustomUrl] = useState('');
-  const [isParsing, setIsParsing] = useState(false);
   const [enrichingId, setEnrichingId] = useState<string | null>(null);
-  const [runningScraper, setRunningScraper] = useState<boolean>(false);
-  const [scraperLog, setScraperLog] = useState<string | string[] | null>(null);
 
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -293,12 +286,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     if (!window.confirm("Delete member from directory?")) return;
     try {
       await DirectoryRepository.deleteMember(id);
+      setDirectoryList(prev => prev.filter(m => m.id !== id));
+      if (editingMember?.id === id) {
+        setEditingMember(null);
+      }
       showToast("Member removed from directory.");
     } catch (e) {
       console.warn("Member delete warning/fallback:", e);
+      setDirectoryList(prev => prev.filter(m => m.id !== id));
       showToast("Member removed from directory.");
     } finally {
-      loadAllData();
+      await loadAllData();
     }
   };
 
@@ -315,12 +313,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const handleBatchDeleteMembers = async (ids: string[]) => {
     try {
       await Promise.allSettled(ids.map(id => DirectoryRepository.deleteMember(id)));
+      setDirectoryList(prev => prev.filter(m => !ids.includes(m.id)));
       showToast(`Batch deleted ${ids.length} members.`);
     } catch (e) {
       console.warn("Batch delete members warning/fallback:", e);
+      setDirectoryList(prev => prev.filter(m => !ids.includes(m.id)));
       showToast(`Batch deleted ${ids.length} members.`);
     } finally {
-      loadAllData();
+      await loadAllData();
     }
   };
 
@@ -387,44 +387,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       loadAllData();
     } catch (e) {
       showToast("Failed to delete application.");
-    }
-  };
-
-  // URL Scraper Article Fetcher
-  const handleFetchArticleFromUrl = async () => {
-    if (!customUrl.trim()) return;
-    setIsParsing(true);
-    try {
-      const response = await axios.post('/api/scrape-news', { url: customUrl });
-      if (response.data && response.data.title) {
-        setEditingNews({
-          title: response.data.title,
-          summary: response.data.summary || response.data.excerpt || '',
-          content: response.data.content || response.data.text || '',
-          sourceUrl: customUrl,
-          category: 'Government & Policy',
-          status: 'Published',
-          publishedAt: new Date().toISOString(),
-          imageUrl: response.data.imageUrl || 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&q=80&w=1200'
-        });
-        setActiveModule('news');
-        showToast("Scraped article metadata loaded into editor!");
-      } else {
-        showToast("Parsed article, but title was empty.");
-      }
-    } catch (err) {
-      showToast("Could not parse URL automatically. Opening blank editor.");
-      setEditingNews({
-        title: 'Scraped Article - ' + new Date().toLocaleDateString(),
-        sourceUrl: customUrl,
-        category: 'Government & Policy',
-        status: 'Published',
-        publishedAt: new Date().toISOString()
-      });
-      setActiveModule('news');
-    } finally {
-      setIsParsing(false);
-      setCustomUrl('');
     }
   };
 
@@ -623,10 +585,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                     setEditingNews={setEditingNews}
                     editorTab={editorTab}
                     setEditorTab={setEditorTab}
-                    customUrl={customUrl}
-                    setCustomUrl={setCustomUrl}
-                    isParsing={isParsing}
-                    onFetchArticleFromUrl={handleFetchArticleFromUrl}
                     enrichingId={enrichingId}
                     onEnrichDraft={handleEnrichDraft}
                   />

@@ -33,6 +33,9 @@ export class NewsRepository {
   }
 
   private static mapSupabaseToNewsItem(item: any): NewsItem {
+    const rawStatus = (item.status || 'Published').toString().trim().toLowerCase();
+    const normalizedStatus: 'Published' | 'Draft' = rawStatus === 'draft' ? 'Draft' : 'Published';
+
     return {
       id: item.id,
       title: this.cleanTitle(item.title || ''),
@@ -44,7 +47,7 @@ export class NewsRepository {
       sourceUrl: item.source_url || '',
       publishedAt: item.published_at || item.created_at || '',
       createdAt: item.created_at || '',
-      status: item.status || 'Published',
+      status: normalizedStatus,
       isEditorial: item.is_editorial ?? false,
       readTimeMinutes: item.read_time_minutes || 3,
       title_el: item.title_el || '',
