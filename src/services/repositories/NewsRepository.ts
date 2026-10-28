@@ -60,13 +60,10 @@ export class NewsRepository {
   }
 
   private static parseTimestamp(item: NewsItem): number {
-    const rawDate = item.createdAt || item.publishedAt;
-    if (rawDate) {
+    const datesToTry = [item.publishedAt, item.createdAt].filter(Boolean);
+    for (const rawDate of datesToTry) {
+      if (!rawDate) continue;
       const ts = new Date(rawDate).getTime();
-      if (!isNaN(ts) && ts > 0) return ts;
-    }
-    if (item.publishedAt) {
-      const ts = new Date(item.publishedAt).getTime();
       if (!isNaN(ts) && ts > 0) return ts;
     }
     return 0;

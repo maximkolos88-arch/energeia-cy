@@ -58,6 +58,7 @@ export function useNewsController() {
   }, []);
 
   useEffect(() => {
+    // Always fetch latest news updates on component mount to ensure fresh feed data
     fetchNews(activeCategory);
   }, [activeCategory, fetchNews]);
 
