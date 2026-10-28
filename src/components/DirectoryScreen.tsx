@@ -3,7 +3,7 @@
 import React from 'react';
 import ClientPortal from './ui/ClientPortal';
 import { useTranslation } from 'react-i18next';
-import { useWebMCP } from 'use-webmcp-tool';
+import { useWebMCP } from '../hooks/useWebMCP';
 import { useDirectoryController } from '../controllers/useDirectoryController';
 import { DirectoryMember } from '../models/types';
 import { Search, Mail, ArrowRight, Building2, User, Leaf, X, Phone, MapPin, CheckCircle2, Globe, Award, Copy, Check } from 'lucide-react';

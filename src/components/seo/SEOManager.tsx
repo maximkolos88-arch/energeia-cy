@@ -18,7 +18,14 @@ export const SEOManager: React.FC<SEOProps> = ({
   article = null,
   siteName = 'Energeia Cyprus All-Energy Network'
 }) => {
+  const isFirstMount = React.useRef(true);
+
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      if (!article) return;
+    }
+
     // 1. Resolve effective meta values
     const articleTitle = article?.title || title;
     const fullTitle = article ? `${articleTitle} | Energeia` : title;

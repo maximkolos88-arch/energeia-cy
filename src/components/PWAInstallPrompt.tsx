@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Share2, MoreVertical, PlusSquare, Upload } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 export interface DeviceInfo {
   os: 'ios' | 'android' | 'other';

@@ -11,6 +11,9 @@ export default defineConfig(({ isSsrBuild }) => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    esbuild: {
+      legalComments: 'none',
+    },
     build: {
       sourcemap: true,
       target: 'esnext',

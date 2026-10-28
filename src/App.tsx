@@ -1,26 +1,28 @@
-import { TermsScreen } from './components/legal/TermsScreen';
-import { PrivacyScreen } from './components/legal/PrivacyScreen';
-import { CookieScreen } from './components/legal/CookieScreen';
-import { CorporateDisclosuresScreen } from './components/legal/CorporateDisclosuresScreen';
 import React, { useState, useEffect, Suspense } from 'react';
+import { supabase } from './lib/supabase';
 import type { Session } from '@supabase/supabase-js';
-import { useWebMCP } from 'use-webmcp-tool';
+import { useWebMCP } from './hooks/useWebMCP';
 import { TopAppBar } from './components/TopAppBar';
 import { BottomNavBar } from './components/BottomNavBar';
 import { Footer } from './components/Footer';
 import { NewsFeedScreen } from './components/NewsFeedScreen';
-import { DirectoryScreen } from './components/DirectoryScreen';
-import { AboutScreen } from './components/AboutScreen';
-import { MagazineScreen } from './components/MagazineScreen';
-import { AcademyScreen } from './components/AcademyScreen';
-import { RegisterScreen } from './components/RegisterScreen';
-import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { useTranslation } from 'react-i18next';
+import { loadLanguageBundle } from './lib/i18n';
 import { FEATURES } from './config/features';
 import { InitialDataProvider, InitialData } from './context/InitialDataContext';
 
+const PWAInstallPrompt = React.lazy(() => import('./components/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt })));
+const DirectoryScreen = React.lazy(() => import('./components/DirectoryScreen').then(m => ({ default: m.DirectoryScreen })));
+const AboutScreen = React.lazy(() => import('./components/AboutScreen').then(m => ({ default: m.AboutScreen })));
+const MagazineScreen = React.lazy(() => import('./components/MagazineScreen').then(m => ({ default: m.MagazineScreen })));
+const AcademyScreen = React.lazy(() => import('./components/AcademyScreen').then(m => ({ default: m.AcademyScreen })));
+const RegisterScreen = React.lazy(() => import('./components/RegisterScreen').then(m => ({ default: m.RegisterScreen })));
+const TermsScreen = React.lazy(() => import('./components/legal/TermsScreen').then(m => ({ default: m.TermsScreen })));
+const PrivacyScreen = React.lazy(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
+const CookieScreen = React.lazy(() => import('./components/legal/CookieScreen').then(m => ({ default: m.CookieScreen })));
+const CorporateDisclosuresScreen = React.lazy(() => import('./components/legal/CorporateDisclosuresScreen').then(m => ({ default: m.CorporateDisclosuresScreen })));
 const AdminPanel = React.lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
 const LoginScreen = React.lazy(() => import('./components/LoginScreen').then(m => ({ default: m.LoginScreen })));
 
@@ -75,6 +77,12 @@ export default function App({ path: propPath, initialData }: AppProps) {
   });
 
   const [refreshKey, setRefreshKey] = useState<number>(0);
+  const [mountDeferredUI, setMountDeferredUI] = useState<boolean>(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMountDeferredUI(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Language state controller (Default to browser language or 'en', save to localStorage)
   const [language, setLanguage] = useState<string>(() => {
@@ -84,7 +92,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
       // Priority 1: Check manual choice in app_lang or fallback energeia_language
       const saved = localStorage.getItem('app_lang') || localStorage.getItem('energeia_language');
       if (saved && supportedLangs.includes(saved)) {
-        if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage(saved);
+        if (saved !== 'en') loadLanguageBundle(saved);
         return saved;
       }
 
@@ -93,18 +101,17 @@ export default function App({ path: propPath, initialData }: AppProps) {
       for (const lang of userLangs) {
         const code = lang.toLowerCase().split('-')[0];
         if (code === 'iw') {
-          if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage('he');
+          loadLanguageBundle('he');
           return 'he';
         }
         if (supportedLangs.includes(code)) {
-          if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage(code);
+          if (code !== 'en') loadLanguageBundle(code);
           return code;
         }
       }
     }
 
-    // Priority 3: Fallback default
-    if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage('en');
+    // Priority 3: Fallback default ('en' is already active in i18n)
     return 'en';
   });
 
@@ -114,14 +121,20 @@ export default function App({ path: propPath, initialData }: AppProps) {
       localStorage.setItem('app_lang', lang);
       localStorage.setItem('energeia_language', lang); // compatibility backup
     }
-    if (i18n && typeof i18n.changeLanguage === 'function') i18n.changeLanguage(lang);
+    loadLanguageBundle(lang);
   };
 
-  // Synchronize HTML attributes (RTL dir and lang locale)
+  // Synchronize HTML attributes (RTL dir and lang locale) only when changed to avoid full-document style invalidation
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.documentElement.lang = language;
-      document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+      const targetDir = language === 'he' ? 'rtl' : 'ltr';
+      if (document.documentElement.lang !== language) {
+        document.documentElement.lang = language;
+      }
+      const currentDir = document.documentElement.getAttribute('dir') || 'ltr';
+      if (currentDir !== targetDir) {
+        document.documentElement.dir = targetDir;
+      }
     }
   }, [language]);
 
@@ -168,19 +181,17 @@ export default function App({ path: propPath, initialData }: AppProps) {
   // Monitor Supabase Auth Session (only needed on /admin routes)
   useEffect(() => {
     if (!isAdminRoute) return;
-    let subscription: { unsubscribe: () => void } | null = null;
-    import('./lib/supabase').then(({ supabase }) => {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
-      });
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        setSession(session);
-      });
-      subscription = data.subscription;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
     });
 
     return () => {
-      subscription?.unsubscribe();
+      subscription.unsubscribe();
     };
   }, [isAdminRoute]);
 
@@ -357,7 +368,9 @@ export default function App({ path: propPath, initialData }: AppProps) {
         {/* Main View Area */}
         <main id="main-content" tabIndex={-1} className="flex-1 w-full flex flex-col main-content pt-16 focus:outline-none">
           <ErrorBoundary>
-            {renderActiveScreen()}
+            <Suspense fallback={null}>
+              {renderActiveScreen()}
+            </Suspense>
           </ErrorBoundary>
         </main>
 
@@ -371,9 +384,13 @@ export default function App({ path: propPath, initialData }: AppProps) {
         />
 
         {/* PWA Home Screen Onboarding Prompt */}
-        <ErrorBoundary>
-          <PWAInstallPrompt />
-        </ErrorBoundary>
+        {mountDeferredUI && (
+          <ErrorBoundary>
+            <Suspense fallback={null}>
+              <PWAInstallPrompt />
+            </Suspense>
+          </ErrorBoundary>
+        )}
       </div>
     </InitialDataProvider>
   );

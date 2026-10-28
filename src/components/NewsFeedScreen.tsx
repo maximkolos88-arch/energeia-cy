@@ -2,7 +2,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const ReactMarkdown = React.lazy(() => import('react-markdown'));
-import { useWebMCP } from 'use-webmcp-tool';
+import { useWebMCP } from '../hooks/useWebMCP';
 import { useNewsController } from '../controllers/useNewsController';
 import { NewsItem, NewsCategory } from '../models/types';
 import { NewsRepository } from '../services/repositories/NewsRepository';
@@ -91,33 +91,15 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
   } = useNewsController();
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const [showScrollBtn, setShowScrollBtn] = useState(false);
-
-  const checkScrollable = () => {
-    const el = scrollContainerRef.current;
-    if (el) {
-      const canScrollRight = el.scrollWidth > el.clientWidth && (el.scrollLeft + el.clientWidth < el.scrollWidth - 15);
-      setShowScrollBtn(canScrollRight);
-    }
-  };
-
-  useEffect(() => {
-    checkScrollable();
-    // Add small delay to ensure rendering completes
-    const timer = setTimeout(checkScrollable, 200);
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', checkScrollable);
-    }
-    return () => {
-      clearTimeout(timer);
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', checkScrollable);
-      }
-    };
-  }, [categories, newsItems]);
+  const scrollBtnWrapperRef = React.useRef<HTMLDivElement>(null);
 
   const handleScroll = () => {
-    checkScrollable();
+    const el = scrollContainerRef.current;
+    const btnWrapper = scrollBtnWrapperRef.current;
+    if (el && btnWrapper) {
+      const canScrollRight = el.scrollWidth > el.clientWidth && (el.scrollLeft + el.clientWidth < el.scrollWidth - 15);
+      btnWrapper.style.display = canScrollRight ? '' : 'none';
+    }
   };
 
   const handleScrollRight = () => {
@@ -294,21 +276,21 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
   const getBadgeStyle = (categoryOrBadge?: string) => {
     const c = categoryOrBadge?.toLowerCase() || '';
     if (c.includes('renew') || c.includes('solar') || c.includes('wind')) {
-      return 'bg-[#e8f5e9] text-[#1CA350] font-semibold dark:bg-[#1b4332] dark:text-[#8fdfab]';
+      return 'bg-[#e8f5e9] text-[#0f6831] font-semibold dark:bg-[#1b4332] dark:text-[#8fdfab]';
     }
     if (c.includes('oil') || c.includes('gas') || c.includes('fossil')) {
-      return 'bg-[#fffbeb] text-[#d97706] font-semibold dark:bg-[#451a03] dark:text-[#fcd34d]';
+      return 'bg-[#fffbeb] text-[#92400e] font-semibold dark:bg-[#451a03] dark:text-[#fcd34d]';
     }
     if (c.includes('policy') || c.includes('govern') || c.includes('cera') || c.includes('regula')) {
-      return 'bg-[#eff6ff] text-[#2563eb] font-semibold dark:bg-[#172554] dark:text-[#93c5fd]';
+      return 'bg-[#eff6ff] text-[#1d4ed8] font-semibold dark:bg-[#172554] dark:text-[#93c5fd]';
     }
     if (c.includes('grant') || c.includes('subsidy')) {
-      return 'bg-[#faf5ff] text-[#9333ea] font-semibold dark:bg-[#3b0764] dark:text-[#d8b4fe]';
+      return 'bg-[#faf5ff] text-[#6b21a8] font-semibold dark:bg-[#3b0764] dark:text-[#d8b4fe]';
     }
     if (c === 'urgent') {
       return 'bg-[#fce8e6] text-[#c5221f] font-semibold dark:bg-[#7f1d1d] dark:text-[#fca5a5]';
     }
-    return 'bg-[#f1f3f4] text-[#5f6368] font-medium dark:bg-[#3c4043] dark:text-gray-300';
+    return 'bg-[#f1f3f4] text-[#3c4043] font-medium dark:bg-[#3c4043] dark:text-gray-300';
   };
 
   return (
@@ -319,19 +301,17 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
       )}
       {/* Major Energy Pillar Filter Chips Wrapper */}
       <div className="relative w-full mb-6 categories-wrapper">
-        {/* Fade Mask & Scroll Button */}
-        {showScrollBtn && (
-          <>
-            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#fafafa] via-[#fafafa]/80 to-transparent dark:from-[#1b1c1e] dark:via-[#1b1c1e]/80 dark:to-transparent z-10 pointer-events-none rounded-r-xl" />
-            <button
-              onClick={handleScrollRight}
-              aria-label="Scroll categories right"
-              className="absolute right-1 top-0 bottom-2 my-auto z-20 w-8 h-8 rounded-full bg-white dark:bg-[#2d2e30] border border-neutral-200 dark:border-neutral-800 shadow-md hover:shadow-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer category-scroll-btn"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </>
-        )}
+        {/* Fade Mask & Scroll Button (visible on mobile horizontal scroll, hidden on desktop where pills fit) */}
+        <div ref={scrollBtnWrapperRef} className="md:hidden">
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#fafafa] via-[#fafafa]/80 to-transparent dark:from-[#1b1c1e] dark:via-[#1b1c1e]/80 dark:to-transparent z-10 pointer-events-none rounded-r-xl" />
+          <button
+            onClick={handleScrollRight}
+            aria-label="Scroll categories right"
+            className="absolute right-1 top-0 bottom-2 my-auto z-20 w-8 h-8 rounded-full bg-white dark:bg-[#2d2e30] border border-neutral-200 dark:border-neutral-800 shadow-md hover:shadow-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer category-scroll-btn"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
 
         <div
           ref={scrollContainerRef}
@@ -358,8 +338,8 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
                 onClick={() => selectCategory(cat)}
                 className={`px-4 py-2 md:px-3.5 md:py-1.5 min-h-[40px] md:min-h-[32px] rounded-full text-xs font-semibold transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                   isActive
-                    ? 'bg-[#1CA350] text-white shadow-xs'
-                    : 'bg-white dark:bg-[#2d2e30] text-[#5f6368] dark:text-gray-300 border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043]'
+                    ? 'bg-[#0f6831] text-white shadow-xs'
+                    : 'bg-white dark:bg-[#2d2e30] text-[#3c4043] dark:text-gray-300 border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043]'
                 }`}
               >
                 {getPillarIcon(cat)}
@@ -425,7 +405,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
               {newsItems.map((item, idx) => {
                 const titleText = getLocalizedValue(item, 'title', language);
                 const isHeroImage = Boolean(item.isEditorial);
-                const optimizedThumbUrl = getOptimizedImageUrl(item.image_url || item.imageUrl, 320, 214);
+                const optimizedThumbUrl = getOptimizedImageUrl(item.image_url || item.imageUrl, 140, 105);
                 const openArticle = () => {
                   const updateState = () => {
                     if (item.isEditorial && item.slug && typeof window !== 'undefined') {

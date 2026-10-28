@@ -1,9 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import en from '../locales/en.json';
-import el from '../locales/el.json';
-import ru from '../locales/ru.json';
-import he from '../locales/he.json';
 
 const getSavedLanguage = (): string => {
   if (typeof window === 'undefined') return 'en';
@@ -18,20 +15,38 @@ const getSavedLanguage = (): string => {
   }
 };
 
+const initialLang = getSavedLanguage();
+
 i18n
   .use(initReactI18next)
   .init({
     resources: {
       en: { translation: en },
-      el: { translation: el },
-      ru: { translation: ru },
-      he: { translation: he }
     },
-    lng: getSavedLanguage(),
+    lng: 'en',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false
     }
   });
+
+export async function loadLanguageBundle(lang: string): Promise<void> {
+  if (lang === 'en' || i18n.hasResourceBundle(lang, 'translation')) {
+    await i18n.changeLanguage(lang);
+    return;
+  }
+  let bundle: any;
+  if (lang === 'el') bundle = (await import('../locales/el.json')).default;
+  else if (lang === 'ru') bundle = (await import('../locales/ru.json')).default;
+  else if (lang === 'he') bundle = (await import('../locales/he.json')).default;
+  if (bundle) {
+    i18n.addResourceBundle(lang, 'translation', bundle, true, true);
+  }
+  await i18n.changeLanguage(lang);
+}
+
+if (typeof window !== 'undefined' && initialLang !== 'en') {
+  loadLanguageBundle(initialLang);
+}
 
 export default i18n;

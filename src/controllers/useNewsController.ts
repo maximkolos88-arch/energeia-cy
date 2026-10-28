@@ -36,7 +36,7 @@ export function useNewsController() {
       empty: false
     };
   });
-  const [visibleCount, setVisibleCount] = useState<number>(12);
+  const [visibleCount, setVisibleCount] = useState<number>(8);
   const isInitialMountRef = useRef<boolean>(true);
 
   const fetchNews = useCallback(async (category: NewsCategory, background = false) => {
@@ -77,11 +77,7 @@ export function useNewsController() {
       } catch {}
 
       if (hasInitialNews && !isDirty && activeCategory === 'All Updates') {
-        // Defer background revalidation so SSR pre-rendered content paints immediately without critical-path blocking
-        const timer = setTimeout(() => {
-          fetchNews(activeCategory, true);
-        }, 4000);
-        return () => clearTimeout(timer);
+        return;
       }
     }
 

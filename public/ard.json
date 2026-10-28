@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "identifier": "urn:air:energeia.cy:docs:llms-txt",
+      "displayName": "Energeia Cyprus Documentation & Market Guide",
+      "description": "Structured Markdown overview of Cyprus energy news, regulatory updates (CERA, TSOC, MECI), renewable energy grants, and verified business directory.",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://www.energeia.cy/llms.txt",
+      "representativeQueries": [
+        "Cyprus energy news and renewable market updates",
+        "CERA regulatory decisions and TSOC grid news",
+        "Cyprus solar photovoltaics and battery storage grants",
+        "Cyprus energy companies and EPC contractors directory"
+      ]
+    }
+  ]
+}

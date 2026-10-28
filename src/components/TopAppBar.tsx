@@ -72,7 +72,6 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           {/* Logo (Accessible Button control) */}
           <button 
             onClick={() => onTabChange('news')}
-            aria-label="Energeia Cyprus Home"
             className="flex items-center gap-3 cursor-pointer shrink-0 select-none text-start bg-transparent border-0 p-0 focus-visible:outline-2 focus-visible:outline-primary rounded-xl"
           >
             <div className="p-2 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center shadow-xs">
@@ -82,7 +81,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
               <div className="flex items-center font-bold text-lg tracking-tight text-neutral-900 dark:text-white leading-none">
                 <span className="font-extrabold">Energeia</span>
               </div>
-              <span className="hidden sm:block text-[9px] text-neutral-500 dark:text-neutral-400 font-medium tracking-wide">Cyprus All-Energy Network</span>
+              <span className="hidden sm:block text-[9px] text-neutral-600 dark:text-neutral-400 font-medium tracking-wide">Cyprus All-Energy Network</span>
             </div>
           </button>
 
@@ -96,8 +95,8 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                   onClick={() => onTabChange(item.id)}
                   className={`px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all rounded-lg cursor-pointer ${
                     isActive
-                      ? 'bg-primary/10 text-primary font-bold shadow-xs'
-                      : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                      ? 'bg-emerald-950/10 text-[#0b5325] dark:text-emerald-300 font-bold shadow-xs'
+                      : 'text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800'
                   }`}
                 >
                   {item.label}
@@ -141,11 +140,11 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 <button
                   key={lang}
                   onClick={() => onLanguageChange(lang)}
-                  aria-label={`Switch language to ${fullNameMap[lang]}`}
+                  title={`Switch language to ${fullNameMap[lang]}`}
                   className={`px-2 py-1 sm:px-2.5 min-h-[32px] text-[10px] font-bold transition-all rounded-md cursor-pointer touch-manipulation flex items-center justify-center ${
                     isActive
                       ? 'bg-primary text-white shadow-3xs'
-                      : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                      : 'text-neutral-700 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white'
                   }`}
                 >
                   {labelMap[lang]}

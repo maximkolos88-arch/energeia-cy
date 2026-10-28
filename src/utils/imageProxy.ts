@@ -11,8 +11,8 @@ const BLOCKED_HOTLINK_DOMAINS = [
 
 export function getOptimizedImageUrl(
   rawUrl?: string | null,
-  width: number = 320,
-  height: number = 214
+  width: number = 140,
+  height: number = 105
 ): string {
   if (!rawUrl || typeof rawUrl !== 'string') return '';
   const url = rawUrl.trim();
@@ -37,7 +37,7 @@ export function getOptimizedImageUrl(
 
   if (url.startsWith('http://') || url.startsWith('https://')) {
     const fallback = 'https://www.energeia.cy/apple-touch-icon-180x180.png';
-    return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&h=${height}&fit=cover&output=webp&q=75&default=${encodeURIComponent(fallback)}`;
+    return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&h=${height}&fit=cover&output=webp&q=60&default=${encodeURIComponent(fallback)}`;
   }
 
   return url;

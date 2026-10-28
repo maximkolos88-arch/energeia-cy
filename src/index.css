@@ -3,13 +3,13 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #15823f;
-  --color-primary-hover: #0e5e2c;
+  --color-primary: #0f6831;
+  --color-primary-hover: #0a4d24;
   --color-on-primary: #ffffff;
   --color-primary-container: #f0fdf4;
-  --color-on-primary-container: #15823f;
+  --color-on-primary-container: #0f6831;
   --color-secondary-container: #f0fdf4;
-  --color-on-secondary-container: #15823f;
+  --color-on-secondary-container: #0f6831;
   --color-secondary: #166534;
   --color-on-secondary: #ffffff;
   --color-error: #ba1a1a;

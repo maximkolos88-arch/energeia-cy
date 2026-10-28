@@ -30,21 +30,15 @@ if (typeof window !== 'undefined') {
   }
 }
 
-document.documentElement.classList.remove('dark');
-document.documentElement.classList.add('light');
-document.documentElement.setAttribute('data-theme', 'light');
-
 const rootElement = document.getElementById('root')!;
 const initialData: InitialData | undefined = (window as any).__INITIAL_DATA__;
 
-const appComponent = (
-  <StrictMode>
-    <App initialData={initialData} />
-  </StrictMode>
-);
+const appComponent = <App initialData={initialData} />;
 
 if (rootElement.hasChildNodes() && rootElement.children.length > 0) {
-  hydrateRoot(rootElement, appComponent);
+  setTimeout(() => {
+    hydrateRoot(rootElement, appComponent);
+  }, 0);
 } else {
   createRoot(rootElement).render(appComponent);
 }
@@ -66,12 +60,14 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   });
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => {
-        reg.update();
-      })
-      .catch(err => {
-        console.warn('SW registration failed:', err);
-      });
+    setTimeout(() => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => {
+          reg.update();
+        })
+        .catch(err => {
+          console.warn('SW registration failed:', err);
+        });
+    }, 4500);
   });
 }

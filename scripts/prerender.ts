@@ -127,7 +127,7 @@ async function loadData() {
   return { newsItems, directoryMembers, magazines, courses };
 }
 
-function getOptimizedImageUrl(rawUrl?: string, width = 320, height = 214): string {
+function getOptimizedImageUrl(rawUrl?: string, width = 140, height = 105): string {
   if (!rawUrl || typeof rawUrl !== 'string') return '';
   const trimmed = rawUrl.trim();
   if (!trimmed || trimmed.includes('offshore-energy.biz')) return '';
@@ -135,7 +135,7 @@ function getOptimizedImageUrl(rawUrl?: string, width = 320, height = 214): strin
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
     const encoded = encodeURIComponent(trimmed);
     const fallback = encodeURIComponent('https://www.energeia.cy/apple-touch-icon-180x180.png');
-    return `https://wsrv.nl/?url=${encoded}&w=${width}&h=${height}&fit=cover&output=webp&q=75&default=${fallback}`;
+    return `https://wsrv.nl/?url=${encoded}&w=${width}&h=${height}&fit=cover&output=webp&q=60&default=${fallback}`;
   }
   return trimmed;
 }
@@ -368,7 +368,7 @@ async function prerender() {
 
   const allRoutesToRender = [...coreRoutes, ...articleRoutes];
 
-  const lightNewsFeedItems = newsItems.slice(0, 12).map((n: any) => ({
+  const lightNewsFeedItems = newsItems.slice(0, 9).map((n: any) => ({
     id: n.id,
     title: n.title,
     slug: n.slug,
@@ -385,7 +385,7 @@ async function prerender() {
   }));
 
   const firstLcpImageUrl = lightNewsFeedItems[0]
-    ? getOptimizedImageUrl(lightNewsFeedItems[0].imageUrl, 320, 214)
+    ? getOptimizedImageUrl(lightNewsFeedItems[0].imageUrl, 140, 105)
     : '';
 
   for (const item of allRoutesToRender) {

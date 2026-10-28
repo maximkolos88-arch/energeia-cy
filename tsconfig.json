@@ -21,9 +21,6 @@
       ]
     },
     "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "types": [
-      "webmcp-types"
-    ]
+    "noEmit": true
   }
 }
