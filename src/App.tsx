@@ -2,26 +2,42 @@ import { TermsScreen } from './components/legal/TermsScreen';
 import { PrivacyScreen } from './components/legal/PrivacyScreen';
 import { CookieScreen } from './components/legal/CookieScreen';
 import { CorporateDisclosuresScreen } from './components/legal/CorporateDisclosuresScreen';
-import React, { useState, useEffect } from 'react';
-import { Session } from '@supabase/supabase-js';
-import { supabase } from './lib/supabase';
+import React, { useState, useEffect, Suspense } from 'react';
+import type { Session } from '@supabase/supabase-js';
+import { useWebMCP } from 'use-webmcp-tool';
 import { TopAppBar } from './components/TopAppBar';
 import { BottomNavBar } from './components/BottomNavBar';
 import { Footer } from './components/Footer';
 import { NewsFeedScreen } from './components/NewsFeedScreen';
 import { DirectoryScreen } from './components/DirectoryScreen';
 import { AboutScreen } from './components/AboutScreen';
-import { AdminPanel } from './components/AdminPanel';
 import { MagazineScreen } from './components/MagazineScreen';
 import { AcademyScreen } from './components/AcademyScreen';
 import { RegisterScreen } from './components/RegisterScreen';
-import { LoginScreen } from './components/LoginScreen';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { useTranslation } from 'react-i18next';
 import { FEATURES } from './config/features';
 import { InitialDataProvider, InitialData } from './context/InitialDataContext';
+
+const AdminPanel = React.lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
+const LoginScreen = React.lazy(() => import('./components/LoginScreen').then(m => ({ default: m.LoginScreen })));
+
+const NAV_SECTIONS = ['news', 'members', 'magazine', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
+
+const NAVIGATE_SECTION_SCHEMA = {
+  type: 'object',
+  properties: {
+    section: {
+      type: 'string',
+      enum: NAV_SECTIONS,
+      default: 'news',
+      description: 'Portal section to navigate to.',
+    },
+  },
+  required: ['section'],
+};
 
 export interface AppProps {
   path?: string;
@@ -149,20 +165,24 @@ export default function App({ path: propPath, initialData }: AppProps) {
     };
   }, []);
 
-  // Monitor Supabase Auth Session
+  // Monitor Supabase Auth Session (only needed on /admin routes)
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    if (!isAdminRoute) return;
+    let subscription: { unsubscribe: () => void } | null = null;
+    import('./lib/supabase').then(({ supabase }) => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session);
+      });
+      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+      });
+      subscription = data.subscription;
     });
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
-  }, []);
+  }, [isAdminRoute]);
 
   // Monitor browser history state changes for SPA routing fallback
   useEffect(() => {
@@ -224,15 +244,43 @@ export default function App({ path: propPath, initialData }: AppProps) {
   }, []);
 
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    if (typeof window !== 'undefined') {
-      if (tab === 'news') {
-        window.history.pushState({}, '', '/');
-      } else {
-        window.history.pushState({}, '', `/${tab}`);
+    const updateView = () => {
+      setActiveTab(tab);
+      if (typeof window !== 'undefined') {
+        if (tab === 'news') {
+          window.history.pushState({}, '', '/');
+        } else {
+          window.history.pushState({}, '', `/${tab}`);
+        }
+      }
+    };
+
+    if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
+      const transition = document.startViewTransition(updateView);
+      transition.finished.finally(() => {
+        document.getElementById('main-content')?.focus({ preventScroll: true });
+      });
+    } else {
+      updateView();
+      if (typeof document !== 'undefined') {
+        document.getElementById('main-content')?.focus({ preventScroll: true });
       }
     }
   };
+
+  useWebMCP<{ section?: string }, unknown>({
+    name: 'navigate_energeia_section',
+    description: 'Navigates the Energeia Cyprus energy portal to a target section.',
+    inputSchema: NAVIGATE_SECTION_SCHEMA,
+    annotations: { readOnlyHint: true },
+    execute({ section = 'news' }) {
+      if (typeof section !== 'string' || !NAV_SECTIONS.includes(section as any)) {
+        return { error: 'Unsupported section name.', supportedSections: NAV_SECTIONS };
+      }
+      handleTabChange(section);
+      return { navigatedTo: section };
+    },
+  });
 
   const navigateToHome = () => {
     if (typeof window !== 'undefined') {
@@ -246,13 +294,17 @@ export default function App({ path: propPath, initialData }: AppProps) {
     if (!session) {
       return (
         <InitialDataProvider value={initialData}>
-          <LoginScreen onSuccess={() => setIsAdminRoute(true)} />
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-xs text-neutral-500">Loading...</div>}>
+            <LoginScreen onSuccess={() => setIsAdminRoute(true)} />
+          </Suspense>
         </InitialDataProvider>
       );
     }
     return (
       <InitialDataProvider value={initialData}>
-        <AdminPanel onClose={navigateToHome} />
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-xs text-neutral-500">Loading Admin...</div>}>
+          <AdminPanel onClose={navigateToHome} />
+        </Suspense>
       </InitialDataProvider>
     );
   }
@@ -287,6 +339,12 @@ export default function App({ path: propPath, initialData }: AppProps) {
   return (
     <InitialDataProvider value={initialData}>
       <div className="min-h-screen bg-background text-on-background flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg focus:font-bold focus:text-xs focus:shadow-md"
+        >
+          Skip to main content
+        </a>
         <ScrollToTop trigger={activeTab} />
         {/* Sticky Top App Bar */}
         <TopAppBar
@@ -297,7 +355,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
         />
 
         {/* Main View Area */}
-        <main className="flex-1 w-full flex flex-col main-content pt-16">
+        <main id="main-content" tabIndex={-1} className="flex-1 w-full flex flex-col main-content pt-16 focus:outline-none">
           <ErrorBoundary>
             {renderActiveScreen()}
           </ErrorBoundary>

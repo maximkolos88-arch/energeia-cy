@@ -23,6 +23,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, onTabChan
 
   return (
     <nav
+      aria-label="Mobile"
       className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#1f1f1f] border-t border-[#dadce0] dark:border-[#3c4043] flex justify-around items-center px-1 shadow-md"
       style={{
         paddingTop: '8px',

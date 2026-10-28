@@ -45,19 +45,19 @@ export const Footer: React.FC = () => {
             <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
               Platform Navigation
             </div>
-            <ul className="space-y-1.5">
-              <li><a href="/" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.news', 'Home & News')}</a></li>
+            <ul className="space-y-2">
+              <li><a href="/" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.news', 'Home & News')}</a></li>
               {FEATURES.enableMembers && (
-                <li><a href="/directory" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.members', 'Directory')}</a></li>
+                <li><a href="/directory" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.members', 'Directory')}</a></li>
               )}
               {FEATURES.enableMagazine && (
-                <li><a href="/magazine" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.magazine', 'Magazine')}</a></li>
+                <li><a href="/magazine" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.magazine', 'Magazine')}</a></li>
               )}
               {FEATURES.enableAcademy && (
-                <li><a href="/academy" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.academy', 'Academy')}</a></li>
+                <li><a href="/academy" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.academy', 'Academy')}</a></li>
               )}
               {FEATURES.enableAbout && (
-                <li><a href="/about" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.about', 'About')}</a></li>
+                <li><a href="/about" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('nav.about', 'About')}</a></li>
               )}
             </ul>
           </div>
@@ -66,11 +66,11 @@ export const Footer: React.FC = () => {
             <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
               Statutory Legal Disclosures
             </div>
-            <ul className="space-y-1.5">
-              <li><a href="/terms" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('terms.title', 'Terms & Conditions')}</a></li>
-              <li><a href="/privacy" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('privacy.title', 'Privacy Policy')}</a></li>
-              <li><a href="/cookies" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('cookies.title', 'Cookie Policy')}</a></li>
-              <li><a href="/disclosures" className="text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('disclosures.title', 'Corporate Disclosures')}</a></li>
+            <ul className="space-y-2">
+              <li><a href="/terms" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('terms.title', 'Terms & Conditions')}</a></li>
+              <li><a href="/privacy" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('privacy.title', 'Privacy Policy')}</a></li>
+              <li><a href="/cookies" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('cookies.title', 'Cookie Policy')}</a></li>
+              <li><a href="/disclosures" className="inline-flex items-center min-h-[28px] py-1 text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">{t('disclosures.title', 'Corporate Disclosures')}</a></li>
             </ul>
           </div>
 

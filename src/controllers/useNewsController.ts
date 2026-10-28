@@ -3,7 +3,7 @@
  * Manages category filtering, fetching, pagination, and UI state
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { NewsItem, NewsCategory, AsyncState } from '../models/types';
 import { NewsRepository } from '../services/repositories/NewsRepository';
 import { useInitialData } from '../context/InitialDataContext';
@@ -18,11 +18,12 @@ export const NEWS_CATEGORIES: NewsCategory[] = [
 
 export function useNewsController() {
   const initialData = useInitialData();
+  const hasInitialNews = Boolean(initialData?.newsItems && initialData.newsItems.length > 0);
   const [activeCategory, setActiveCategory] = useState<NewsCategory>('All Updates');
   const [state, setState] = useState<AsyncState<NewsItem[]>>(() => {
-    if (initialData?.newsItems && initialData.newsItems.length > 0) {
+    if (hasInitialNews) {
       return {
-        data: initialData.newsItems,
+        data: initialData!.newsItems,
         loading: false,
         error: null,
         empty: false
@@ -35,12 +36,22 @@ export function useNewsController() {
       empty: false
     };
   });
-  const [visibleCount, setVisibleCount] = useState<number>(20);
+  const [visibleCount, setVisibleCount] = useState<number>(12);
+  const isInitialMountRef = useRef<boolean>(true);
 
-  const fetchNews = useCallback(async (category: NewsCategory) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+  const fetchNews = useCallback(async (category: NewsCategory, background = false) => {
+    setState(prev => ({
+      ...prev,
+      loading: background ? false : prev.data.length === 0,
+      error: null
+    }));
     try {
       const items = await NewsRepository.getPublishedNews(category);
+      try {
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+          window.sessionStorage.removeItem('energeia_news_dirty');
+        }
+      } catch {}
       setState({
         data: items,
         loading: false,
@@ -48,31 +59,46 @@ export function useNewsController() {
         empty: items.length === 0
       });
     } catch (err) {
-      setState({
-        data: [],
+      setState(prev => ({
+        data: prev.data,
         loading: false,
-        error: err instanceof Error ? err.message : 'Failed to fetch news updates.',
-        empty: true
-      });
+        error: prev.data.length > 0 ? null : (err instanceof Error ? err.message : 'Failed to fetch news updates.'),
+        empty: prev.data.length === 0
+      }));
     }
   }, []);
 
   useEffect(() => {
-    // Always fetch latest news updates on component mount to ensure fresh feed data
-    fetchNews(activeCategory);
-  }, [activeCategory, fetchNews]);
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+      let isDirty = false;
+      try {
+        isDirty = typeof window !== 'undefined' && window.sessionStorage?.getItem('energeia_news_dirty') === '1';
+      } catch {}
+
+      if (hasInitialNews && !isDirty && activeCategory === 'All Updates') {
+        // Defer background revalidation so SSR pre-rendered content paints immediately without critical-path blocking
+        const timer = setTimeout(() => {
+          fetchNews(activeCategory, true);
+        }, 4000);
+        return () => clearTimeout(timer);
+      }
+    }
+
+    fetchNews(activeCategory, hasInitialNews);
+  }, [activeCategory, fetchNews, hasInitialNews]);
 
   const selectCategory = (category: NewsCategory) => {
     setActiveCategory(category);
-    setVisibleCount(5);
+    setVisibleCount(10);
   };
 
   const loadMore = () => {
-    setVisibleCount(prev => prev + 5);
+    setVisibleCount(prev => prev + 10);
   };
 
   const refresh = () => {
-    fetchNews(activeCategory);
+    fetchNews(activeCategory, false);
   };
 
   const visibleNews = state.data.slice(0, visibleCount);

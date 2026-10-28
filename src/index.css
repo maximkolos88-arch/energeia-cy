@@ -31,6 +31,34 @@ html, body {
   }
   h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* Defer rendering heavy below-the-fold feed items */
+.feed-card-deferred {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 140px;
+}
+
+/* Native modal dialog scroll containment */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+/* Respect reduced motion for View Transitions */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

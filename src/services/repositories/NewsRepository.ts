@@ -7,6 +7,14 @@ import { NewsItem, NewsCategory } from '../../models/types';
 import { supabase } from '../../lib/supabase';
 
 export class NewsRepository {
+  private static markDirty(): void {
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        window.sessionStorage.setItem('energeia_news_dirty', '1');
+      }
+    } catch {}
+  }
+
   private static cleanTitle(title: string): string {
     if (!title) return '';
     let cleaned = title.replace(/\s+-\s+[^-]+$/, '').trim();
@@ -188,6 +196,7 @@ export class NewsRepository {
         .insert([fullPayload])
         .select();
       if (error) throw error;
+      this.markDirty();
       return this.mapSupabaseToNewsItem(data[0]);
     } catch (err: any) {
       console.warn("createNewsItem failed with full payload, retrying with core columns only:", err.message);
@@ -202,6 +211,7 @@ export class NewsRepository {
         .insert([corePayload])
         .select();
       if (error) throw error;
+      this.markDirty();
       return this.mapSupabaseToNewsItem(data[0]);
     }
   }
@@ -229,6 +239,7 @@ export class NewsRepository {
         .eq('id', id)
         .select();
       if (error) throw error;
+      this.markDirty();
       return this.mapSupabaseToNewsItem(data[0]);
     } catch (err: any) {
       console.warn("updateNewsItem failed with full payload, retrying with core columns only:", err.message);
@@ -244,6 +255,7 @@ export class NewsRepository {
         .eq('id', id)
         .select();
       if (error) throw error;
+      this.markDirty();
       return this.mapSupabaseToNewsItem(data[0]);
     }
   }
@@ -258,6 +270,7 @@ export class NewsRepository {
       .eq('id', id)
       .select();
     if (error) throw error;
+    this.markDirty();
     return this.mapSupabaseToNewsItem(data[0]);
   }
 

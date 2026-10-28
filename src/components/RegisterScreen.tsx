@@ -18,27 +18,40 @@ export const RegisterScreen: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const nativeEvent = e.nativeEvent as SubmitEvent & {
+      agentInvoked?: boolean;
+      respondWith?: (p: Promise<unknown>) => void;
+    };
     setIsSubmitting(true);
     setError(null);
 
-    try {
-      const { error: supabaseError } = await supabase.from('applications').insert([
-        {
-          full_name: formData.fullName,
-          email: formData.email,
-          company: formData.company,
-          role: formData.role,
-          messenger: formData.messenger,
-          description: formData.description
-        }
-      ]);
-      if (supabaseError) throw supabaseError;
-      setIsSubmitted(true);
-    } catch (err) {
-      console.error('Error submitting application to Supabase:', err);
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
-    } finally {
-      setIsSubmitting(false);
+    const submitTask = (async () => {
+      try {
+        const { error: supabaseError } = await supabase.from('applications').insert([
+          {
+            full_name: formData.fullName,
+            email: formData.email,
+            company: formData.company,
+            role: formData.role,
+            messenger: formData.messenger,
+            description: formData.description
+          }
+        ]);
+        if (supabaseError) throw supabaseError;
+        setIsSubmitted(true);
+        return { status: 'submitted', company: formData.company };
+      } catch (err) {
+        console.error('Error submitting application to Supabase:', err);
+        const msg = err instanceof Error ? err.message : 'An unexpected error occurred.';
+        setError(msg);
+        return { error: msg };
+      } finally {
+        setIsSubmitting(false);
+      }
+    })();
+
+    if (nativeEvent?.agentInvoked && typeof nativeEvent.respondWith === 'function') {
+      nativeEvent.respondWith(submitTask);
     }
   };
 
@@ -80,12 +93,20 @@ export const RegisterScreen: React.FC = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form
+          toolname="submit_directory_application"
+          tooldescription="Submit an application to join the Energeia Cyprus energy directory."
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.fullName')}</label>
+              <label htmlFor="register-full-name" className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.fullName')}</label>
               <input 
+                id="register-full-name"
+                name="fullName"
                 type="text" 
+                autoComplete="name"
                 required
                 className="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white rounded-xl focus:outline-none focus:border-primary transition-colors text-xs font-semibold"
                 placeholder={t('register.fullNamePlaceholder')}
@@ -93,9 +114,12 @@ export const RegisterScreen: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.company')}</label>
+              <label htmlFor="register-company" className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.company')}</label>
               <input 
+                id="register-company"
+                name="company"
                 type="text" 
+                autoComplete="organization"
                 required
                 className="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white rounded-xl focus:outline-none focus:border-primary transition-colors text-xs font-semibold"
                 placeholder={t('register.companyPlaceholder')}
@@ -106,9 +130,12 @@ export const RegisterScreen: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.role')}</label>
+              <label htmlFor="register-role" className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.role')}</label>
               <input 
+                id="register-role"
+                name="role"
                 type="text" 
+                autoComplete="organization-title"
                 required
                 className="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white rounded-xl focus:outline-none focus:border-primary transition-colors text-xs font-semibold"
                 placeholder={t('register.rolePlaceholder')}
@@ -116,9 +143,12 @@ export const RegisterScreen: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.messenger')}</label>
+              <label htmlFor="register-messenger" className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.messenger')}</label>
               <input 
+                id="register-messenger"
+                name="messenger"
                 type="text" 
+                autoComplete="tel"
                 required
                 className="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white rounded-xl focus:outline-none focus:border-primary transition-colors text-xs font-semibold"
                 placeholder={t('register.messengerPlaceholder')}
@@ -128,9 +158,12 @@ export const RegisterScreen: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.email')}</label>
+            <label htmlFor="register-email" className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.email')}</label>
             <input 
+              id="register-email"
+              name="email"
               type="email" 
+              autoComplete="email"
               className="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white rounded-xl focus:outline-none focus:border-primary transition-colors text-xs font-semibold"
               placeholder={t('register.emailPlaceholder')}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -138,8 +171,10 @@ export const RegisterScreen: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.bio')}</label>
+            <label htmlFor="register-bio" className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t('register.bio')}</label>
             <textarea 
+              id="register-bio"
+              name="description"
               required
               rows={3}
               className="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white rounded-xl focus:outline-none focus:border-primary transition-colors resize-none text-xs font-semibold leading-relaxed"

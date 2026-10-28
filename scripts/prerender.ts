@@ -127,6 +127,19 @@ async function loadData() {
   return { newsItems, directoryMembers, magazines, courses };
 }
 
+function getOptimizedImageUrl(rawUrl?: string, width = 320, height = 214): string {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  const trimmed = rawUrl.trim();
+  if (!trimmed || trimmed.includes('offshore-energy.biz')) return '';
+  if (trimmed.startsWith('https://wsrv.nl/') || trimmed.startsWith('/') || trimmed.startsWith('data:')) return trimmed;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    const encoded = encodeURIComponent(trimmed);
+    const fallback = encodeURIComponent('https://www.energeia.cy/apple-touch-icon-180x180.png');
+    return `https://wsrv.nl/?url=${encoded}&w=${width}&h=${height}&fit=cover&output=webp&q=75&default=${fallback}`;
+  }
+  return trimmed;
+}
+
 function updateHeadSEOTags(
   html: string,
   meta: {
@@ -135,7 +148,8 @@ function updateHeadSEOTags(
     url: string;
     image?: string;
     ogType?: string;
-  }
+  },
+  preloadImageUrl?: string
 ): string {
   const imageUrl = meta.image || `${SITE_URL}/apple-touch-icon-180x180.png`;
   const ogType = meta.ogType || 'website';
@@ -174,6 +188,37 @@ function updateHeadSEOTags(
   html = html.replace(/<meta name="twitter:title" content=".*?" \/>/gi, `<meta name="twitter:title" content="${meta.title}" />`);
   html = html.replace(/<meta name="twitter:description" content=".*?" \/>/gi, `<meta name="twitter:description" content="${meta.description}" />`);
   html = html.replace(/<meta name="twitter:image" content=".*?" \/>/gi, `<meta name="twitter:image" content="${imageUrl}" />`);
+
+  const structuredData =
+    ogType === 'article'
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'NewsArticle',
+          headline: meta.title,
+          description: meta.description,
+          image: [imageUrl],
+          author: { '@type': 'Organization', name: 'Energeia Cyprus', url: SITE_URL },
+          publisher: {
+            '@type': 'Organization',
+            name: 'Energeia Cyprus',
+            logo: { '@type': 'ImageObject', url: `${SITE_URL}/apple-touch-icon-180x180.png` },
+          },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': meta.url },
+        }
+      : {
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'Energeia - Cyprus Energy News',
+          url: SITE_URL,
+          description: meta.description,
+          publisher: { '@type': 'Organization', name: 'Energeia Cyprus' },
+        };
+
+  let headExtras = `  <script id="schema-structured-data" type="application/ld+json">${JSON.stringify(structuredData)}</script>\n`;
+  if (preloadImageUrl) {
+    headExtras += `  <link rel="preload" as="image" href="${preloadImageUrl}" fetchpriority="high" />\n`;
+  }
+  html = html.replace('</head>', `${headExtras}  </head>`);
 
   return html;
 }
@@ -323,13 +368,38 @@ async function prerender() {
 
   const allRoutesToRender = [...coreRoutes, ...articleRoutes];
 
+  const lightNewsFeedItems = newsItems.slice(0, 12).map((n: any) => ({
+    id: n.id,
+    title: n.title,
+    slug: n.slug,
+    summary: n.summary,
+    content: '',
+    category: n.category,
+    imageUrl: n.imageUrl,
+    sourceUrl: n.sourceUrl,
+    publishedAt: n.publishedAt,
+    createdAt: n.createdAt,
+    status: n.status,
+    isEditorial: n.isEditorial,
+    readTimeMinutes: n.readTimeMinutes,
+  }));
+
+  const firstLcpImageUrl = lightNewsFeedItems[0]
+    ? getOptimizedImageUrl(lightNewsFeedItems[0].imageUrl, 320, 214)
+    : '';
+
   for (const item of allRoutesToRender) {
     const route = item.route;
+    const isDirectoryRoute = route === '/directory' || route === '/members';
+    const isMagazineRoute = route === '/magazine';
+    const isAcademyRoute = route === '/academy';
+    const isStaticLegalOrAbout = ['/about', '/terms', '/privacy', '/cookies', '/disclosures'].includes(route);
+
     const initialData = {
-      newsItems,
-      directoryMembers,
-      magazines,
-      courses,
+      newsItems: isDirectoryRoute || isMagazineRoute || isAcademyRoute || isStaticLegalOrAbout ? [] : lightNewsFeedItems,
+      directoryMembers: isDirectoryRoute ? directoryMembers : [],
+      magazines: isMagazineRoute ? magazines : [],
+      courses: isAcademyRoute ? courses : [],
       selectedArticle: 'selectedArticle' in item ? item.selectedArticle : null
     };
 
@@ -342,7 +412,8 @@ async function prerender() {
       `<div id="root">${appHtml}</div>\n    <script>window.__INITIAL_DATA__ = ${JSON.stringify(initialData)};</script>`
     );
 
-    finalHtml = updateHeadSEOTags(finalHtml, item.meta);
+    const preloadImg = (route === '/' || route === '/news' || route === '/articles') ? firstLcpImageUrl : undefined;
+    finalHtml = updateHeadSEOTags(finalHtml, item.meta, preloadImg);
 
     let fileOutputDir: string;
     if (route === '/') {

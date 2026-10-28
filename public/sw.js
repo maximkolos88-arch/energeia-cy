@@ -1,8 +1,13 @@
 /**
  * Energeia - Service Worker for PWA Offline Caching & Push Notifications
  */
+try {
+  importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+} catch (e) {
+  // Ignore if offline or blocked
+}
 
-const CACHE_NAME = 'energeia-cache-v10';
+const CACHE_NAME = 'energeia-cache-v11';
 const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/apple-touch-icon.png?v=4',

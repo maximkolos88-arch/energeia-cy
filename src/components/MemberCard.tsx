@@ -94,6 +94,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick }) => {
             <img
               src={member.logoUrl || member.imageUrl}
               alt={member.name}
+              width={48}
+              height={48}
+              loading="lazy"
+              decoding="async"
               className="w-12 h-12 rounded-xl object-contain bg-white dark:bg-[#1b1c1e] shrink-0 border border-neutral-200 dark:border-neutral-800 p-1"
             />
           ) : (

@@ -23,9 +23,30 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
     if (typeof window !== 'undefined') {
       const windowObj = window as any;
       windowObj.OneSignalDeferred = windowObj.OneSignalDeferred || [];
-      windowObj.OneSignalDeferred.push(async function(OneSignal: any) {
-        await OneSignal.Slidedown.promptPush();
-      });
+
+      if (!document.getElementById('onesignal-sdk-script')) {
+        const script = document.createElement('script');
+        script.id = 'onesignal-sdk-script';
+        script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+        script.defer = true;
+        document.head.appendChild(script);
+
+        windowObj.OneSignalDeferred.push(async function(OneSignal: any) {
+          await OneSignal.init({
+            appId: 'e4d374ff-f1ad-495f-a839-b2f52efb05fc',
+            safari_web_id: 'web.onesignal.auto.02093de6-f6ab-427c-bf3a-c7ddb76bfc75',
+            serviceWorkerPath: 'sw.js',
+            notifyButton: {
+              enable: false,
+            },
+          });
+          await OneSignal.Slidedown.promptPush();
+        });
+      } else {
+        windowObj.OneSignalDeferred.push(async function(OneSignal: any) {
+          await OneSignal.Slidedown.promptPush();
+        });
+      }
     }
   };
 
@@ -66,7 +87,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </button>
 
           {/* Navigation Tabs (Relocated inline next to logo - desktop only) */}
-          <nav className="hidden md:flex items-center gap-1.5 h-full">
+          <nav aria-label="Primary" className="hidden md:flex items-center gap-1.5 h-full">
             {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (

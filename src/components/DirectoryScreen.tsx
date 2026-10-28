@@ -3,12 +3,25 @@
 import React from 'react';
 import ClientPortal from './ui/ClientPortal';
 import { useTranslation } from 'react-i18next';
+import { useWebMCP } from 'use-webmcp-tool';
 import { useDirectoryController } from '../controllers/useDirectoryController';
 import { DirectoryMember } from '../models/types';
 import { Search, Mail, ArrowRight, Building2, User, Leaf, X, Phone, MapPin, CheckCircle2, Globe, Award, Copy, Check } from 'lucide-react';
 import { MemberCard } from './MemberCard';
 import PageHeader from './PageHeader';
 import { getLocalizedTag } from '../utils/tagLocalization';
+
+const DIRECTORY_SEARCH_SCHEMA = {
+  type: 'object',
+  properties: {
+    query: {
+      type: 'string',
+      description: 'Keyword, company name, or service specialty to search for in the Cyprus energy directory.',
+    },
+  },
+  required: ['query'],
+};
+
 export const DirectoryScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
 
@@ -29,19 +42,42 @@ export const DirectoryScreen: React.FC = () => {
     closeMemberContact
   } = useDirectoryController();
 
-  const [copiedEmail, setCopiedEmail] = React.useState<boolean>(false);
+  useWebMCP<{ query?: string }, unknown>({
+    name: 'search_directory_members',
+    description: 'Searches verified Cyprus energy companies and professionals by name, category, or expertise.',
+    inputSchema: DIRECTORY_SEARCH_SCHEMA,
+    annotations: { readOnlyHint: true },
+    execute({ query = '' }) {
+      if (typeof query !== 'string') {
+        return { error: 'Pass a string query.' };
+      }
+      setSearchQuery(query);
+      const q = query.trim().toLowerCase();
+      const matched = !q
+        ? members
+        : members.filter(
+            m =>
+              m.name.toLowerCase().includes(q) ||
+              m.roleOrCategory.toLowerCase().includes(q) ||
+              (m.description && m.description.toLowerCase().includes(q))
+          );
+      return {
+        query,
+        count: matched.length,
+        members: matched.slice(0, 15).map(m => ({
+          id: m.id,
+          name: m.name,
+          type: m.type,
+          roleOrCategory: m.roleOrCategory,
+          category: m.category,
+          location: m.location,
+          website: m.website,
+        })),
+      };
+    },
+  });
 
-  // Background scroll lock effect
-  React.useEffect(() => {
-    if (selectedMember) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [selectedMember]);
+  const [copiedEmail, setCopiedEmail] = React.useState<boolean>(false);
 
   const handleCopyEmail = (email: string) => {
     navigator.clipboard.writeText(email);
@@ -95,24 +131,48 @@ export const DirectoryScreen: React.FC = () => {
       />
 
       {/* Clean Full-Width Search Bar */}
-      <div className="relative w-full mb-6 mt-4">
-        <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={t('directory.searchPlaceholder')}
-          className="w-full bg-[#f5f5f5] dark:bg-[#1b1c1e] border border-neutral-200 dark:border-neutral-800 focus:border-primary focus:bg-white dark:focus:bg-neutral-900 focus:outline-none rounded-xl py-3 pl-12 pr-12 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-500 transition-all shadow-3xs"
-        />
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery('')}
-            aria-label="Clear search" className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
-      </div>
+      <search className="w-full mb-6 mt-4">
+        <form
+          toolname="search_energy_directory"
+          tooldescription="Search verified Cyprus energy companies and professionals in the directory."
+          toolautosubmit=""
+          onSubmit={(e) => {
+            e.preventDefault();
+            const nativeEvent = e.nativeEvent as SubmitEvent & {
+              agentInvoked?: boolean;
+              respondWith?: (p: Promise<unknown>) => void;
+            };
+            if (nativeEvent?.agentInvoked && typeof nativeEvent.respondWith === 'function') {
+              nativeEvent.respondWith(Promise.resolve({ query: searchQuery, count: members.length }));
+            }
+          }}
+          className="relative w-full"
+        >
+          <label htmlFor="directory-search-input" className="sr-only">
+            {t('directory.searchPlaceholder')}
+          </label>
+          <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
+          <input
+            id="directory-search-input"
+            name="query"
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t('directory.searchPlaceholder')}
+            className="w-full bg-[#f5f5f5] dark:bg-[#1b1c1e] border border-neutral-200 dark:border-neutral-800 focus:border-primary focus:bg-white dark:focus:bg-neutral-900 focus:outline-none rounded-xl py-3 pl-12 pr-12 text-sm font-medium text-neutral-900 dark:text-white placeholder:text-neutral-500 transition-all shadow-3xs"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              aria-label="Clear search"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </form>
+      </search>
 
       {/* Directory Grid View */}
       {loading ? (
@@ -182,6 +242,10 @@ export const DirectoryScreen: React.FC = () => {
                       <img
                         src={selectedMember.logoUrl || selectedMember.imageUrl}
                         alt={selectedMember.name}
+                        width={56}
+                        height={56}
+                        loading="lazy"
+                        decoding="async"
                         className="w-14 h-14 rounded-xl object-contain bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-1 shrink-0"
                       />
                     ) : (

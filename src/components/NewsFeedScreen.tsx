@@ -1,11 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+
+const ReactMarkdown = React.lazy(() => import('react-markdown'));
+import { useWebMCP } from 'use-webmcp-tool';
 import { useNewsController } from '../controllers/useNewsController';
 import { NewsItem, NewsCategory } from '../models/types';
 import { NewsRepository } from '../services/repositories/NewsRepository';
 import { SEOManager } from './seo/SEOManager';
 import { useInitialData } from '../context/InitialDataContext';
+import { getOptimizedImageUrl } from '../utils/imageProxy';
+
+const NEWS_CATEGORY_VALUES: readonly NewsCategory[] = [
+  'All News',
+  'Renewables & Solar',
+  'Oil & Gas',
+  'Government & Policy',
+  'Grants & Subsidies',
+  'Electricity & Trading',
+  'Maritime & Offshore',
+];
+
+const FILTER_NEWS_SCHEMA = {
+  type: 'object',
+  properties: {
+    category: {
+      type: 'string',
+      enum: NEWS_CATEGORY_VALUES,
+      default: 'All News',
+      description: 'Cyprus energy market category to display in the news stream.',
+    },
+  },
+  required: ['category'],
+};
+
+const SEARCH_NEWS_SCHEMA = {
+  type: 'object',
+  properties: {
+    query: {
+      type: 'string',
+      description: 'Search keywords to match against Cyprus energy news titles and summaries.',
+    },
+  },
+  required: ['query'],
+};
 import { 
   ArrowRight, 
   ExternalLink, 
@@ -150,6 +187,67 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
   const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(() => {
     if (initialData?.selectedArticle) return initialData.selectedArticle;
     return null;
+  });
+
+  useWebMCP<{ category?: NewsCategory }, unknown>({
+    name: 'filter_energy_news',
+    description: 'Filters the Cyprus energy news feed by market sector category. Use when the user wants to view news for a specific Cyprus energy pillar.',
+    inputSchema: FILTER_NEWS_SCHEMA,
+    annotations: { readOnlyHint: true },
+    execute({ category: targetCategory = 'All News' }) {
+      if (typeof targetCategory !== 'string' || !NEWS_CATEGORY_VALUES.includes(targetCategory as NewsCategory)) {
+        return {
+          error: 'Unsupported category value.',
+          supportedCategories: NEWS_CATEGORY_VALUES,
+        };
+      }
+      selectCategory(targetCategory as NewsCategory);
+      const filtered = targetCategory === 'All News'
+        ? newsItems
+        : newsItems.filter(item => item.category === targetCategory);
+      return {
+        activeCategory: targetCategory,
+        count: filtered.length,
+        articles: filtered.slice(0, 10).map(item => ({
+          id: item.id,
+          title: item.title,
+          category: item.category,
+          publishedAt: item.publishedAt,
+          summary: item.summary,
+        })),
+      };
+    },
+  });
+
+  useWebMCP<{ query?: string }, unknown>({
+    name: 'search_energy_news',
+    description: 'Searches Cyprus energy news articles by keyword and returns matching headlines, summaries, and publication dates.',
+    inputSchema: SEARCH_NEWS_SCHEMA,
+    annotations: { readOnlyHint: true },
+    execute({ query }) {
+      if (typeof query !== 'string' || !query.trim()) {
+        return { error: 'Pass a non-empty search query string.' };
+      }
+      const q = query.trim().toLowerCase();
+      const matches = newsItems.filter(
+        item =>
+          item.title.toLowerCase().includes(q) ||
+          (item.summary && item.summary.toLowerCase().includes(q)) ||
+          (item.category && item.category.toLowerCase().includes(q))
+      );
+      return {
+        query: query.trim(),
+        count: matches.length,
+        articles: matches.slice(0, 10).map(item => ({
+          id: item.id,
+          title: item.title,
+          category: item.category,
+          publishedAt: item.publishedAt,
+          summary: item.summary,
+          url: item.slug ? `/news/${item.slug}` : '/',
+        })),
+      };
+    },
   });
 
   // Check URL pathname for direct /news/[slug] deep-linking on client side
@@ -324,39 +422,51 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
           {/* News Cards Feed */}
           {!loading && !empty && (
             <div className="space-y-3.5 md:space-y-4">
-              {newsItems.map((item) => {
+              {newsItems.map((item, idx) => {
                 const titleText = getLocalizedValue(item, 'title', language);
                 const isHeroImage = Boolean(item.isEditorial);
+                const optimizedThumbUrl = getOptimizedImageUrl(item.image_url || item.imageUrl, 320, 214);
+                const openArticle = () => {
+                  const updateState = () => {
+                    if (item.isEditorial && item.slug && typeof window !== 'undefined') {
+                      window.history.pushState({}, '', `/news/${item.slug}`);
+                    }
+                    setSelectedArticle(item);
+                  };
+
+                  if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
+                    const transition = document.startViewTransition(updateState);
+                    transition.finished.finally(() => {
+                      document.getElementById('article-modal-heading')?.focus();
+                    });
+                  } else {
+                    updateState();
+                    setTimeout(() => document.getElementById('article-modal-heading')?.focus(), 0);
+                  }
+
+                  if (!item.content && (item.slug || item.id)) {
+                    NewsRepository.getNewsBySlug(item.slug || item.id)
+                      .then((fullItem) => {
+                        if (fullItem) {
+                          setSelectedArticle((prev) => (prev && prev.id === fullItem.id ? fullItem : prev));
+                        }
+                      })
+                      .catch(() => {});
+                  }
+
+                  if (typeof window !== 'undefined') {
+                    (window as any).trackCustomEvent?.('post_read', item.id);
+                  }
+                };
                 return (
                   <article
                     key={item.id}
-                    tabIndex={0}
-                    role="button"
-                    aria-label={`Read article: ${titleText}`}
-                    onClick={() => {
-                      if (item.isEditorial && item.slug && typeof window !== 'undefined') {
-                        window.history.pushState({}, '', `/news/${item.slug}`);
-                      }
-                      setSelectedArticle(item);
-                      if (typeof window !== 'undefined') {
-                        (window as any).trackCustomEvent?.('post_read', item.id);
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        if (item.isEditorial && item.slug && typeof window !== 'undefined') {
-                          window.history.pushState({}, '', `/news/${item.slug}`);
-                        }
-                        setSelectedArticle(item);
-                        if (typeof window !== 'undefined') {
-                          (window as any).trackCustomEvent?.('post_read', item.id);
-                        }
-                      }
-                    }}
+                    onClick={openArticle}
                     className={`bg-white dark:bg-[#1b1c1e] border rounded-xl p-4 md:p-6 transition-all duration-200 ease-in-out group cursor-pointer relative flex ${
                       isHeroImage ? 'flex-col md:flex-row' : 'flex-row items-center md:items-stretch'
-                    } gap-4 md:gap-6 justify-between active:scale-[0.98] touch-manipulation focus-visible:outline-2 focus-visible:outline-primary ${
+                    } gap-4 md:gap-6 justify-between active:scale-[0.98] touch-manipulation ${
+                      idx >= 4 ? 'feed-card-deferred ' : ''
+                    }${
                       item.isEditorial 
                         ? 'border-emerald-500/50 dark:border-emerald-500/40 shadow-xs hover:shadow-sm' 
                         : 'border-neutral-200 dark:border-neutral-800 hover:border-primary/80'
@@ -386,7 +496,16 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
 
                         {/* Headline */}
                         <h2 className="text-sm md:text-lg font-bold text-neutral-900 dark:text-neutral-100 leading-snug md:leading-snug group-hover:text-primary transition-colors mb-1 md:mb-2 tracking-tight [text-wrap:balance]">
-                          {titleText}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openArticle();
+                            }}
+                            className="text-left bg-transparent border-0 p-0 font-inherit text-inherit cursor-pointer focus-visible:outline-2 focus-visible:outline-primary rounded after:absolute after:inset-0"
+                          >
+                            {titleText}
+                          </button>
                         </h2>
                       </div>
 
@@ -396,15 +515,20 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
                       </p>
                     </div>
 
-                    {(item.image_url || item.imageUrl) ? (
+                    {optimizedThumbUrl ? (
                       <div className={`${
                         isHeroImage 
                           ? 'w-full md:w-32 h-44 md:h-24 order-1 md:order-2' 
                           : 'w-20 h-20 md:w-32 md:h-24 order-2 aspect-square'
                       } rounded-xl overflow-hidden shrink-0 border border-neutral-200/60 dark:border-neutral-800/60`}>
                         <img
-                          src={item.image_url || item.imageUrl}
+                          src={optimizedThumbUrl}
                           alt={titleText}
+                          width={128}
+                          height={96}
+                          loading={idx < 2 ? 'eager' : 'lazy'}
+                          decoding={idx < 2 ? 'sync' : 'async'}
+                          fetchPriority={idx === 0 ? 'high' : undefined}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-in-out"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = 'none';
@@ -463,11 +587,13 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
               <X className="w-5 h-5" />
             </button>
 
-            {(selectedArticle.image_url || selectedArticle.imageUrl) ? (
+            {getOptimizedImageUrl(selectedArticle.image_url || selectedArticle.imageUrl, 800, 450) ? (
               <div className="w-full h-48 md:h-64 rounded-xl md:rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800">
                 <img
-                  src={selectedArticle.image_url || selectedArticle.imageUrl}
+                  src={getOptimizedImageUrl(selectedArticle.image_url || selectedArticle.imageUrl, 800, 450)}
                   alt={getLocalizedValue(selectedArticle, 'title', language)}
+                  width={800}
+                  height={450}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = 'none';
@@ -489,7 +615,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
                 </time>
               </div>
 
-              <h1 className="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white leading-snug mb-3 [text-wrap:balance]">
+              <h1 id="article-modal-heading" tabIndex={-1} className="text-lg md:text-2xl font-bold text-neutral-900 dark:text-white leading-snug mb-3 [text-wrap:balance] focus:outline-none">
                 {getLocalizedValue(selectedArticle, 'title', language)}
               </h1>
             </div>
@@ -503,9 +629,11 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
 
             {/* Markdown Content */}
             <div className="prose prose-sm dark:prose-invert max-w-none text-neutral-800 dark:text-neutral-200 leading-relaxed space-y-3 pt-2">
-              <ReactMarkdown>
-                {getLocalizedValue(selectedArticle, 'content', language) || getLocalizedValue(selectedArticle, 'summary', language) || 'Full article text is being prepared for this publication.'}
-              </ReactMarkdown>
+              <Suspense fallback={<p className="text-xs text-neutral-500">{getLocalizedValue(selectedArticle, 'summary', language)}</p>}>
+                <ReactMarkdown>
+                  {getLocalizedValue(selectedArticle, 'content', language) || getLocalizedValue(selectedArticle, 'summary', language) || 'Full article text is being prepared for this publication.'}
+                </ReactMarkdown>
+              </Suspense>
             </div>
 
             {selectedArticle.sourceUrl && (
