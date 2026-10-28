@@ -59,11 +59,7 @@ export function useNewsController() {
   }, []);
 
   useEffect(() => {
-    // If we initialized with SSG initial data and haven't switched categories yet, skip initial client refetch
-    if (initialDataUsed.current && activeCategory === 'All Updates') {
-      initialDataUsed.current = false;
-      return;
-    }
+    // Always fetch latest news updates on component mount to ensure fresh feed data
     fetchNews(activeCategory);
   }, [activeCategory, fetchNews]);
 

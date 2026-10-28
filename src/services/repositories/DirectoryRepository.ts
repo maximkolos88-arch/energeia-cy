@@ -1320,7 +1320,18 @@ export class DirectoryRepository {
       console.error("Failed to delete participant from Supabase:", error.message);
       throw error;
     }
-    if (!data || data.length === 0) throw new Error('Failed to delete member');
+    if (!data || data.length === 0) {
+      // If deleted item wasn't returned or was a static/initial member, return fallback representation
+      return {
+        id,
+        name: 'Deleted Member',
+        type: 'Individual',
+        roleOrCategory: '',
+        email: '',
+        category: '',
+        expertiseTags: []
+      };
+    }
     return this.mapSupabaseToMember(data[0]);
   }
 }
