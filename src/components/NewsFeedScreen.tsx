@@ -439,8 +439,8 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
                   }
                 };
                 return (
+                  <Suspense key={item.id} fallback={null}>
                   <article
-                    key={item.id}
                     onClick={openArticle}
                     className={`bg-white dark:bg-[#1b1c1e] border rounded-xl p-4 md:p-6 transition-all duration-200 ease-in-out group cursor-pointer relative flex ${
                       isHeroImage ? 'flex-col md:flex-row' : 'flex-row items-center md:items-stretch'
@@ -517,6 +517,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en',
                       </div>
                     ) : null}
                   </article>
+                  </Suspense>
                 );
               })}
             </div>
