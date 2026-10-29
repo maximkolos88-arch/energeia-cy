@@ -7,7 +7,7 @@ try {
   // Ignore if offline or blocked
 }
 
-const CACHE_NAME = 'energeia-cache-v11';
+const CACHE_NAME = 'energeia-cache-v12';
 const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/apple-touch-icon.png?v=4',
@@ -49,6 +49,9 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
+  // Only handle same-origin requests; ignore loopback, API, or external origins
+  if (url.origin !== self.location.origin) return;
+
   // Network-First for HTML navigation / index.html to guarantee latest deployment assets
   if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
     event.respondWith(
@@ -74,7 +77,10 @@ self.addEventListener('fetch', (event) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request);
+      return fetch(event.request).catch(() => {
+        // Graceful offline fallback: avoid uncaught promise rejections
+        return new Response(null, { status: 504, statusText: 'Network Unavailable' });
+      });
     })
   );
 });

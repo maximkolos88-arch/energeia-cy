@@ -198,8 +198,20 @@ function mountApp(): Promise<void> {
     preHydrationWebMCPController.abort();
     const App = AppModule.default;
     const appElement = React.createElement(App, { initialData });
+    const onRecoverableError = (error: unknown) => {
+      const msg = error instanceof Error ? error.message : String(error);
+      if (msg.includes('419') || msg.includes('Suspense boundary') || msg.includes('server could not finish')) {
+        return;
+      }
+      console.warn('[Hydration]', error);
+    };
+
     if (hasPrerenderedDOM) {
-      ReactDOMClient.hydrateRoot(rootElement, appElement);
+      try {
+        ReactDOMClient.hydrateRoot(rootElement, appElement, { onRecoverableError });
+      } catch {
+        ReactDOMClient.createRoot(rootElement).render(appElement);
+      }
     } else {
       ReactDOMClient.createRoot(rootElement).render(appElement);
     }
