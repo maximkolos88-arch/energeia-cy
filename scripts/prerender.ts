@@ -8,8 +8,8 @@ const __dirname = path.dirname(__filename);
 
 const SITE_URL = 'https://www.energeia.cy';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://spbszwdlcedeanvpsmpa.supabase.co';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_PUr7qZ5OhSgsLNcZ6WLlgQ_Z1XPpN_m';
+const supabaseUrl = 'https://spbszwdlcedeanvpsmpa.supabase.co';
+const supabaseKey = 'sb_publishable_PUr7qZ5OhSgsLNcZ6WLlgQ_Z1XPpN_m';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 function parseTimestamp(m: any): number {
@@ -74,7 +74,13 @@ async function loadData() {
         createdAt: item.created_at || new Date().toISOString(),
         status: item.status || 'Published',
         isEditorial: item.is_editorial ?? false,
-        readTimeMinutes: item.read_time_minutes || 3
+        readTimeMinutes: item.read_time_minutes || 3,
+        title_el: item.title_el || '',
+        title_ru: item.title_ru || '',
+        title_he: item.title_he || '',
+        summary_el: item.summary_el || '',
+        summary_ru: item.summary_ru || '',
+        summary_he: item.summary_he || '',
       }));
     }
   } catch (err) {
@@ -393,6 +399,12 @@ async function prerender() {
     status: n.status,
     isEditorial: n.isEditorial,
     readTimeMinutes: n.readTimeMinutes,
+    title_el: n.title_el,
+    title_ru: n.title_ru,
+    title_he: n.title_he,
+    summary_el: n.summary_el,
+    summary_ru: n.summary_ru,
+    summary_he: n.summary_he,
   }));
 
   const firstLcpImageUrl = lightNewsFeedItems[0]

@@ -69,18 +69,6 @@ export function useNewsController() {
   }, []);
 
   useEffect(() => {
-    if (isInitialMountRef.current) {
-      isInitialMountRef.current = false;
-      let isDirty = false;
-      try {
-        isDirty = typeof window !== 'undefined' && window.sessionStorage?.getItem('energeia_news_dirty') === '1';
-      } catch {}
-
-      if (hasInitialNews && !isDirty && activeCategory === 'All Updates') {
-        return;
-      }
-    }
-
     fetchNews(activeCategory, hasInitialNews);
   }, [activeCategory, fetchNews, hasInitialNews]);
 
