@@ -15,7 +15,7 @@ export default defineConfig(({ isSsrBuild }) => {
       legalComments: 'none',
     },
     build: {
-      sourcemap: true,
+      sourcemap: false,
       target: 'esnext',
       cssMinify: true,
       rollupOptions: isSsrBuild
