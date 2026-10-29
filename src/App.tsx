@@ -120,6 +120,53 @@ const NAVIGATE_SECTION_SCHEMA = {
   required: ['section'],
 };
 
+const ROUTE_META: Record<string, { title: string; description: string }> = {
+  news: {
+    title: 'Energeia - Cyprus Energy News & Market Intelligence',
+    description: 'Cyprus energy news, renewable market intelligence, regulatory policy updates, and clean energy analytics.',
+  },
+  terminal: {
+    title: 'Helios Eye — Cyprus National Energy Terminal | Energeia',
+    description: 'Interactive 3D GIS platform monitoring Cyprus renewable infrastructure, 520+ power plants, transmission substations, and live ENTSO-E market telemetry.',
+  },
+  members: {
+    title: 'Directory - Cyprus Energy Professionals & Companies | Energeia',
+    description: 'Explore verified energy sector members, solar installers, ESG auditors, and clean tech companies in Cyprus.',
+  },
+  about: {
+    title: 'About Energeia - Cyprus All-Energy Network',
+    description: 'Energeia is the central information hub and intelligence platform for Cyprus clean energy transition.',
+  },
+  magazine: {
+    title: 'Magazine - Print & Digital Energy Issues | Energeia',
+    description: 'Access exclusive Cyprus energy market issue digests, regulatory reports, and interview archives.',
+  },
+  academy: {
+    title: 'Academy - Clean Energy Courses & Training | Energeia',
+    description: 'Specialized professional courses and educational training for the Cyprus energy transition and renewables market.',
+  },
+  register: {
+    title: 'Join the Network - Membership Registration | Energeia',
+    description: 'Register as an energy professional or enterprise in Cyprus to connect with industry leaders and clean tech projects.',
+  },
+  terms: {
+    title: 'Terms & Conditions | Energeia Cyprus',
+    description: 'Terms of service, platform usage rules, and legal conditions for Energeia Cyprus energy portal.',
+  },
+  privacy: {
+    title: 'Privacy Policy | Energeia Cyprus',
+    description: 'EU GDPR compliance, personal data protection details, and data subject rights for Energeia Cyprus.',
+  },
+  cookies: {
+    title: 'Cookie Policy | Energeia Cyprus',
+    description: 'Information on cookie usage, technical web analytics, and user consent management on Energeia.',
+  },
+  disclosures: {
+    title: 'Statutory Corporate Disclosures | Energeia Cyprus',
+    description: 'Official corporate profile, HE 438859 registration details, VAT CY10438859X, address, and legal disclosures.',
+  },
+};
+
 export interface AppProps {
   path?: string;
   initialData?: InitialData;
@@ -224,6 +271,39 @@ export default function App({ path: propPath, initialData }: AppProps) {
   useEffect(() => {
     console.log('App successfully mounted on client');
   }, []);
+
+  // Synchronize browser tab document.title and meta description dynamically based on active route
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    // Do not override if user is viewing a deep news article (managed by SEOManager)
+    const pathname = window.location.pathname;
+    if (pathname.startsWith('/news/') && pathname !== '/news') {
+      return;
+    }
+
+    const meta = ROUTE_META[activeTab] || ROUTE_META['news'];
+    if (document.title !== meta.title) {
+      document.title = meta.title;
+    }
+
+    const updateMetaTag = (attribute: 'name' | 'property', key: string, content: string) => {
+      let element = document.head.querySelector(`meta[${attribute}="${key}"]`);
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute(attribute, key);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
+
+    updateMetaTag('name', 'description', meta.description);
+    updateMetaTag('name', 'title', meta.title);
+    updateMetaTag('property', 'og:title', meta.title);
+    updateMetaTag('property', 'og:description', meta.description);
+    updateMetaTag('name', 'twitter:title', meta.title);
+    updateMetaTag('name', 'twitter:description', meta.description);
+  }, [activeTab]);
 
   // App Badging API Manager: Clear home screen icon badge on App Open & Visibility Change
   useEffect(() => {

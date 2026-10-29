@@ -21,11 +21,6 @@ export const SEOManager: React.FC<SEOProps> = ({
   const isFirstMount = React.useRef(true);
 
   useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      if (!article) return;
-    }
-
     // 1. Resolve effective meta values
     const articleTitle = article?.title || title;
     const fullTitle = article ? `${articleTitle} | Energeia` : title;
@@ -33,6 +28,14 @@ export const SEOManager: React.FC<SEOProps> = ({
     const currentUrl = article?.slug ? `https://www.energeia.cy/news/${article.slug}` : url;
     const imageUrl = article?.image_url || article?.imageUrl || image;
     const publishedDate = article?.publishedAt || article?.createdAt || new Date().toISOString();
+
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      // If server pre-rendered HTML already matches target title, avoid duplicate DOM mutations
+      if (!article && document.title === fullTitle) {
+        return;
+      }
+    }
 
     // 2. Update Document Title
     document.title = fullTitle;
