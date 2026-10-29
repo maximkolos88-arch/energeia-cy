@@ -1,4 +1,10 @@
 {
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Energeia Cyprus",
+    "identifier": "did:web:www.energeia.cy",
+    "documentationUrl": "https://www.energeia.cy/llms.txt"
+  },
   "entries": [
     {
       "identifier": "urn:air:energeia.cy:docs:llms-txt",
