@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Newspaper, Users, GraduationCap, BookOpen, Info } from 'lucide-react';
+import { Newspaper, Users, GraduationCap, BookOpen, Info, Radar } from 'lucide-react';
 
 import { FEATURES } from '../config/features';
 
@@ -13,6 +13,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, onTabChan
   const { t } = useTranslation();
   const allTabs = [
     { id: 'news', label: t('nav.news'), icon: Newspaper, enabled: true },
+    { id: 'terminal', label: t('nav.terminal'), icon: Radar, enabled: FEATURES.enableTerminal },
     { id: 'members', label: t('nav.members'), icon: Users, enabled: FEATURES.enableMembers },
     { id: 'magazine', label: t('nav.magazine'), icon: BookOpen, enabled: FEATURES.enableMagazine },
     { id: 'academy', label: t('nav.academy'), icon: GraduationCap, enabled: FEATURES.enableAcademy },

@@ -1,149 +1,234 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import PageHeader from './PageHeader';
+import { 
+  Globe, 
+  Database, 
+  Handshake, 
+  ExternalLink, 
+  Maximize2, 
+  Minimize2, 
+  Sun, 
+  Wind, 
+  BatteryCharging, 
+  Zap, 
+  Info, 
+  X,
+  Activity
+} from 'lucide-react';
 
 export const TerminalScreen: React.FC = () => {
   const { t } = useTranslation();
   const [iframeLoaded, setIframeLoaded] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
 
   const toggleFullscreen = () => {
     setIsFullscreen(prev => !prev);
   };
 
   return (
-    <div className={`w-full max-w-7xl mx-auto px-4 md:px-6 py-6 pb-24 md:pb-12 animate-fade-in ${isFullscreen ? 'fixed inset-0 z-50 max-w-none p-0 bg-[#0b1120]' : ''}`}>
-      {!isFullscreen && (
-        <>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
-            <PageHeader
-              title={t('terminal.title', 'Helios Eye — Cyprus Energy Terminal')}
-              description={t('terminal.subtitle', 'Interactive 3D GIS platform monitoring 520+ power plants, transmission substations, and live ENTSO-E market telemetry.')}
-              iconName="radar"
-            />
-            <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
+    <div className={`w-full relative flex flex-col bg-[#0b1120] overflow-hidden ${
+      isFullscreen 
+        ? 'fixed inset-0 z-50 h-screen w-screen' 
+        : 'h-[calc(100dvh-4rem)]'
+    }`}>
+      {/* Top Floating Telemetry & Control HUD Bar */}
+      <div className="absolute top-3 left-3 right-3 z-30 pointer-events-none flex items-center justify-between gap-3">
+        {/* Left: Terminal Status Badge */}
+        <div className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-[#0b1120]/90 backdrop-blur-md border border-emerald-500/30 text-white shadow-lg">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <div className="flex flex-col">
+            <span className="text-xs font-bold tracking-wide text-neutral-100 flex items-center gap-1.5">
+              <span>Helios Eye</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">v1.0</span>
+            </span>
+            <span className="text-[10px] text-neutral-400 hidden sm:inline">Cyprus 3D Energy Grid Terminal</span>
+          </div>
+        </div>
+
+        {/* Right: Quick Action Controls */}
+        <div className="pointer-events-auto flex items-center gap-2">
+          {/* Info & Registry Stats Drawer Button */}
+          <button
+            type="button"
+            onClick={() => setShowInfoModal(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[#111827]/90 text-neutral-200 border border-neutral-700/80 hover:bg-neutral-800 hover:text-white transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="View Cyprus Grid Infrastructure Metrics"
+          >
+            <Info className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Grid Overview</span>
+          </button>
+
+          {/* Standalone Window Mode */}
+          <a
+            href="/helios/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[#111827]/90 text-neutral-200 border border-neutral-700/80 hover:bg-neutral-800 hover:text-white transition-all shadow-md backdrop-blur-md"
+            title="Open Standalone HUD in New Window"
+          >
+            <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
+            <span className="hidden sm:inline">{t('terminal.openStandalone', 'Standalone Mode')}</span>
+          </a>
+
+          {/* Fullscreen Toggle */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-md cursor-pointer"
+            title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
+          >
+            {isFullscreen ? (
+              <>
+                <Minimize2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Exit Full View</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{t('terminal.fullscreen', 'Full View')}</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Loading state indicator */}
+      {!iframeLoaded && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0b1120] text-emerald-400 gap-3 z-20">
+          <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-xs font-mono tracking-wider text-neutral-400">ESTABLISHING SECURE CONNECTION TO HELIOS GRID ENGINE...</p>
+        </div>
+      )}
+
+      {/* Embedded Terminal Frame */}
+      <iframe
+        src="/helios/"
+        title="Helios Eye Cyprus Grid Terminal"
+        className="w-full h-full border-0 relative z-10"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        onLoad={() => setIframeLoaded(true)}
+      />
+
+      {/* Grid Overview Modal / Overlay */}
+      {showInfoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-3xl bg-[#111827] border border-neutral-700/80 rounded-3xl p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-4 mb-6 pb-4 border-b border-neutral-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Cyprus Energy Grid Telemetry & Registry</h2>
+                  <p className="text-xs text-neutral-400">Helios Eye National Asset Overview • CERA & TSOC Coordinated</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowInfoModal(false)}
+                className="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+                aria-label="Close Overview"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Metric Stat Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              <div className="p-4 rounded-2xl bg-[#1f2937]/60 border border-neutral-700/60">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Sun className="w-4 h-4 text-amber-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Solar PV</span>
+                </div>
+                <div className="text-xl font-extrabold text-white">~780 MW</div>
+                <div className="text-[11px] text-neutral-400 mt-0.5">450+ Licensed Arrays</div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#1f2937]/60 border border-neutral-700/60">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Wind className="w-4 h-4 text-sky-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Wind Farms</span>
+                </div>
+                <div className="text-xl font-extrabold text-white">~157 MW</div>
+                <div className="text-[11px] text-neutral-400 mt-0.5">Mountain Basins</div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#1f2937]/60 border border-neutral-700/60">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <BatteryCharging className="w-4 h-4 text-purple-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">BESS Storage</span>
+                </div>
+                <div className="text-xl font-extrabold text-white">Pipelines</div>
+                <div className="text-[11px] text-neutral-400 mt-0.5">Fast Reserve Units</div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#1f2937]/60 border border-neutral-700/60">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Zap className="w-4 h-4 text-rose-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Substations</span>
+                </div>
+                <div className="text-xl font-extrabold text-white">66 / 132 kV</div>
+                <div className="text-[11px] text-neutral-400 mt-0.5">TSOC Backbone</div>
+              </div>
+            </div>
+
+            {/* Capability Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="p-4 rounded-2xl bg-[#1f2937]/40 border border-neutral-700/50">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-3">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white mb-1">Photorealistic 3D GIS</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Google Maps 3D vector and tilt rendering displaying geospatial positioning of utility-scale solar parks, wind turbines, and substations across Cyprus.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#1f2937]/40 border border-neutral-700/50">
+                <div className="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center mb-3">
+                  <Database className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white mb-1">OpenInfraMap National Registry</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Over 520 power generation facilities cataloged with real-world capacities, geographic coordinates, voltage levels, and CERA regulatory metadata.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#1f2937]/40 border border-neutral-700/50">
+                <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mb-3">
+                  <Handshake className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white mb-1">B2B PPA & EPC Integration</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Directly connect with project developers, licensed energy suppliers, and certified EPC contractors through Energeia verified member channels.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
               <a
                 href="/helios/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors shadow-xs"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
               >
-                <span className="material-symbols-outlined text-sm">open_in_new</span>
-                <span>{t('terminal.openStandalone', 'Standalone Mode')}</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open Standalone HUD</span>
               </a>
               <button
                 type="button"
-                onClick={toggleFullscreen}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-xs"
+                onClick={() => setShowInfoModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition-colors cursor-pointer"
               >
-                <span className="material-symbols-outlined text-sm">fullscreen</span>
-                <span>{t('terminal.fullscreen', 'Full View')}</span>
+                Close
               </button>
             </div>
-          </div>
-
-          {/* Infrastructure Quick Metric Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#18191c] border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
-              <div className="flex items-center gap-2 text-amber-500 mb-1">
-                <span className="material-symbols-outlined text-base">solar_power</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Solar PV</span>
-              </div>
-              <div className="text-lg md:text-xl font-extrabold text-neutral-900 dark:text-white">~780 MW</div>
-              <div className="text-[11px] text-neutral-500 dark:text-neutral-400">450+ Licensed Arrays</div>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#18191c] border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
-              <div className="flex items-center gap-2 text-sky-500 mb-1">
-                <span className="material-symbols-outlined text-base">wind_power</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Wind Farms</span>
-              </div>
-              <div className="text-lg md:text-xl font-extrabold text-neutral-900 dark:text-white">~157 MW</div>
-              <div className="text-[11px] text-neutral-500 dark:text-neutral-400">Major Mountain Basins</div>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#18191c] border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
-              <div className="flex items-center gap-2 text-purple-500 mb-1">
-                <span className="material-symbols-outlined text-base">battery_charging_full</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">BESS Storage</span>
-              </div>
-              <div className="text-lg md:text-xl font-extrabold text-neutral-900 dark:text-white">Pipelines</div>
-              <div className="text-[11px] text-neutral-500 dark:text-neutral-400">Fast Reserve Assets</div>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#18191c] border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
-              <div className="flex items-center gap-2 text-rose-500 mb-1">
-                <span className="material-symbols-outlined text-base">bolt</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Grid Substation</span>
-              </div>
-              <div className="text-lg md:text-xl font-extrabold text-neutral-900 dark:text-white">66 / 132 kV</div>
-              <div className="text-[11px] text-neutral-500 dark:text-neutral-400">TSOC Backbone Nodes</div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Terminal Viewport */}
-      <div className={`relative w-full rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-[#0b1120] shadow-xl ${isFullscreen ? 'h-screen rounded-none border-none' : 'h-[68vh] md:h-[78vh]'}`}>
-        {/* Fullscreen Exit Control */}
-        {isFullscreen && (
-          <button
-            type="button"
-            onClick={toggleFullscreen}
-            className="absolute top-4 right-4 z-50 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-neutral-900/90 text-white border border-neutral-700/60 hover:bg-neutral-800 backdrop-blur-md shadow-lg"
-          >
-            <span className="material-symbols-outlined text-sm">fullscreen_exit</span>
-            <span>Exit Full View</span>
-          </button>
-        )}
-
-        {/* Loading placeholder */}
-        {!iframeLoaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0b1120] text-emerald-400 gap-3 z-10">
-            <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-xs font-mono tracking-wider text-neutral-400">CONNECTING TO HELIOS CYPRUS GRID ENGINE...</p>
-          </div>
-        )}
-
-        <iframe
-          src="/helios/"
-          title="Helios Eye Cyprus Grid Terminal"
-          className="w-full h-full border-0 relative z-20"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          onLoad={() => setIframeLoaded(true)}
-        />
-      </div>
-
-      {!isFullscreen && (
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-white dark:bg-[#18191c] border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
-              <span className="material-symbols-outlined">satellite_alt</span>
-            </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white mb-1">Photorealistic 3D GIS</h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Google Maps 3D vector and tilt rendering displaying geospatial positioning of utility-scale solar parks, wind turbines, and substations across Cyprus.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-white dark:bg-[#18191c] border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-3">
-              <span className="material-symbols-outlined">database</span>
-            </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white mb-1">OpenInfraMap National Registry</h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Over 520 power generation facilities cataloged with real-world capacities, geographic coordinates, voltage levels, and CERA regulatory metadata.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-white dark:bg-[#18191c] border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3">
-              <span className="material-symbols-outlined">handshake</span>
-            </div>
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-white mb-1">B2B PPA & EPC Integration</h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Directly connect with project developers, licensed energy suppliers, and certified EPC contractors through Energeia verified member channels.
-            </p>
           </div>
         </div>
       )}

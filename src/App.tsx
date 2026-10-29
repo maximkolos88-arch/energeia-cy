@@ -502,7 +502,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
         </main>
 
         {/* Global Footer & Mobile Bottom Navigation Bar */}
-        <Footer />
+        {activeTab !== 'terminal' && <Footer />}
         <BottomNavBar
           activeTab={activeTab}
           onTabChange={handleTabChange}
