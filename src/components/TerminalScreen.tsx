@@ -40,7 +40,7 @@ export const TerminalScreen: React.FC = () => {
       // Failsafe timer: ensure overlay always dismisses once the page is interactive
       const timer = setTimeout(() => {
         setIframeLoaded(true);
-      }, 1000);
+      }, 500);
 
       return () => {
         iframe.removeEventListener('load', handleLoad);
@@ -59,23 +59,8 @@ export const TerminalScreen: React.FC = () => {
         ? 'fixed inset-0 z-50 h-screen w-screen' 
         : 'h-[calc(100dvh-4rem)]'
     }`}>
-      {/* Top Floating Telemetry & Control HUD Bar */}
-      <div className="absolute top-3 left-3 right-3 z-30 pointer-events-none flex items-center justify-between gap-3">
-        {/* Left: Terminal Status Badge */}
-        <div className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-[#0b1120]/90 backdrop-blur-md border border-emerald-500/30 text-white shadow-lg">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-          </span>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold tracking-wide text-neutral-100 flex items-center gap-1.5">
-              <span>Helios Eye</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">v1.0</span>
-            </span>
-            <span className="text-[10px] text-neutral-400 hidden sm:inline">Cyprus 3D Energy Grid Terminal</span>
-          </div>
-        </div>
-
+      {/* Top Floating Control Bar */}
+      <div className="absolute top-3 right-3 z-30 pointer-events-none flex items-center justify-end gap-2">
         {/* Right: Quick Action Controls */}
         <div className="pointer-events-auto flex items-center gap-2">
           {/* Info & Registry Stats Drawer Button */}
@@ -124,15 +109,15 @@ export const TerminalScreen: React.FC = () => {
       </div>
 
       {/* Loading state indicator */}
-      <div 
-        className={`absolute inset-0 flex flex-col items-center justify-center bg-[#0b1120] text-emerald-400 gap-3 z-20 transition-opacity duration-500 ${
-          iframeLoaded ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
-        aria-hidden={iframeLoaded}
-      >
-        <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xs font-mono tracking-wider text-neutral-400">ESTABLISHING SECURE CONNECTION TO HELIOS GRID ENGINE...</p>
-      </div>
+      {!iframeLoaded && (
+        <div 
+          className="absolute inset-0 flex flex-col items-center justify-center bg-[#0b1120] text-emerald-400 gap-3 z-20 pointer-events-none transition-opacity duration-300"
+          aria-hidden={iframeLoaded}
+        >
+          <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-xs font-mono tracking-wider text-neutral-400">CONNECTING TO HELIOS 3D GRID TERMINAL...</p>
+        </div>
+      )}
 
       {/* Embedded Terminal Frame */}
       <iframe
