@@ -13,6 +13,84 @@ import { loadLanguageBundle } from './lib/i18n';
 import { FEATURES } from './config/features';
 import { InitialDataProvider, InitialData } from './context/InitialDataContext';
 
+function lazyWithRetry<T extends { default: React.ComponentType<any> }>(
+  factory: () => Promise<T>,
+  retries = 3,
+  delayMs = 400
+): React.LazyExoticComponent<T['default']> {
+  return React.lazy(() =>
+    new Promise<T>((resolve, reject) => {
+      const attempt = (left: number) => {
+        factory()
+          .then(resolve)
+          .catch((err) => {
+            if (left <= 0) {
+              reject(err);
+            } else {
+              setTimeout(() => attempt(left - 1), delayMs);
+            }
+          });
+      };
+      attempt(retries);
+    })
+  );
+}
+
+const loadAdminPanel = () => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel }));
+const loadLoginScreen = () => import('./components/LoginScreen').then(m => ({ default: m.LoginScreen }));
+
+interface AdminErrorBoundaryProps {
+  children: React.ReactNode;
+}
+interface AdminErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+class AdminErrorBoundary extends React.Component<AdminErrorBoundaryProps, AdminErrorBoundaryState> {
+  constructor(props: AdminErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: Error): AdminErrorBoundaryState {
+    return { hasError: true, error };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-[#121212] p-6 text-center">
+          <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/30 flex items-center justify-center text-red-600 mb-4">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Unable to load Admin Portal</h2>
+          <p className="text-sm text-slate-500 dark:text-gray-400 max-w-sm mb-6">
+            {this.state.error?.message || 'A network error occurred while loading the portal bundle.'}
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                window.location.reload();
+              }}
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-sm transition-colors shadow-sm"
+            >
+              Retry Loading
+            </button>
+            <a
+              href="/"
+              className="px-5 py-2.5 bg-slate-200 dark:bg-[#2c2d30] text-slate-700 dark:text-gray-300 font-medium rounded-xl text-sm hover:bg-slate-300 dark:hover:bg-[#3c3d42] transition-colors"
+            >
+              Return Home
+            </a>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const PWAInstallPrompt = React.lazy(() => import('./components/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt })));
 const DirectoryScreen = React.lazy(() => import('./components/DirectoryScreen').then(m => ({ default: m.DirectoryScreen })));
 const AboutScreen = React.lazy(() => import('./components/AboutScreen').then(m => ({ default: m.AboutScreen })));
@@ -23,8 +101,8 @@ const TermsScreen = React.lazy(() => import('./components/legal/TermsScreen').th
 const PrivacyScreen = React.lazy(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
 const CookieScreen = React.lazy(() => import('./components/legal/CookieScreen').then(m => ({ default: m.CookieScreen })));
 const CorporateDisclosuresScreen = React.lazy(() => import('./components/legal/CorporateDisclosuresScreen').then(m => ({ default: m.CorporateDisclosuresScreen })));
-const AdminPanel = React.lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
-const LoginScreen = React.lazy(() => import('./components/LoginScreen').then(m => ({ default: m.LoginScreen })));
+const AdminPanel = lazyWithRetry(loadAdminPanel);
+const LoginScreen = lazyWithRetry(loadLoginScreen);
 
 const NAV_SECTIONS = ['news', 'members', 'magazine', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
 
@@ -49,6 +127,9 @@ export interface AppProps {
 export default function App({ path: propPath, initialData }: AppProps) {
   const { i18n } = useTranslation();
   const [session, setSession] = useState<Session | null>(null);
+  const [authChecking, setAuthChecking] = useState<boolean>(() => {
+    return (propPath ?? (typeof window !== 'undefined' ? window.location.pathname : '/')).startsWith('/admin');
+  });
 
   const currentPath = propPath ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
 
@@ -181,16 +262,37 @@ export default function App({ path: propPath, initialData }: AppProps) {
   // Monitor Supabase Auth Session (only needed on /admin routes)
   useEffect(() => {
     if (!isAdminRoute) return;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+
+    loadAdminPanel();
+    loadLoginScreen();
+
+    let isSubscribed = true;
+
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (isSubscribed) {
+          setSession(session);
+          setAuthChecking(false);
+        }
+      })
+      .catch((err) => {
+        console.warn('Auth session check error:', err);
+        if (isSubscribed) {
+          setAuthChecking(false);
+        }
+      });
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+      if (isSubscribed) {
+        setSession(session);
+        setAuthChecking(false);
+      }
     });
 
     return () => {
+      isSubscribed = false;
       subscription.unsubscribe();
     };
   }, [isAdminRoute]);
@@ -302,20 +404,42 @@ export default function App({ path: propPath, initialData }: AppProps) {
   };
 
   if (isAdminRoute) {
-    if (!session) {
+    if (authChecking) {
       return (
-        <InitialDataProvider value={initialData}>
-          <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-xs text-neutral-500">Loading...</div>}>
-            <LoginScreen onSuccess={() => setIsAdminRoute(true)} />
-          </Suspense>
-        </InitialDataProvider>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-[#121212] gap-3">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm text-slate-500 dark:text-gray-400 font-medium">Verifying authorization...</p>
+        </div>
       );
     }
+
     return (
       <InitialDataProvider value={initialData}>
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-xs text-neutral-500">Loading Admin...</div>}>
-          <AdminPanel onClose={navigateToHome} />
-        </Suspense>
+        <AdminErrorBoundary>
+          {!session ? (
+            <Suspense
+              fallback={
+                <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-[#121212] gap-3">
+                  <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm text-slate-500 dark:text-gray-400 font-medium">Loading Sign In...</p>
+                </div>
+              }
+            >
+              <LoginScreen onSuccess={() => setIsAdminRoute(true)} />
+            </Suspense>
+          ) : (
+            <Suspense
+              fallback={
+                <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-[#121212] gap-3">
+                  <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm text-slate-500 dark:text-gray-400 font-medium">Loading Admin Portal...</p>
+                </div>
+              }
+            >
+              <AdminPanel onClose={navigateToHome} />
+            </Suspense>
+          )}
+        </AdminErrorBoundary>
       </InitialDataProvider>
     );
   }

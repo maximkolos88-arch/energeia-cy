@@ -39,7 +39,12 @@ if (typeof window !== 'undefined') {
 
 const rootElement = document.getElementById('root')!;
 const initialData: InitialData | undefined = typeof window !== 'undefined' ? (window as any).__INITIAL_DATA__ : undefined;
-const hasPrerenderedDOM = Boolean(rootElement && rootElement.hasChildNodes() && rootElement.children.length > 0);
+const currentPathname = typeof window !== 'undefined' ? window.location.pathname : '/';
+const isClientOnlyRoute = currentPathname.startsWith('/admin') || currentPathname === '/register';
+if (isClientOnlyRoute && rootElement) {
+  rootElement.innerHTML = '';
+}
+const hasPrerenderedDOM = Boolean(!isClientOnlyRoute && rootElement && rootElement.hasChildNodes() && rootElement.children.length > 0);
 
 const preHydrationWebMCPController = new AbortController();
 let mountPromise: Promise<void> | null = null;
