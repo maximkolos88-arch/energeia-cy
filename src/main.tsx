@@ -1,7 +1,7 @@
 import './index.css';
 import type { InitialData } from './context/InitialDataContext';
 
-const NAV_SECTIONS = ['news', 'members', 'magazine', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
+const NAV_SECTIONS = ['news', 'terminal', 'members', 'magazine', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
 const NEWS_CATEGORY_VALUES = [
   'All News',
   'Renewables & Solar',

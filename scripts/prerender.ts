@@ -300,6 +300,14 @@ async function prerender() {
       }
     },
     {
+      route: '/terminal',
+      meta: {
+        title: 'Helios Eye — Cyprus National Energy Terminal | Energeia',
+        description: 'Interactive 3D GIS platform monitoring Cyprus renewable infrastructure, 520+ power plants, transmission substations, and live ENTSO-E market telemetry.',
+        url: `${SITE_URL}/terminal`
+      }
+    },
+    {
       route: '/directory',
       meta: {
         title: 'Directory - Cyprus Energy Professionals & Companies | Energeia',
@@ -416,10 +424,11 @@ async function prerender() {
     const isDirectoryRoute = route === '/directory' || route === '/members';
     const isMagazineRoute = route === '/magazine';
     const isAcademyRoute = route === '/academy';
+    const isTerminalRoute = route === '/terminal';
     const isStaticLegalOrAbout = ['/about', '/terms', '/privacy', '/cookies', '/disclosures'].includes(route);
 
     const initialData = {
-      newsItems: isDirectoryRoute || isMagazineRoute || isAcademyRoute || isStaticLegalOrAbout ? [] : lightNewsFeedItems,
+      newsItems: isDirectoryRoute || isMagazineRoute || isAcademyRoute || isTerminalRoute || isStaticLegalOrAbout ? [] : lightNewsFeedItems,
       directoryMembers: isDirectoryRoute ? directoryMembers : [],
       magazines: isMagazineRoute ? magazines : [],
       courses: isAcademyRoute ? courses : [],

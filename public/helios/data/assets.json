@@ -1,0 +1,749 @@
+{
+  "status": "success",
+  "source": "energeia.cy REST API / Members Directory",
+  "data": [
+    {
+      "id": "sub-01",
+      "name": "132kV Substation «Vasilikos Transmission Node»",
+      "type": "Substation",
+      "lat": 34.7208,
+      "lng": 33.3182,
+      "capacity_mw": 860,
+      "voltage_kv": 132,
+      "region": "Larnaca / Limassol",
+      "status": "Operational",
+      "cera_license": "CERA-SUB-1998-004",
+      "curtailment_risk": "Minimal",
+      "curtailment_level": "green",
+      "developer_name": "EAC Transmission (TSOC)",
+      "developer_url": "https://energeia.cy/directory/eac-tsoc",
+      "polygon_coords": [
+        {
+          "lat": 34.7216,
+          "lng": 33.3172
+        },
+        {
+          "lat": 34.7216,
+          "lng": 33.3192
+        },
+        {
+          "lat": 34.72,
+          "lng": 33.3192
+        },
+        {
+          "lat": 34.72,
+          "lng": 33.3172
+        }
+      ]
+    },
+    {
+      "id": "sub-02",
+      "name": "132kV Substation «Dhekelia Grid Hub»",
+      "type": "Substation",
+      "lat": 34.9806,
+      "lng": 33.7445,
+      "capacity_mw": 460,
+      "voltage_kv": 132,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-SUB-2002-019",
+      "curtailment_risk": "Low risk",
+      "curtailment_level": "green",
+      "developer_name": "Electricity Authority of Cyprus (EAC)",
+      "developer_url": "https://energeia.cy/directory/eac",
+      "polygon_coords": [
+        {
+          "lat": 34.9814,
+          "lng": 33.7436
+        },
+        {
+          "lat": 34.9814,
+          "lng": 33.7454
+        },
+        {
+          "lat": 34.9798,
+          "lng": 33.7454
+        },
+        {
+          "lat": 34.9798,
+          "lng": 33.7436
+        }
+      ]
+    },
+    {
+      "id": "sub-03",
+      "name": "66kV Substation «Athalassa Distribution»",
+      "type": "Substation",
+      "lat": 35.1385,
+      "lng": 33.3895,
+      "capacity_mw": 240,
+      "voltage_kv": 66,
+      "region": "Nicosia",
+      "status": "Operational",
+      "cera_license": "CERA-SUB-2009-082",
+      "curtailment_risk": "Low risk",
+      "curtailment_level": "green",
+      "developer_name": "EAC Distribution",
+      "developer_url": "https://energeia.cy/directory/eac-distribution",
+      "polygon_coords": [
+        {
+          "lat": 35.1392,
+          "lng": 33.3887
+        },
+        {
+          "lat": 35.1392,
+          "lng": 33.3903
+        },
+        {
+          "lat": 35.1378,
+          "lng": 33.3903
+        },
+        {
+          "lat": 35.1378,
+          "lng": 33.3887
+        }
+      ]
+    },
+    {
+      "id": "sub-04",
+      "name": "132kV Substation «Moni Coastal Substation»",
+      "type": "Substation",
+      "lat": 34.7106,
+      "lng": 33.1825,
+      "capacity_mw": 320,
+      "voltage_kv": 132,
+      "region": "Limassol",
+      "status": "Operational",
+      "cera_license": "CERA-SUB-2004-031",
+      "curtailment_risk": "Minimal",
+      "curtailment_level": "green",
+      "developer_name": "EAC Transmission (TSOC)",
+      "developer_url": "https://energeia.cy/directory/eac-tsoc",
+      "polygon_coords": [
+        {
+          "lat": 34.7113,
+          "lng": 33.1817
+        },
+        {
+          "lat": 34.7113,
+          "lng": 33.1833
+        },
+        {
+          "lat": 34.7099,
+          "lng": 33.1833
+        },
+        {
+          "lat": 34.7099,
+          "lng": 33.1817
+        }
+      ]
+    },
+    {
+      "id": "sub-05",
+      "name": "66kV Substation «Anavargos Grid»",
+      "type": "Substation",
+      "lat": 34.7844,
+      "lng": 32.4435,
+      "capacity_mw": 150,
+      "voltage_kv": 66,
+      "region": "Paphos",
+      "status": "Operational",
+      "cera_license": "CERA-SUB-2015-104",
+      "curtailment_risk": "Low risk",
+      "curtailment_level": "green",
+      "developer_name": "EAC Distribution",
+      "developer_url": "https://energeia.cy/directory/eac-distribution",
+      "polygon_coords": [
+        {
+          "lat": 34.7851,
+          "lng": 32.4427
+        },
+        {
+          "lat": 34.7851,
+          "lng": 32.4443
+        },
+        {
+          "lat": 34.7837,
+          "lng": 32.4443
+        },
+        {
+          "lat": 34.7837,
+          "lng": 32.4427
+        }
+      ]
+    },
+    {
+      "id": "spv-01",
+      "name": "Solar Park «Tseri Mega Solar»",
+      "type": "Solar PV",
+      "lat": 35.09,
+      "lng": 33.3511,
+      "capacity_mw": 32.5,
+      "voltage_kv": 22,
+      "region": "Nicosia",
+      "status": "Operational",
+      "cera_license": "CERA-PV-2021-0814",
+      "curtailment_risk": "Medium risk (8.4%)",
+      "curtailment_level": "yellow",
+      "developer_name": "Cyfield Energy Group",
+      "developer_url": "https://energeia.cy/directory/cyfield-energy",
+      "polygon_coords": [
+        {
+          "lat": 35.0918,
+          "lng": 33.3496
+        },
+        {
+          "lat": 35.092,
+          "lng": 33.3526
+        },
+        {
+          "lat": 35.0882,
+          "lng": 33.3528
+        },
+        {
+          "lat": 35.088,
+          "lng": 33.3498
+        }
+      ]
+    },
+    {
+      "id": "spv-02",
+      "name": "Solar Park «Larnaca-Aradippou Solar Hub»",
+      "type": "Solar PV",
+      "lat": 34.9808,
+      "lng": 33.5441,
+      "capacity_mw": 18.2,
+      "voltage_kv": 22,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-PV-2020-0491",
+      "curtailment_risk": "Low risk (2.1%)",
+      "curtailment_level": "green",
+      "developer_name": "SolarSun Cyprus EPC",
+      "developer_url": "https://energeia.cy/directory/solarsun-cyprus",
+      "polygon_coords": [
+        {
+          "lat": 34.9822,
+          "lng": 33.5426
+        },
+        {
+          "lat": 34.9824,
+          "lng": 33.5456
+        },
+        {
+          "lat": 34.9792,
+          "lng": 33.5458
+        },
+        {
+          "lat": 34.979,
+          "lng": 33.5428
+        }
+      ]
+    },
+    {
+      "id": "spv-03",
+      "name": "Solar Park «Monagroulli-Limassol Solar Array»",
+      "type": "Solar PV",
+      "lat": 34.7627,
+      "lng": 33.1704,
+      "capacity_mw": 18,
+      "voltage_kv": 22,
+      "region": "Limassol",
+      "status": "Operational",
+      "cera_license": "CERA-PV-2022-1102",
+      "curtailment_risk": "High risk (14.2%)",
+      "curtailment_level": "orange",
+      "developer_name": "Hellenic Petroleum Renewables (HELRPE)",
+      "developer_url": "https://energeia.cy/directory/helrpe-renewables",
+      "polygon_coords": [
+        {
+          "lat": 34.7642,
+          "lng": 33.1688
+        },
+        {
+          "lat": 34.7644,
+          "lng": 33.172
+        },
+        {
+          "lat": 34.7612,
+          "lng": 33.1722
+        },
+        {
+          "lat": 34.761,
+          "lng": 33.169
+        }
+      ]
+    },
+    {
+      "id": "spv-04",
+      "name": "Solar Park «Evretou-Paphos Solar Farm»",
+      "type": "Solar PV",
+      "lat": 34.9779,
+      "lng": 32.4727,
+      "capacity_mw": 12.8,
+      "voltage_kv": 11,
+      "region": "Paphos",
+      "status": "Operational",
+      "cera_license": "CERA-PV-2019-0331",
+      "curtailment_risk": "Low risk (1.8%)",
+      "curtailment_level": "green",
+      "developer_name": "GreenTech Energy Systems",
+      "developer_url": "https://energeia.cy/directory/greentech-systems",
+      "polygon_coords": [
+        {
+          "lat": 34.9793,
+          "lng": 32.471
+        },
+        {
+          "lat": 34.9795,
+          "lng": 32.4744
+        },
+        {
+          "lat": 34.9765,
+          "lng": 32.4746
+        },
+        {
+          "lat": 34.9763,
+          "lng": 32.4712
+        }
+      ]
+    },
+    {
+      "id": "spv-05",
+      "name": "Solar Park «Frenaros West PV Facility»",
+      "type": "Solar PV",
+      "lat": 35.0569,
+      "lng": 33.8863,
+      "capacity_mw": 15.6,
+      "voltage_kv": 22,
+      "region": "Famagusta",
+      "status": "Operational",
+      "cera_license": "CERA-PV-2023-0941",
+      "curtailment_risk": "High risk (16.8%)",
+      "curtailment_level": "orange",
+      "developer_name": "AgroSolar Hellas-Cyprus",
+      "developer_url": "https://energeia.cy/directory/agrosolar-cy",
+      "polygon_coords": [
+        {
+          "lat": 35.0586,
+          "lng": 33.8845
+        },
+        {
+          "lat": 35.0588,
+          "lng": 33.8881
+        },
+        {
+          "lat": 35.0552,
+          "lng": 33.8883
+        },
+        {
+          "lat": 35.055,
+          "lng": 33.8847
+        }
+      ]
+    },
+    {
+      "id": "spv-06",
+      "name": "Solar Park «Agios Ioannis Malountas (Achera)»",
+      "type": "Solar PV",
+      "lat": 35.08,
+      "lng": 33.1669,
+      "capacity_mw": 16.8,
+      "voltage_kv": 22,
+      "region": "Nicosia",
+      "status": "Operational",
+      "cera_license": "CERA-PV-2018-0177",
+      "curtailment_risk": "Low risk",
+      "curtailment_level": "green",
+      "developer_name": "CYPV Sunrising / Church of Cyprus JV",
+      "developer_url": "https://energeia.cy/directory/cypv-sunrising",
+      "polygon_coords": [
+        {
+          "lat": 35.0818,
+          "lng": 33.1646
+        },
+        {
+          "lat": 35.082,
+          "lng": 33.1692
+        },
+        {
+          "lat": 35.0782,
+          "lng": 33.1694
+        },
+        {
+          "lat": 35.078,
+          "lng": 33.1648
+        }
+      ]
+    },
+    {
+      "id": "spv-07",
+      "name": "Solar Park «Kalavasos Industrial Solar»",
+      "type": "Solar PV",
+      "lat": 34.7448,
+      "lng": 33.284,
+      "capacity_mw": 8,
+      "voltage_kv": 22,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-PV-2020-0312",
+      "curtailment_risk": "Low risk (1.5%)",
+      "curtailment_level": "green",
+      "developer_name": "Vassiliko Cement Works Public Co",
+      "developer_url": "https://energeia.cy/directory/vassiliko-cement",
+      "polygon_coords": [
+        {
+          "lat": 34.746,
+          "lng": 33.2826
+        },
+        {
+          "lat": 34.7462,
+          "lng": 33.2854
+        },
+        {
+          "lat": 34.7436,
+          "lng": 33.2856
+        },
+        {
+          "lat": 34.7434,
+          "lng": 33.2828
+        }
+      ]
+    },
+    {
+      "id": "wnd-01",
+      "name": "Wind Farm «Orites Wind Farm»",
+      "type": "Wind Park",
+      "lat": 34.7394,
+      "lng": 32.6574,
+      "capacity_mw": 82,
+      "voltage_kv": 132,
+      "region": "Paphos",
+      "status": "Operational",
+      "cera_license": "CERA-WND-2010-0012",
+      "curtailment_risk": "Medium risk (6.2%)",
+      "curtailment_level": "yellow",
+      "developer_name": "D.K. Wind Supply Ltd (Orites Wind)",
+      "developer_url": "https://energeia.cy/directory/orites-wind",
+      "polygon_coords": [
+        {
+          "lat": 34.7475,
+          "lng": 32.635
+        },
+        {
+          "lat": 34.7495,
+          "lng": 32.662
+        },
+        {
+          "lat": 34.746,
+          "lng": 32.678
+        },
+        {
+          "lat": 34.736,
+          "lng": 32.676
+        },
+        {
+          "lat": 34.73,
+          "lng": 32.652
+        },
+        {
+          "lat": 34.726,
+          "lng": 32.636
+        }
+      ]
+    },
+    {
+      "id": "wnd-02",
+      "name": "Wind Farm «Alexigros Wind Energy»",
+      "type": "Wind Park",
+      "lat": 34.8694,
+      "lng": 33.5168,
+      "capacity_mw": 31.5,
+      "voltage_kv": 66,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-WND-2011-0038",
+      "curtailment_risk": "Low risk (3.0%)",
+      "curtailment_level": "green",
+      "developer_name": "Ketonis Developments & Energy",
+      "developer_url": "https://energeia.cy/directory/ketonis-energy",
+      "polygon_coords": [
+        {
+          "lat": 34.879,
+          "lng": 33.511
+        },
+        {
+          "lat": 34.88,
+          "lng": 33.527
+        },
+        {
+          "lat": 34.865,
+          "lng": 33.526
+        },
+        {
+          "lat": 34.859,
+          "lng": 33.507
+        },
+        {
+          "lat": 34.867,
+          "lng": 33.503
+        }
+      ]
+    },
+    {
+      "id": "wnd-03",
+      "name": "Wind Farm «Koshi Ridge Station»",
+      "type": "Wind Park",
+      "lat": 34.9582,
+      "lng": 33.5148,
+      "capacity_mw": 20,
+      "voltage_kv": 22,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-WND-2013-0094",
+      "curtailment_risk": "Low risk (2.4%)",
+      "curtailment_level": "green",
+      "developer_name": "Aerolic Energy Cyprus",
+      "developer_url": "https://energeia.cy/directory/aerolic-cyprus",
+      "polygon_coords": [
+        {
+          "lat": 34.965,
+          "lng": 33.509
+        },
+        {
+          "lat": 34.966,
+          "lng": 33.523
+        },
+        {
+          "lat": 34.952,
+          "lng": 33.522
+        },
+        {
+          "lat": 34.951,
+          "lng": 33.508
+        }
+      ]
+    },
+    {
+      "id": "wnd-04",
+      "name": "Wind Farm «Ayia Anna Wind Ridge»",
+      "type": "Wind Park",
+      "lat": 34.9724,
+      "lng": 33.4997,
+      "capacity_mw": 14,
+      "voltage_kv": 22,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-WND-2014-0105",
+      "curtailment_risk": "High risk (11.5%)",
+      "curtailment_level": "orange",
+      "developer_name": "Vouros Energy Holdings",
+      "developer_url": "https://energeia.cy/directory/vouros-energy",
+      "polygon_coords": [
+        {
+          "lat": 34.979,
+          "lng": 33.493
+        },
+        {
+          "lat": 34.98,
+          "lng": 33.507
+        },
+        {
+          "lat": 34.966,
+          "lng": 33.506
+        },
+        {
+          "lat": 34.965,
+          "lng": 33.492
+        }
+      ]
+    },
+    {
+      "id": "bess-01",
+      "name": "BESS «Vasilikos Alpha Storage»",
+      "type": "BESS",
+      "lat": 34.7225,
+      "lng": 33.3155,
+      "capacity_mw": 40,
+      "voltage_kv": 132,
+      "region": "Larnaca / Limassol",
+      "status": "Operational (Standby)",
+      "cera_license": "CERA-BES-2024-001",
+      "curtailment_risk": "None (Peak Shaving)",
+      "curtailment_level": "green",
+      "developer_name": "Fluence Energy Cyprus Consortium",
+      "developer_url": "https://energeia.cy/directory/fluence-cyprus",
+      "polygon_coords": [
+        {
+          "lat": 34.723,
+          "lng": 33.3148
+        },
+        {
+          "lat": 34.723,
+          "lng": 33.3162
+        },
+        {
+          "lat": 34.722,
+          "lng": 33.3162
+        },
+        {
+          "lat": 34.722,
+          "lng": 33.3148
+        }
+      ]
+    },
+    {
+      "id": "bess-02",
+      "name": "BESS «Dhekelia Fast Storage»",
+      "type": "BESS",
+      "lat": 34.9812,
+      "lng": 33.7425,
+      "capacity_mw": 25,
+      "voltage_kv": 132,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-BES-2023-018",
+      "curtailment_risk": "None",
+      "curtailment_level": "green",
+      "developer_name": "Tesla Megapack Grid Solutions (energeia partner)",
+      "developer_url": "https://energeia.cy/directory/tesla-grid-partner",
+      "polygon_coords": [
+        {
+          "lat": 34.9818,
+          "lng": 33.7418
+        },
+        {
+          "lat": 34.9818,
+          "lng": 33.7432
+        },
+        {
+          "lat": 34.9806,
+          "lng": 33.7432
+        },
+        {
+          "lat": 34.9806,
+          "lng": 33.7418
+        }
+      ]
+    },
+    {
+      "id": "bess-03",
+      "name": "BESS «Orites Co-Located Facility»",
+      "type": "BESS",
+      "lat": 34.7315,
+      "lng": 32.6455,
+      "capacity_mw": 15,
+      "voltage_kv": 66,
+      "region": "Paphos",
+      "status": "Operational",
+      "cera_license": "CERA-BES-2024-009",
+      "curtailment_risk": "None (Wind Buffering)",
+      "curtailment_level": "green",
+      "developer_name": "D.K. Wind & Storage Ltd",
+      "developer_url": "https://energeia.cy/directory/orites-wind",
+      "polygon_coords": [
+        {
+          "lat": 34.7322,
+          "lng": 32.6447
+        },
+        {
+          "lat": 34.7322,
+          "lng": 32.6463
+        },
+        {
+          "lat": 34.7308,
+          "lng": 32.6463
+        },
+        {
+          "lat": 34.7308,
+          "lng": 32.6447
+        }
+      ]
+    },
+    {
+      "id": "bess-04",
+      "name": "BESS «Latsia Peak-Shaving Storage»",
+      "type": "BESS",
+      "lat": 35.1065,
+      "lng": 33.376,
+      "capacity_mw": 20,
+      "voltage_kv": 22,
+      "region": "Nicosia",
+      "status": "Operational (Charging)",
+      "cera_license": "CERA-BES-2024-014",
+      "curtailment_risk": "None",
+      "curtailment_level": "green",
+      "developer_name": "Huawei Digital Power Cyprus (EPC Partner)",
+      "developer_url": "https://energeia.cy/directory/huawei-digital-power",
+      "polygon_coords": [
+        {
+          "lat": 35.1072,
+          "lng": 33.3752
+        },
+        {
+          "lat": 35.1072,
+          "lng": 33.3768
+        },
+        {
+          "lat": 35.1058,
+          "lng": 33.3768
+        },
+        {
+          "lat": 35.1058,
+          "lng": 33.3752
+        }
+      ]
+    },
+    {
+      "id": "wind-05",
+      "name": "Wind Farm «Maroni Coastal Wind Park»",
+      "type": "Wind Park",
+      "lat": 34.745,
+      "lng": 33.355,
+      "capacity_mw": 5.4,
+      "voltage_kv": 22,
+      "turbines_count": 3,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-WND-2016-011",
+      "curtailment_risk": "Low risk (3.2%)",
+      "curtailment_level": "green",
+      "developer_name": "Aeolian Dynamics Cyprus",
+      "developer_url": "https://energeia.cy/directory/aeolian-dynamics"
+    },
+    {
+      "id": "wind-06",
+      "name": "Wind Farm «Sanida-Kellaki Wind Park»",
+      "type": "Wind Park",
+      "lat": 34.8918,
+      "lng": 33.1225,
+      "capacity_mw": 2.4,
+      "voltage_kv": 22,
+      "turbines_count": 3,
+      "region": "Limassol",
+      "status": "Operational",
+      "cera_license": "CERA-WND-2017-009",
+      "curtailment_risk": "Low risk (1.9%)",
+      "curtailment_level": "green",
+      "developer_name": "Kellaki Wind Power Ltd",
+      "developer_url": "https://energeia.cy/directory/kellaki-wind"
+    },
+    {
+      "id": "wind-07",
+      "name": "Wind Farm «Kalo Chorio Wind Park»",
+      "type": "Wind Park",
+      "lat": 34.988,
+      "lng": 33.6065,
+      "capacity_mw": 4,
+      "voltage_kv": 22,
+      "turbines_count": 2,
+      "region": "Larnaca",
+      "status": "Operational",
+      "cera_license": "CERA-WND-2018-015",
+      "curtailment_risk": "Medium risk (5.8%)",
+      "curtailment_level": "yellow",
+      "developer_name": "Kalo Chorio Green Energy Ltd",
+      "developer_url": "https://energeia.cy/directory/kalo-chorio"
+    }
+  ]
+}

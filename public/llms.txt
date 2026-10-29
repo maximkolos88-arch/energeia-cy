@@ -7,6 +7,7 @@ Energeia monitors regulatory developments from the Cyprus Energy Regulatory Auth
 ## Core Sections
 
 - [Home & Energy News Feed](https://www.energeia.cy/): Real-time Cyprus energy news, renewable energy updates, grid analytics, and policy coverage.
+- [Helios Eye — Cyprus Energy Terminal](https://www.energeia.cy/terminal): Interactive 3D GIS platform monitoring 520+ power plants, transmission substations, and live ENTSO-E market telemetry.
 - [Cyprus Energy News Updates](https://www.energeia.cy/news): Latest regulatory announcements, solar photovoltaics market reports, and electricity market updates.
 - [Energy Articles & Insights](https://www.energeia.cy/articles): In-depth editorial analysis, CERA regulatory reviews, and Cyprus energy transition market reports.
 - [Cyprus Energy Directory](https://www.energeia.cy/directory): Verified directory of Cyprus energy companies, solar EPC contractors, RES installers, and ESG consultants.

@@ -13,7 +13,7 @@ export interface FeatureFlags {
 }
 
 export const FEATURES: FeatureFlags = {
-  enableTerminal: false,
+  enableTerminal: true, // Helios Eye Terminal / Map
   enableMembers: true,
   enableMagazine: false,
   enableAcademy: false,

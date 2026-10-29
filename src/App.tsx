@@ -101,10 +101,11 @@ const TermsScreen = React.lazy(() => import('./components/legal/TermsScreen').th
 const PrivacyScreen = React.lazy(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
 const CookieScreen = React.lazy(() => import('./components/legal/CookieScreen').then(m => ({ default: m.CookieScreen })));
 const CorporateDisclosuresScreen = React.lazy(() => import('./components/legal/CorporateDisclosuresScreen').then(m => ({ default: m.CorporateDisclosuresScreen })));
+const TerminalScreen = React.lazy(() => import('./components/TerminalScreen').then(m => ({ default: m.TerminalScreen })));
 const AdminPanel = lazyWithRetry(loadAdminPanel);
 const LoginScreen = lazyWithRetry(loadLoginScreen);
 
-const NAV_SECTIONS = ['news', 'members', 'magazine', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
+const NAV_SECTIONS = ['news', 'terminal', 'members', 'magazine', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
 
 const NAVIGATE_SECTION_SCHEMA = {
   type: 'object',
@@ -448,6 +449,8 @@ export default function App({ path: propPath, initialData }: AppProps) {
     switch (activeTab) {
       case 'news':
         return <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
+      case 'terminal':
+        return FEATURES.enableTerminal ? <TerminalScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       case 'members':
         return FEATURES.enableMembers ? <DirectoryScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
       case 'magazine':

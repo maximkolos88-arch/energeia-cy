@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Helios Eye — Data Terminal v1.0</title>
+    <meta name="description" content="Data Terminal v1.0 - Interactive 3D GIS terminal for Cyprus energy infrastructure monitoring with OpenInfraMap national power plant registry (520+ solar, wind & thermal plants), grid assets, and environmental telemetry." />
+    <meta property="og:title" content="Helios Eye — Data Terminal v1.0" />
+    <meta property="og:description" content="Data Terminal v1.0 - Interactive 3D GIS terminal for Cyprus energy infrastructure monitoring with OpenInfraMap national power plant registry (520+ solar, wind & thermal plants), grid assets, and environmental telemetry." />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0b1120" />
+    
+    <!-- Google Maps Platform JavaScript API (Dynamic Library Loader with Advanced Markers & 3D Vector Support) -->
+    <script>
+      (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})((()=>{
+        const config = { v: "weekly", libraries: ["maps", "marker"] };
+        const rawKey = "AIzaSyB0dswljLf9-GDqwhhlXkgXdYrTsHC0cNE";
+        const isPlaceholder = !rawKey || rawKey === ("%" + "VITE_GOOGLE_MAPS_API_KEY%") || rawKey === "YOUR_API_KEY" || rawKey.startsWith("YOUR_");
+        config.key = !isPlaceholder ? rawKey : "AIzaSyB0dswljLf9-GDqwhhlXkgXdYrTsHC0cNE";
+        return config;
+      })());
+    </script>
+    
+    <!-- Google Material Symbols Outlined Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+      }
+    </style>
+
+    <!-- Google Fonts: Inter & Roboto Clean Sans-serif for B2B typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Helios Grid Terminal Glassmorphism Theme -->
+    <script type="module" crossorigin src="/helios/assets/index-lrtGGaIO.js"></script>
+    <link rel="modulepreload" crossorigin href="/helios/assets/vendor-maplibre-BspvpYt5.js">
+    <link rel="modulepreload" crossorigin href="/helios/assets/vendor-utils-BDlZkRC-.js">
+    <link rel="stylesheet" crossorigin href="/helios/assets/vendor-maplibre-DvulA2N7.css">
+    <link rel="stylesheet" crossorigin href="/helios/assets/index-D2g3qKIB.css">
+  </head>
+  <body>
+    <!-- Full-screen 3D Map container with satellite imagery & terrain -->
+    <div id="map"></div>
+
+    <!-- Cinematic dark circle / vignette fade overlay -->
+    <div class="map-vignette-overlay" id="map-vignette-overlay" aria-hidden="true"></div>
+
+    <!-- Global Data Loading HUD Spinner -->
+    <div id="grid-db-loader" class="grid-db-loader" role="alert" aria-live="assertive">
+      <div class="grid-db-spinner"></div>
+      <span class="grid-db-loader-text">Establishing secure connection to Grid Database...</span>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="helios-toast-container" aria-live="polite"></div>
+
+    <!-- Master Structured HUD Overlay Layer (pointer-events: none) -->
+    <div class="app-overlay-layer" id="app-overlay-layer">
+      <!-- 1. Left Column: Fixed Minimalist B2B Control Panel Sidebar -->
+      <aside class="control-panel glass-panel" id="control-panel" aria-label="Helios Eye Control Panel">
+        <!-- Helios Eye Brand Header -->
+        <div class="sidebar-brand-header">
+          <div class="sidebar-logo-group">
+            <div class="sidebar-logo-badge" id="brand-logo-badge" title="Helios Eye Terminal">
+              <span class="material-symbols-outlined sidebar-logo-icon" id="brand-logo-icon">visibility</span>
+            </div>
+            <div class="sidebar-brand-text">
+              <h1 class="sidebar-brand-title">Helios Eye</h1>
+              <span class="sidebar-brand-sub">Data Terminal v1.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clean B2B Search Bar -->
+        <div class="search-container" id="search-container">
+          <span class="search-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input 
+            type="text" 
+            id="search-input" 
+            class="search-input" 
+            placeholder="Search assets, CERA license..." 
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="search-clear-btn" class="search-clear-btn" title="Clear search" aria-label="Clear">✕</button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="sidebar-section categories-section">
+          <div class="sidebar-section-label" id="asset-categories-label">ASSET CATEGORIES</div>
+          <div class="filter-chips-row" id="filter-chips-row" role="group" aria-labelledby="asset-categories-label">
+            <button class="filter-chip active" data-filter="all" id="chip-all" aria-pressed="true">
+              <span class="chip-title">All Assets</span>
+              <span class="chip-count" id="count-all">0</span>
+            </button>
+            <button class="filter-chip asset-theme-solar" data-filter="solar" id="chip-solar" aria-pressed="false">
+              <span class="material-symbols-outlined chip-icon icon-solar">solar_power</span>
+              <span class="chip-title">Solar PV</span>
+              <span class="chip-count" id="count-solar">0</span>
+            </button>
+            <button class="filter-chip asset-theme-wind" data-filter="wind" id="chip-wind" aria-pressed="false">
+              <span class="material-symbols-outlined chip-icon icon-wind">wind_power</span>
+              <span class="chip-title">Wind Parks</span>
+              <span class="chip-count" id="count-wind">0</span>
+            </button>
+            <button class="filter-chip asset-theme-bess" data-filter="bess" id="chip-bess" aria-pressed="false">
+              <span class="material-symbols-outlined chip-icon icon-bess">battery_charging_full</span>
+              <span class="chip-title">BESS Storage</span>
+              <span class="chip-count" id="count-bess">0</span>
+            </button>
+            <button class="filter-chip asset-theme-substation" data-filter="substation" id="chip-substation" aria-pressed="false">
+              <span class="material-symbols-outlined chip-icon icon-substation">bolt</span>
+              <span class="chip-title">Grid Substations</span>
+              <span class="chip-count" id="count-substation">0</span>
+            </button>
+            <button class="filter-chip asset-theme-curtailment" data-filter="curtailment" id="chip-curtailment" aria-pressed="false">
+              <span class="material-symbols-outlined chip-icon icon-curtailment">warning</span>
+              <span class="chip-title">Curtailment Risk</span>
+              <span class="chip-count" id="count-curtailment">0</span>
+            </button>
+            <button class="filter-chip chip-oim asset-theme-oim" data-filter="openinframap" id="chip-oim" title="Cyprus Energy Registry (Verified)" aria-pressed="false">
+              <span class="material-symbols-outlined chip-icon icon-oim">database</span>
+              <span class="chip-title">Cyprus Registry</span>
+              <span class="chip-count" id="count-oim">616</span>
+            </button>
+            <button class="filter-chip chip-maritime asset-theme-maritime" data-filter="maritime" id="chip-maritime" aria-pressed="false">
+              <span class="maritime-status-dot" aria-hidden="true"></span>
+              <span class="chip-title" id="maritime-chip-label">Maritime OSINT</span>
+              <span class="chip-count" id="count-maritime">0</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right HUD Area: Top Header Bar (Flexbox) + Dynamic Side Sheet -->
+      <div class="hud-content-area" id="hud-content-area">
+        <!-- Top HUD Bar: Master Mission Control Header -->
+        <!-- Top HUD Bar: Master Mission Control Header (Two-Row Ergonomic Layout) -->
+        <header class="hud-top-bar" id="hud-top-bar">
+          <!-- Row 1: Primary Controls (Clock, Basemap Mode, SCADA Telemetry Pill, Hotkeys) -->
+          <div class="hud-primary-row" id="hud-primary-row">
+            <div class="hud-left-controls">
+              <!-- 1. Live Telemetry Clock (Nicosia, Cyprus) -->
+              <div class="live-clock-widget glass-panel" id="live-clock-widget" aria-label="Nicosia Local Time">
+                <span class="clock-live-dot" aria-hidden="true"></span>
+                <div class="clock-meta-group">
+                  <div class="clock-badge-header">
+                    <span class="clock-city-label">NICOSIA</span>
+                    <span class="clock-tz-label">EET</span>
+                  </div>
+                  <div class="clock-date-display" id="nicosia-clock-date">
+                    Loading date...
+                  </div>
+                </div>
+                <div class="clock-divider" aria-hidden="true"></div>
+                <div class="clock-time-display">
+                  <span class="clock-digits" id="nicosia-clock-time">--:--:--</span>
+                </div>
+              </div>
+
+              <!-- Basemap Segment: Satellite vs Hybrid -->
+              <div class="map-type-toggle-widget glass-panel" id="map-type-toggle-widget" role="group" aria-label="Terrain View Mode">
+            <button type="button" class="map-type-btn" id="btn-view-satellite" title="Pure Satellite Photography" aria-pressed="false">
+                  <span class="map-type-icon">🛰️</span>
+                  <span class="map-type-label">Satellite</span>
+                </button>
+            <button type="button" class="map-type-btn active" id="btn-view-hybrid" title="Hybrid View with Roads, Borders & Place Labels" aria-pressed="true">
+                  <span class="map-type-icon">🗺️</span>
+                  <span class="map-type-label">Hybrid</span>
+                </button>
+              </div>
+
+              <!-- ENTSO-E Live European Energy Market & Interconnector Telemetry Widget -->
+              <button type="button" class="entsoe-hud-pill glass-panel" id="entsoe-hud-widget" title="Live ENTSO-E EU Electricity Market & Great Sea Interconnector Telemetry" aria-label="Open ENTSO-E European Electricity Market & Grid Intelligence Center">
+                <span class="entsoe-live-dot"></span>
+                <span class="entsoe-tag">ENTSO-E EU</span>
+                <span class="entsoe-val" id="entsoe-price-val">€191.05/MWh</span>
+                <span class="entsoe-sub" id="entsoe-interconnector-val">⚡ Great Sea: 485 MW (GR→CY)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Row 2: Atmosphere & Environmental Intelligence Layers Bar -->
+          <div class="hud-secondary-row" id="hud-secondary-row">
+            <!-- Atmosphere Layer Control with Anchored Floating Legend Sub-HUD -->
+            <div class="weather-control-wrapper" id="weather-control-wrapper">
+              <div class="weather-toggle-widget glass-panel" id="weather-toggle-widget" role="group" aria-label="Real-Time Weather Layer">
+                <div class="weather-toggle-label">
+                  <span class="weather-live-dot" aria-hidden="true"></span>
+                  <span class="weather-title">ATMOSPHERE</span>
+                </div>
+                <div class="weather-buttons-row">
+                  <button type="button" class="weather-layer-btn active" data-weather-mode="off" id="btn-weather-off" title="Turn Weather Heatmap Off" aria-pressed="true">
+                    <span class="weather-btn-icon">Off</span>
+                  </button>
+                  <button type="button" class="weather-layer-btn" data-weather-mode="wind" id="btn-weather-wind" title="Live Wind Speed Heatmap (km/h) & Vectors" aria-pressed="false">
+                    <span class="weather-btn-icon">💨</span>
+                    <span class="weather-btn-label">Wind</span>
+                  </button>
+                  <button type="button" class="weather-layer-btn" data-weather-mode="solar" id="btn-weather-solar" title="Live Solar Irradiance Heatmap (W/m² GHI)" aria-pressed="false">
+                    <span class="weather-btn-icon">☀️</span>
+                    <span class="weather-btn-label">Solar GHI</span>
+                  </button>
+                  <button type="button" class="weather-layer-btn" data-weather-mode="airquality" id="btn-weather-airquality" title="Google Maps Air Quality API (Universal AQI Heatmap & Live Cyprus Telemetry)" aria-pressed="false">
+                    <span class="weather-btn-icon">🍃</span>
+                    <span class="weather-btn-label">Air Quality</span>
+                  </button>
+                  <button type="button" class="weather-layer-btn" data-weather-mode="alphaearth" id="btn-weather-alphaearth" title="Google AlphaEarth AI 10m Land Suitability & Terrain Feasibility" aria-pressed="false">
+                    <span class="weather-btn-icon">🌐</span>
+                    <span class="weather-btn-label">AlphaEarth</span>
+                  </button>
+                  <button type="button" class="weather-layer-btn" data-weather-mode="weathernext" id="btn-weather-weathernext" title="Google DeepMind WeatherNext 3 Hourly Renewable Forecast & Rapid Delta" aria-pressed="false">
+                    <span class="weather-btn-icon">⚡</span>
+                    <span class="weather-btn-label">WeatherNext</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Weather Heatmap Legend HUD (Docked directly beneath Atmosphere widget as a floating popover card) -->
+              <div class="weather-legend-hud glass-panel" id="weather-legend-hud" aria-label="Weather Heatmap Scale">
+                <div class="weather-legend-header">
+                  <span class="weather-legend-icon" id="weather-legend-icon">💨</span>
+                  <span class="weather-legend-title" id="weather-legend-title">WIND SPEED (10M AGL)</span>
+                  <span class="weather-legend-live-tag">LIVE</span>
+                </div>
+                <div class="weather-legend-gradient-bar" id="weather-legend-gradient"></div>
+                <div class="weather-legend-labels" id="weather-legend-labels">
+                  <span>0 km/h</span>
+                  <span>25 km/h</span>
+                  <span>50+ km/h</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </header>
+
+        <!-- Floating Real-Time Air Quality Telemetry Inspector (Google Maps Platform Air Quality API) -->
+        <div class="air-quality-card glass-panel" id="air-quality-telemetry-card" aria-label="Live Air Quality Telemetry">
+          <div class="aq-card-header">
+            <div class="aq-header-title-group">
+              <span class="aq-live-dot" aria-hidden="true"></span>
+              <span class="aq-card-title" id="aq-location-name">NICOSIA AIR QUALITY</span>
+            </div>
+            <button type="button" class="aq-card-close-btn" id="aq-card-close-btn" title="Close Air Quality Card" aria-label="Close">✕</button>
+          </div>
+          <div class="aq-main-metric-row">
+            <div class="aq-score-badge" id="aq-score-badge">
+              <span class="aq-score-val" id="aq-score-val">28</span>
+              <span class="aq-score-unit">UAQI</span>
+            </div>
+            <div class="aq-status-summary">
+              <div class="aq-status-cat" id="aq-status-cat">Good Air Quality</div>
+              <div class="aq-dominant-pollutant" id="aq-dominant-pollutant">Dominant: Fine PM2.5</div>
+            </div>
+          </div>
+          <div class="aq-pollutants-grid">
+            <div class="aq-pollutant-pill">
+              <span class="aq-poll-name">PM2.5</span>
+              <span class="aq-poll-val" id="aq-val-pm25">6.8 µg/m³</span>
+            </div>
+            <div class="aq-pollutant-pill">
+              <span class="aq-poll-name">PM10</span>
+              <span class="aq-poll-val" id="aq-val-pm10">14.2 µg/m³</span>
+            </div>
+            <div class="aq-pollutant-pill">
+              <span class="aq-poll-name">NO₂</span>
+              <span class="aq-poll-val" id="aq-val-no2">11.4 ppb</span>
+            </div>
+            <div class="aq-pollutant-pill">
+              <span class="aq-poll-name">O₃</span>
+              <span class="aq-poll-val" id="aq-val-o3">38.5 ppb</span>
+            </div>
+          </div>
+          <div class="aq-advisory-box" id="aq-health-advisory">
+            <span class="aq-advisory-icon">🛡️</span>
+            <span class="aq-advisory-text" id="aq-advisory-text">Air quality is ideal for outdoor activities and renewable energy maintenance.</span>
+          </div>
+          <div class="aq-card-footer">
+            <span class="aq-footer-source">Google Maps Air Quality API</span>
+            <span class="aq-footer-coords" id="aq-coords-display">35.18°N, 33.38°E</span>
+          </div>
+        </div>
+
+        <!-- Right Side Sheet Slot: Detailed Asset Information Panel -->
+        <div class="hud-side-sheet-slot" id="hud-side-sheet-slot">
+          <aside class="side-sheet glass-panel" id="side-sheet" aria-label="Asset Telemetry Information Panel">
+            <div class="side-sheet-header">
+              <h2 class="side-sheet-title" id="sheet-title">Vasilikos Solar Park</h2>
+              <button class="side-sheet-close-btn" id="btn-close-sidesheet" title="Close panel" aria-label="Close">✕</button>
+            </div>
+
+            <!-- Subtitle: Type Chip Badge -->
+            <div class="side-sheet-subtitle" id="sheet-subtitle">
+              <span class="type-badge solar" id="sheet-type-badge">⚡ SOLAR POWER PLANT (PV)</span>
+            </div>
+
+            <!-- Telemetry Block (Coordinates & CERA License) -->
+            <div class="telemetry-block" id="sheet-telemetry-block">
+              <div class="telemetry-row">
+                <span class="telemetry-label" id="label-coords">Coordinates:</span>
+                <span class="telemetry-val" id="sheet-coords">34.7241°N, 33.3228°E</span>
+              </div>
+              <div class="telemetry-row" id="row-cera">
+                <span class="telemetry-label" id="label-cera">CERA License:</span>
+                <span class="telemetry-val" id="sheet-cera">CERA-PV-2021-0814</span>
+              </div>
+              <div class="telemetry-row" id="row-region">
+                <span class="telemetry-label" id="label-region">Region / District:</span>
+                <span class="telemetry-val" id="sheet-region">Larnaca</span>
+              </div>
+              <div class="telemetry-row" id="row-voltage">
+                <span class="telemetry-label" id="label-voltage">Grid Voltage:</span>
+                <span class="telemetry-val" id="sheet-voltage">22 kV</span>
+              </div>
+              <div class="telemetry-row" id="row-alphaearth">
+                <span class="telemetry-label" id="label-alphaearth">AlphaEarth AI:</span>
+                <span class="telemetry-val" id="sheet-alphaearth">92/100 (Optimal Land Fit)</span>
+              </div>
+              <div class="telemetry-row" id="row-weathernext">
+                <span class="telemetry-label" id="label-weathernext">WeatherNext 3:</span>
+                <span class="telemetry-val" id="sheet-weathernext">+4.2% Delta (+1.4 MW)</span>
+              </div>
+              <div class="telemetry-row" id="row-developer">
+                <span class="telemetry-label" id="label-developer">EPC / Developer:</span>
+                <span class="telemetry-val" id="sheet-developer-wrap">
+                  <a href="https://energeia.cy/directory" target="_blank" rel="noopener noreferrer" class="sheet-developer-link" id="sheet-developer-link">Cyfield Energy Group</a>
+                </span>
+              </div>
+              <div class="telemetry-row" id="row-openinframap" style="display: none;">
+                <span class="telemetry-label" id="label-openinframap">Registry Links:</span>
+                <span class="telemetry-val" id="sheet-openinframap-links">
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="sheet-oim-link" id="sheet-oim-link" style="color: #059669; font-weight: 500; text-decoration: underline;">OpenInfraMap ↗</a>
+                  <span class="link-sep" style="margin: 0 4px; opacity: 0.4;">·</span>
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="sheet-osm-link" id="sheet-osm-link" style="color: #0284c7; font-weight: 500; text-decoration: underline;">OpenStreetMap ↗</a>
+                </span>
+              </div>
+            </div>
+
+            <!-- Characteristics Block (Grid) -->
+            <div class="characteristics-grid" id="sheet-characteristics">
+              <!-- Status Card -->
+              <div class="char-card">
+                <span class="char-label" id="label-status">STATUS</span>
+                <span class="char-value" id="sheet-status">
+                  <span class="char-indicator-dot green" id="sheet-status-dot"></span>
+                  <span id="sheet-status-text">Operational</span>
+                </span>
+              </div>
+
+              <!-- Capacity Card -->
+              <div class="char-card">
+                <span class="char-label" id="label-capacity">CAPACITY</span>
+                <span class="char-value" id="sheet-capacity">12.4 MWp</span>
+              </div>
+
+              <!-- Curtailment Risk Card -->
+              <div class="char-card">
+                <span class="char-label" id="label-curtailment">CURTAILMENT</span>
+                <span class="char-value" id="sheet-curtailment">
+                  <span class="char-indicator-dot yellow" id="sheet-curtailment-dot"></span>
+                  <span id="sheet-curtailment-text">Low risk</span>
+                </span>
+              </div>
+
+              <!-- SoC Card (for BESS) -->
+              <div class="char-card" id="sheet-soc-card" style="display: none;">
+                <span class="char-label">STATE OF CHARGE</span>
+                <div class="soc-progress-bar">
+                  <div class="soc-progress-fill" id="sheet-soc-fill" style="width: 0%"></div>
+                </div>
+                <span class="char-value" id="sheet-soc-text">0%</span>
+              </div>
+            </div>
+
+            <!-- Main CTA (Request PPA Contact / Request EPC Quote) -->
+            <button class="btn-main-cta" id="btn-request-ppa" type="button">
+              <span id="cta-icon">✉</span>
+              <span id="cta-text">Request PPA Contact</span>
+            </button>
+          </aside>
+        </div>
+
+        <!-- 3. Floating Custom Map Zoom Controls & 3D Camera Tilt Dock (Branded Glassmorphism UI) -->
+        <div class="map-zoom-dock" id="map-zoom-dock">
+          <!-- 3D Camera Tilt Dynamic Slider Widget -->
+          <div class="map-tilt-control glass-panel" id="map-tilt-control" aria-label="Camera Tilt 3D Controller">
+            <div class="tilt-badge" title="Current Camera Tilt">
+              <span class="tilt-degree-val" id="tilt-degree-val">65°</span>
+            </div>
+            <div class="tilt-slider-track-wrap">
+              <input 
+                type="range" 
+                id="camera-tilt-slider" 
+                class="tilt-range-slider" 
+                min="0" 
+                max="65" 
+                value="65" 
+                step="1" 
+                orient="vertical"
+                aria-label="Adjust Camera Tilt (0 to 65 degrees)"
+                title="Camera Tilt (0° top-down to 65° oblique terrain)"
+              />
+            </div>
+            <span class="tilt-slider-label" title="Camera Tilt">3D</span>
+          </div>
+
+          <nav class="map-zoom-control glass-panel" aria-label="Map Zoom and Navigation Controls">
+            <button type="button" class="map-zoom-btn" id="btn-zoom-in" title="Zoom In (+)" aria-label="Zoom In">
+              <span class="material-symbols-outlined">add</span>
+            </button>
+            <div class="map-zoom-divider" aria-hidden="true"></div>
+            <button type="button" class="map-zoom-btn" id="btn-zoom-out" title="Zoom Out (-)" aria-label="Zoom Out">
+              <span class="material-symbols-outlined">remove</span>
+            </button>
+            <div class="map-zoom-divider" aria-hidden="true"></div>
+            <button type="button" class="map-zoom-btn btn-reset-view" id="btn-reset-view" title="Reset Cyprus 3D View (R)" aria-label="Reset Cyprus Camera View">
+              <span class="material-symbols-outlined">center_focus_strong</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PPA / EPC INQUIRY MODAL (Confirmation Dialog) -->
+    <div class="ppa-modal-backdrop" id="ppa-modal-backdrop" role="dialog" aria-modal="true">
+      <div class="ppa-modal-box glass-panel">
+        <div class="ppa-icon-circle" id="modal-icon">✉</div>
+        <h3 class="ppa-modal-title" id="ppa-modal-title">PPA Request Submitted</h3>
+        <p class="ppa-modal-desc" id="ppa-modal-desc">
+          A Power Purchase Agreement (PPA) request for <strong>«Vasilikos Solar Park»</strong> has been routed to the energeia.cy trading desk.
+        </p>
+        <button class="ppa-modal-confirm-btn" id="btn-close-ppa-modal">Close Modal</button>
+      </div>
+    </div>
+
+    <!-- 4b. SCADA TELEMETRY MONITOR & FLEET HEALTH MODAL DIALOG -->
+    <div class="telemetry-modal-backdrop" id="telemetry-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="telemetry-modal-title">
+      <div class="telemetry-modal-box glass-panel">
+        <div class="telemetry-modal-header">
+          <div class="telemetry-modal-title-group">
+            <div class="telemetry-modal-icon-badge" id="telemetry-modal-badge">
+              <span class="telemetry-modal-dot" id="telemetry-modal-dot"></span>
+              <span class="material-symbols-outlined">sensors</span>
+            </div>
+            <div>
+              <div class="telemetry-modal-eyebrow">CYPRUS TRANSMISSION SYSTEM (TSOC)</div>
+              <h2 class="telemetry-modal-title" id="telemetry-modal-title">SCADA Telemetry & Fleet Monitor</h2>
+            </div>
+          </div>
+          <button class="shortcuts-close-btn" id="btn-close-telemetry-modal" title="Close (Esc)" aria-label="Close telemetry monitor">✕</button>
+        </div>
+
+        <!-- Real-Time Metrics Strip -->
+        <div class="telemetry-kpi-strip">
+          <div class="telemetry-kpi-item">
+            <span class="telemetry-kpi-label">Monitored Fleet</span>
+            <span class="telemetry-kpi-val" id="telemetry-kpi-total">500</span>
+          </div>
+          <div class="telemetry-kpi-item">
+            <span class="telemetry-kpi-label">Grid Health</span>
+            <span class="telemetry-kpi-val green" id="telemetry-kpi-operational">100%</span>
+          </div>
+          <div class="telemetry-kpi-item">
+            <span class="telemetry-kpi-label">Critical Offline</span>
+            <span class="telemetry-kpi-val red" id="telemetry-kpi-offline">0</span>
+          </div>
+          <div class="telemetry-kpi-item">
+            <span class="telemetry-kpi-label">Maintenance Advisory</span>
+            <span class="telemetry-kpi-val amber" id="telemetry-kpi-maint">0</span>
+          </div>
+        </div>
+
+        <!-- Active Alerts / Events Feed Container -->
+        <div class="telemetry-events-container" id="telemetry-events-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="telemetry-modal-footer">
+          <div class="telemetry-footer-status" id="telemetry-footer-time">SCADA Telemetry: Live (Nicosia EET)</div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- 5. GLOBAL KEYBOARD SHORTCUTS OVERLAY (Triggered by '?') -->
+    <div class="shortcuts-modal-backdrop" id="shortcuts-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+      <div class="shortcuts-modal-box glass-panel">
+        <div class="shortcuts-header">
+          <div class="shortcuts-title-group">
+            <div class="shortcuts-icon-badge">
+              <span class="material-symbols-outlined">keyboard</span>
+            </div>
+            <div>
+              <h2 class="shortcuts-title" id="shortcuts-title">Keyboard Shortcuts</h2>
+              <p class="shortcuts-subtitle">Power-user hotkeys for navigation, search & weather layers</p>
+            </div>
+          </div>
+          <button class="shortcuts-close-btn" id="btn-close-shortcuts" title="Close (Esc)" aria-label="Close shortcuts dialog">✕</button>
+        </div>
+
+        <div class="shortcuts-content">
+          <!-- Section 1: Map Navigation -->
+          <div class="shortcuts-section">
+            <div class="shortcuts-section-title">Map Navigation & Perspective</div>
+            <div class="shortcuts-grid">
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Reset 3D camera to Cyprus center</span>
+                <span class="shortcut-keys"><kbd>R</kbd> <span class="shortcut-or">or</span> <kbd>0</kbd></span>
+              </div>
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Toggle Satellite / Hybrid terrain mode</span>
+                <span class="shortcut-keys"><kbd>M</kbd> <span class="shortcut-or">or</span> <kbd>H</kbd></span>
+              </div>
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Zoom in / Zoom out</span>
+                <span class="shortcut-keys"><kbd>+</kbd> <span class="shortcut-or">/</span> <kbd>-</kbd></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Searching & Filtering -->
+          <div class="shortcuts-section">
+            <div class="shortcuts-section-title">Search & Categories</div>
+            <div class="shortcuts-grid">
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Focus asset search bar</span>
+                <span class="shortcut-keys"><kbd>/</kbd> <span class="shortcut-or">or</span> <kbd>Ctrl</kbd>+<kbd>K</kbd></span>
+              </div>
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Filter categories (All, Solar, Wind, BESS, Grid, Risk)</span>
+                <span class="shortcut-keys"><kbd>1</kbd> – <kbd>6</kbd></span>
+              </div>
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Close side sheet / overlays / blur search</span>
+                <span class="shortcut-keys"><kbd>Esc</kbd></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Weather & Atmosphere -->
+          <div class="shortcuts-section">
+            <div class="shortcuts-section-title">Atmosphere & Weather Heatmaps</div>
+            <div class="shortcuts-grid">
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Toggle Wind Speed heatmap</span>
+                <span class="shortcut-keys"><kbd>W</kbd></span>
+              </div>
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Toggle Solar Irradiance (GHI) heatmap</span>
+                <span class="shortcut-keys"><kbd>S</kbd></span>
+              </div>
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Toggle Air Quality (AQI) heatmap</span>
+                <span class="shortcut-keys"><kbd>A</kbd> <span class="shortcut-or">or</span> <kbd>Q</kbd></span>
+              </div>
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Turn off weather heatmaps</span>
+                <span class="shortcut-keys"><kbd>O</kbd></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Telemetry Alerts & SCADA -->
+          <div class="shortcuts-section">
+            <div class="shortcuts-section-title">Telemetry & SCADA Alerts</div>
+            <div class="shortcuts-grid">
+              <div class="shortcut-item">
+                <span class="shortcut-desc">Simulate telemetry status change (Maintenance / Offline)</span>
+                <span class="shortcut-keys"><kbd>T</kbd></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts-footer">
+          <span>Tip: Press <kbd>?</kbd> anywhere or click Hotkeys in the top bar to reopen</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENTSO-E EU Transparency Intelligence Modal -->
+    <div class="entsoe-modal-backdrop" id="entsoe-modal-backdrop" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="entsoe-modal-title">
+      <div class="entsoe-modal glass-panel" id="entsoe-modal">
+        <div class="entsoe-modal-header">
+          <div class="entsoe-modal-title-group">
+            <span class="entsoe-modal-badge">ENTSO-E EU</span>
+            <h2 id="entsoe-modal-title">European Electricity Market & Grid Intelligence</h2>
+          </div>
+          <button type="button" class="entsoe-modal-close" id="btn-close-entsoe-modal" title="Close panel" aria-label="Close ENTSO-E intelligence modal">✕</button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="entsoe-tabs">
+          <button class="entsoe-tab-btn active" data-tab="gen-mix">☀️ Generation Mix & Renewables</button>
+          <button class="entsoe-tab-btn" data-tab="market-prices">💶 Day-Ahead Prices & BESS Arbitrage</button>
+          <button class="entsoe-tab-btn" data-tab="load-demand">📊 System Load & Demand Curve</button>
+          <button class="entsoe-tab-btn" data-tab="outages">🛑 Grid Outages & TSO Alerts</button>
+        </div>
+
+        <!-- Tab 1: Generation Mix -->
+        <div class="entsoe-tab-content active" id="tab-gen-mix">
+          <div class="entsoe-grid-3">
+            <div class="entsoe-card">
+              <span class="card-label">RENEWABLE PENETRATION</span>
+              <div class="card-val-big" id="entsoe-ren-pct">59.4%</div>
+              <span class="card-sub">Solar PV + Wind + Hydro</span>
+            </div>
+            <div class="entsoe-card">
+              <span class="card-label">CARBON INTENSITY</span>
+              <div class="card-val-big" id="entsoe-co2-val">210.8 g/kWh</div>
+              <span class="card-sub">Low Carbon Emissions Rate</span>
+            </div>
+            <div class="entsoe-card">
+              <span class="card-label">GRID CURTAILMENT RISK</span>
+              <div class="card-val-big warning" id="entsoe-curtail-val">12.4%</div>
+              <span class="card-sub">Solar PV Midday Clipping</span>
+            </div>
+          </div>
+
+          <div class="entsoe-gen-breakdown-card">
+            <h3>Live Generation Breakdown (MW)</h3>
+            <div class="gen-bar-stacked">
+              <div class="bar-seg solar" style="width:41%" title="Solar PV: 248.5 MW"></div>
+              <div class="bar-seg wind" style="width:12%" title="Wind: 72.0 MW"></div>
+              <div class="bar-seg bess" style="width:6%" title="BESS Discharge: 35.0 MW"></div>
+              <div class="bar-seg thermal" style="width:41%" title="Thermal Gas/Oil: 235.0 MW"></div>
+            </div>
+            <div class="gen-legend-grid">
+              <div class="legend-item"><span class="dot solar"></span> Solar PV: <strong>248.5 MW</strong></div>
+              <div class="legend-item"><span class="dot wind"></span> Wind: <strong>72.0 MW</strong></div>
+              <div class="legend-item"><span class="dot bess"></span> BESS Discharge: <strong>35.0 MW</strong></div>
+              <div class="legend-item"><span class="dot thermal"></span> Thermal Gas/Oil: <strong>235.0 MW</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Market Prices -->
+        <div class="entsoe-tab-content" id="tab-market-prices" style="display:none;">
+          <div class="entsoe-grid-3">
+            <div class="entsoe-card">
+              <span class="card-label">DAY-AHEAD AVG PRICE</span>
+              <div class="card-val-big" id="entsoe-avg-price">€191.05 / MWh</div>
+              <span class="card-sub">ENTSO-E Greece/Cyprus Zone</span>
+            </div>
+            <div class="entsoe-card">
+              <span class="card-label">PEAK HOURS SPOT PRICE</span>
+              <div class="card-val-big danger" id="entsoe-peak-price">€340.89 / MWh</div>
+              <span class="card-sub">High Evening Demand Peak</span>
+            </div>
+            <div class="entsoe-card">
+              <span class="card-label">BESS SPARK SPREAD</span>
+              <div class="card-val-big success" id="entsoe-spark-val">€340.90 / MWh</div>
+              <span class="card-sub">Max Battery Arbitrage Spread</span>
+            </div>
+          </div>
+          <div class="entsoe-gen-breakdown-card">
+            <h3>24-Hour Wholesale Electricity Spot Price Curve (€/MWh)</h3>
+            <div style="font-size:12px; color:#94a3b8; line-height:1.5;">
+              ENTSO-E Day-Ahead Clearing Prices retrieved live via SecurityToken. High evening spot prices (€340.89/MWh) indicate strong revenue feasibility for BESS battery energy storage arbitrage.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: System Load -->
+        <div class="entsoe-tab-content" id="tab-load-demand" style="display:none;">
+          <div class="entsoe-grid-2">
+            <div class="entsoe-card">
+              <span class="card-label">ACTUAL SYSTEM LOAD</span>
+              <div class="card-val-big" id="entsoe-actual-load">590.5 MW</div>
+              <span class="card-sub">Live Substation Metering</span>
+            </div>
+            <div class="entsoe-card">
+              <span class="card-label">DAY-AHEAD PEAK DEMAND FORECAST</span>
+              <div class="card-val-big" id="entsoe-forecast-peak">680.0 MW</div>
+              <span class="card-sub">TSO Evening Peak Estimate</span>
+            </div>
+          </div>
+          <div class="entsoe-gen-breakdown-card">
+            <h3>Cyprus Transmission Substation Stress Levels</h3>
+            <div class="gen-legend-grid">
+              <div class="legend-item"><span class="dot bess"></span> Vasilikos 132kV Substation: <strong>68% Load</strong></div>
+              <div class="legend-item"><span class="dot solar"></span> Nicosia East 132kV Substation: <strong>82% Load (Congested)</strong></div>
+              <div class="legend-item"><span class="dot wind"></span> Limassol Port Substation: <strong>54% Load</strong></div>
+              <div class="legend-item"><span class="dot bess"></span> Dhekelia 132kV Substation: <strong>61% Load</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Outages -->
+        <div class="entsoe-tab-content" id="tab-outages" style="display:none;">
+          <div class="outages-list">
+            <div class="outage-item warning">
+              <div class="outage-header">
+                <span class="outage-badge">TRANSMISSION ASSET NOTICE</span>
+                <span class="outage-time">Active Today 06:00 - 18:00 UTC</span>
+              </div>
+              <div class="outage-title">132kV Substation Vasilikos Maintenance (Bay 4)</div>
+              <div class="outage-desc">Planned maintenance on 132kV busbar coupler. Grid transmission capacity temporarily derated by 40 MW.</div>
+            </div>
+            <div class="outage-item info">
+              <div class="outage-header">
+                <span class="outage-badge">GENERATION UNIT NOTICE</span>
+                <span class="outage-time">Active 21 Sep - 24 Sep</span>
+              </div>
+              <div class="outage-title">Orites Wind Farm Rotor Inspection</div>
+              <div class="outage-desc">Scheduled rotor inspection on Turbines 12-16. Partial curtailment active during high-wind windows.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Main Vanilla JavaScript GIS Entry -->
+  </body>
+</html>
