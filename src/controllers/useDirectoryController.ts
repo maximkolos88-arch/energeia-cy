@@ -55,11 +55,6 @@ export function useDirectoryController() {
   }, []);
 
   useEffect(() => {
-    if (initialDataUsed.current && !searchQuery && selectedTags.length === 0) {
-      initialDataUsed.current = false;
-      return;
-    }
-
     const timer = setTimeout(() => {
       fetchDirectory(searchQuery, selectedTags, tagMatchMode);
     }, 200); // Debounce search input

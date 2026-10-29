@@ -93,7 +93,7 @@ async function loadData() {
     const { data: partData, error: partErr } = await supabase
       .from('participants')
       .select('*');
-    if (!partErr && partData && partData.length > 0) {
+    if (!partErr && Array.isArray(partData)) {
       directoryMembers = partData.map((item: any) => ({
         id: item.id,
         name: item.name || '',
@@ -300,6 +300,14 @@ async function prerender() {
       }
     },
     {
+      route: '/register',
+      meta: {
+        title: 'Join the Network - Membership Registration | Energeia',
+        description: 'Register as an energy professional or enterprise in Cyprus to connect with industry leaders and clean tech projects.',
+        url: `${SITE_URL}/register`
+      }
+    },
+    {
       route: '/terminal',
       meta: {
         title: 'Helios Eye — Cyprus National Energy Terminal | Energeia',
@@ -425,7 +433,7 @@ async function prerender() {
     const isMagazineRoute = route === '/magazine';
     const isAcademyRoute = route === '/academy';
     const isTerminalRoute = route === '/terminal';
-    const isStaticLegalOrAbout = ['/about', '/terms', '/privacy', '/cookies', '/disclosures'].includes(route);
+    const isStaticLegalOrAbout = ['/about', '/terms', '/privacy', '/cookies', '/disclosures', '/register'].includes(route);
 
     const initialData = {
       newsItems: isDirectoryRoute || isMagazineRoute || isAcademyRoute || isTerminalRoute || isStaticLegalOrAbout ? [] : lightNewsFeedItems,

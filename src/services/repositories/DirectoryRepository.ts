@@ -1224,43 +1224,34 @@ export class DirectoryRepository {
    */
   static async getAllParticipants(): Promise<DirectoryMember[]> {
     let remoteMembers: DirectoryMember[] = [];
+    let fetchSucceeded = false;
     try {
       const { data, error } = await supabase
         .from('participants')
         .select('*')
         .order('id', { ascending: false });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         remoteMembers = data.map(item => this.mapSupabaseToMember(item));
+        fetchSucceeded = true;
       }
     } catch (err) {
-      console.warn("Failed to fetch participants from Supabase, merging with static directory:", err);
+      console.warn("Failed to fetch participants from Supabase:", err);
     }
 
     const deletedSet = getDeletedMemberIds();
 
-    // Merge Supabase records with INITIAL_DIRECTORY_MEMBERS, avoiding duplicates by id or name
-    const memberMap = new Map<string, DirectoryMember>();
-
-    // First add static initial members
-    for (const member of INITIAL_DIRECTORY_MEMBERS) {
-      if (deletedSet.has(member.id) || (member.name && deletedSet.has(`name:${member.name.toLowerCase()}`))) {
-        continue;
-      }
-      const key = String(member.id || member.name).toLowerCase();
-      memberMap.set(key, member);
+    if (fetchSucceeded) {
+      // Remote Supabase records are the single source of truth
+      return remoteMembers.filter(
+        m => !deletedSet.has(m.id) && (!m.name || !deletedSet.has(`name:${m.name.toLowerCase()}`))
+      );
     }
 
-    // Remote (Supabase) records override initial static members if ID or name matches
-    for (const member of remoteMembers) {
-      if (deletedSet.has(member.id) || (member.name && deletedSet.has(`name:${member.name.toLowerCase()}`))) {
-        continue;
-      }
-      const key = String(member.id || member.name).toLowerCase();
-      memberMap.set(key, member);
-    }
-
-    return Array.from(memberMap.values());
+    // Only fallback to INITIAL_DIRECTORY_MEMBERS if Supabase is completely unreachable
+    return INITIAL_DIRECTORY_MEMBERS.filter(
+      m => !deletedSet.has(m.id) && (!m.name || !deletedSet.has(`name:${m.name.toLowerCase()}`))
+    );
   }
 
   /**

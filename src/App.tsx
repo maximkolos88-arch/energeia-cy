@@ -91,17 +91,18 @@ class AdminErrorBoundary extends React.Component<AdminErrorBoundaryProps, AdminE
   }
 }
 
+import { DirectoryScreen } from './components/DirectoryScreen';
+import { AboutScreen } from './components/AboutScreen';
+import { MagazineScreen } from './components/MagazineScreen';
+import { AcademyScreen } from './components/AcademyScreen';
+import { RegisterScreen } from './components/RegisterScreen';
+import { TermsScreen } from './components/legal/TermsScreen';
+import { PrivacyScreen } from './components/legal/PrivacyScreen';
+import { CookieScreen } from './components/legal/CookieScreen';
+import { CorporateDisclosuresScreen } from './components/legal/CorporateDisclosuresScreen';
+import { TerminalScreen } from './components/TerminalScreen';
+
 const PWAInstallPrompt = React.lazy(() => import('./components/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt })));
-const DirectoryScreen = React.lazy(() => import('./components/DirectoryScreen').then(m => ({ default: m.DirectoryScreen })));
-const AboutScreen = React.lazy(() => import('./components/AboutScreen').then(m => ({ default: m.AboutScreen })));
-const MagazineScreen = React.lazy(() => import('./components/MagazineScreen').then(m => ({ default: m.MagazineScreen })));
-const AcademyScreen = React.lazy(() => import('./components/AcademyScreen').then(m => ({ default: m.AcademyScreen })));
-const RegisterScreen = React.lazy(() => import('./components/RegisterScreen').then(m => ({ default: m.RegisterScreen })));
-const TermsScreen = React.lazy(() => import('./components/legal/TermsScreen').then(m => ({ default: m.TermsScreen })));
-const PrivacyScreen = React.lazy(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
-const CookieScreen = React.lazy(() => import('./components/legal/CookieScreen').then(m => ({ default: m.CookieScreen })));
-const CorporateDisclosuresScreen = React.lazy(() => import('./components/legal/CorporateDisclosuresScreen').then(m => ({ default: m.CorporateDisclosuresScreen })));
-const TerminalScreen = React.lazy(() => import('./components/TerminalScreen').then(m => ({ default: m.TerminalScreen })));
 const AdminPanel = lazyWithRetry(loadAdminPanel);
 const LoginScreen = lazyWithRetry(loadLoginScreen);
 

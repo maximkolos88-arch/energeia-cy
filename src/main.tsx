@@ -40,7 +40,7 @@ if (typeof window !== 'undefined') {
 const rootElement = document.getElementById('root')!;
 const initialData: InitialData | undefined = typeof window !== 'undefined' ? (window as any).__INITIAL_DATA__ : undefined;
 const currentPathname = typeof window !== 'undefined' ? window.location.pathname : '/';
-const isClientOnlyRoute = currentPathname.startsWith('/admin') || currentPathname === '/register';
+const isClientOnlyRoute = currentPathname.startsWith('/admin');
 if (isClientOnlyRoute && rootElement) {
   rootElement.innerHTML = '';
 }

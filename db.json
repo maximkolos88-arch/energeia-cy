@@ -190,42 +190,7 @@
       "readTimeMinutes": 1
     }
   ],
-  "participants": [
-    {
-      "name": "Ketonis Holdings Ltd.",
-      "type": "Company",
-      "roleOrCategory": "Refineries",
-      "email": "info@wincono.com",
-      "phone": "+35722876696",
-      "location": "71 Larnakos Avenue Centre Court, Office 301 2101 Aglantzia / Nicosia, Cyprus",
-      "category": "Renewables",
-      "expertiseTags": [
-        "Hygrogen",
-        "Wind Power"
-      ],
-      "description": "Ketonis Holdings Ltd. is an active private limited company in Cyprus, functioning as a key corporate vehicle for renewable energy projects, stakeholder in Wincono Cyprus Ltd., and coordinator for green hydrogen initiatives GreenH2CY Project.",
-      "imageUrl": "https://greenh2cy.futurefuels-cy.com/media/2023/08/Green_Hydrogen_2_Cyprus.png",
-      "logoUrl": "https://greenh2cy.futurefuels-cy.com/media/2023/08/Green_Hydrogen_2_Cyprus.png",
-      "website": "https://wincono.com/",
-      "linkedin": "https://www.linkedin.com/company/greenh2cy",
-      "keyContactName": "Sylvia Trabert",
-      "isVerified": true,
-      "showDescription": true,
-      "showLocation": true,
-      "showWebsite": true,
-      "showLinkedin": true,
-      "showEmail": true,
-      "showPhone": true,
-      "showKeyContact": true,
-      "keyServices": [],
-      "notableProjects": "Wincono Cyprus, GreenH2CY Project",
-      "certifications": "",
-      "showKeyServices": false,
-      "showNotableProjects": true,
-      "showCertifications": false,
-      "id": "member-1785506158399"
-    }
-  ],
+  "participants": [],
   "magazines": [],
   "courses": []
 }
