@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserCheck, ArrowRight } from 'lucide-react';
 import PageHeader from './PageHeader';
 
 export const AboutScreen: React.FC = () => {
@@ -33,7 +34,7 @@ export const AboutScreen: React.FC = () => {
 
           {/* CTA Box */}
           <div className="lg:col-span-2 flex flex-col items-center justify-center p-8 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-850 text-center">
-            <span className="material-symbols-outlined text-5xl text-primary mb-4">how_to_reg</span>
+            <UserCheck className="w-12 h-12 text-primary mb-4" />
             <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">{t('about.action')}</h3>
             <p className="text-sm text-neutral-500 mb-8">
               {t('about.subtitle')}
@@ -45,7 +46,7 @@ export const AboutScreen: React.FC = () => {
               className="inline-flex items-center justify-center px-8 py-3 w-full bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-all duration-200 shadow-md cursor-pointer"
             >
               {t('nav.register')}
-              <span className="material-symbols-outlined ml-2 text-xl">arrow_forward</span>
+              <ArrowRight className="w-5 h-5 ml-2" />
             </a>
           </div>
 

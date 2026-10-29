@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { GraduationCap } from 'lucide-react';
 import PageHeader from './PageHeader';
 import { CourseCard } from './CourseCard';
 import { AcademyCourse } from '../models/types';
@@ -86,7 +87,7 @@ export const AcademyScreen: React.FC = () => {
             ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-20 mt-6 bg-neutral-50 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-850 text-center animate-fade-in">
-              <span className="material-symbols-outlined text-5xl text-neutral-300 mb-4">school</span>
+              <GraduationCap className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mb-4" />
               <h3 className="text-xl font-bold text-slate-700 dark:text-neutral-300 mb-2">{t('academy.noCourses')}</h3>
               <p className="text-sm text-neutral-500 max-w-md">
                 Our academy is currently being updated. Check back soon for specialized professional energy courses.

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface LoginScreenProps {
@@ -33,7 +34,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onSuccess }) => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/20 mb-4">
-            <span className="material-symbols-outlined text-[#1CA350] text-3xl">admin_panel_settings</span>
+            <ShieldCheck className="w-8 h-8 text-[#1CA350]" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Admin Portal</h1>
           <p className="text-sm text-slate-500 dark:text-gray-400">
@@ -69,7 +70,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onSuccess }) => {
 
           {error && (
             <div className="text-red-500 text-xs font-semibold mt-2 flex items-center gap-1.5 bg-red-50 dark:bg-red-950/20 p-3 rounded-xl border border-red-100 dark:border-red-950/30">
-              <span className="material-symbols-outlined text-base">error</span>
+              <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -81,7 +82,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onSuccess }) => {
           >
             {isLoading ? (
               <>
-                <span className="material-symbols-outlined animate-spin text-lg">sync</span>
+                <Loader2 className="w-4 h-4 animate-spin" />
                 <span>Authenticating...</span>
               </>
             ) : (

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { BookOpen } from 'lucide-react';
 import { MagazineIssue } from '../models/types';
 import { MagazineRepository } from '../services/repositories/MagazineRepository';
 import PageHeader from './PageHeader';
@@ -83,7 +84,7 @@ export const MagazineScreen: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 mt-6 bg-neutral-50 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-850 text-center animate-fade-in">
-              <span className="material-symbols-outlined text-5xl text-neutral-300 mb-4">menu_book</span>
+              <BookOpen className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mb-4" />
               <h3 className="text-xl font-bold text-neutral-700 dark:text-neutral-300 mb-2">{t('magazine.noIssues')}</h3>
               <p className="text-sm text-neutral-500 max-w-md">
                 Our digital archive is currently being updated. Check back soon for the latest regional energy digests.

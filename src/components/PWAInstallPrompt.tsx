@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Share2, MoreVertical, PlusSquare, Upload } from 'lucide-react';
+import { X, Share2, MoreVertical, PlusSquare, Upload, Zap } from 'lucide-react';
 
 export interface DeviceInfo {
   os: 'ios' | 'android' | 'other';
@@ -296,9 +296,7 @@ export const PWAInstallPrompt: React.FC = () => {
           </svg>
 
           <div className="relative w-16 h-16 bg-gradient-to-br from-[#16a34a] to-[#15823f] rounded-2xl flex items-center justify-center shadow-lg border border-[#14532d]/25 z-10">
-            <span className="material-symbols-outlined text-white text-3xl select-none" style={{ fontVariationSettings: '"FILL" 1, "wght" 600, "GRAD" 0, "opsz" 24' }}>
-              power_input
-            </span>
+            <Zap className="w-8 h-8 text-white fill-current" />
           </div>
         </div>
 

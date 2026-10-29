@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Calendar } from 'lucide-react';
 
 interface MagazineCardProps {
   title: string;
@@ -33,8 +34,8 @@ const MagazineCard: React.FC<MagazineCardProps> = ({ title, issueNumber, publish
         </div>
         <h3 className="text-lg font-bold text-neutral-900 dark:text-white tracking-tight mb-2 leading-snug">{title}</h3>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-3 mb-4">{description}</p>
-        <div className="flex items-center text-[11px] text-neutral-400 gap-2 font-medium">
-          <span className="material-symbols-outlined text-sm">calendar_today</span>
+        <div className="flex items-center text-[11px] text-neutral-400 gap-1.5 font-medium">
+          <Calendar className="w-3.5 h-3.5" />
           {publishDate}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserPlus, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export const RegisterScreen: React.FC = () => {
@@ -60,7 +61,7 @@ export const RegisterScreen: React.FC = () => {
       <div className="min-h-[70vh] w-full flex items-center justify-center px-4 py-12 animate-fade-in">
         <div className="w-full max-w-md bg-white dark:bg-[#1b1c1e] rounded-xl border border-neutral-200 dark:border-neutral-800 p-10 text-center shadow-3xs">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/20 mb-6">
-            <span className="material-symbols-outlined text-primary text-3xl">check_circle</span>
+            <CheckCircle2 className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4 tracking-tight">{t('register.successTitle')}</h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-8 leading-relaxed">
@@ -84,7 +85,7 @@ export const RegisterScreen: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
-            <span className="material-symbols-outlined text-primary text-2xl">assignment_ind</span>
+            <UserPlus className="w-6 h-6 text-primary" />
           </div>
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">{t('register.title')}</h1>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
