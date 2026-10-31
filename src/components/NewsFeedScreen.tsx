@@ -329,8 +329,16 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           </time>
 
           {/* 3. Headline: Google Sans style, medium weight, crisp */}
-          <h2 className="text-[22px] sm:text-[26px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] leading-snug group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors mb-3">
-            {getLocalizedValue(heroStory, 'title', language)}
+          <h2 className="text-[22px] sm:text-[28px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] leading-snug hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors mb-3">
+            <a 
+              href={`/news/${heroStory.slug || heroStory.id}`} 
+              onClick={(e) => { 
+                e.preventDefault(); 
+                openArticle(heroStory); 
+              }}
+            >
+              {getLocalizedValue(heroStory, 'title', language)}
+            </a>
           </h2>
 
           {/* 4. Analytical summary */}
@@ -554,8 +562,16 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                   </time>
 
                   {/* 3. Headline: Google Sans style, medium weight, crisp */}
-                  <h3 className="text-[17px] sm:text-[18px] font-medium tracking-tight text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-[var(--md-sys-color-on-surface,#E3E3E3)] line-clamp-2 mb-2 group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors leading-snug">
-                    {titleText}
+                  <h3 className="text-[17px] sm:text-[18px] font-medium tracking-tight text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-[var(--md-sys-color-on-surface,#E3E3E3)] line-clamp-2 mb-2 hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors leading-snug">
+                    <a 
+                      href={`/news/${item.slug || item.id}`} 
+                      onClick={(e) => { 
+                        e.preventDefault(); 
+                        openArticle(item); 
+                      }}
+                    >
+                      {titleText}
+                    </a>
                   </h3>
 
                   {/* 4. Analytical summary */}
