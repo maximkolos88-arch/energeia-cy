@@ -22,7 +22,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, onTabChan
   return (
     <nav
       aria-label="Mobile Navigation"
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[var(--md-sys-color-background,#FFFFFF)]/95 dark:bg-[#1E1F20]/95 backdrop-blur-md border-t border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] flex justify-around items-center px-2 shadow-lg"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#131314]/95 backdrop-blur-md border-t border-[#F1F3F4] dark:border-[#282A2C] flex justify-around items-center px-2"
       style={{
         paddingTop: '6px',
         paddingBottom: 'calc(6px + env(safe-area-inset-bottom, 0px))',
@@ -36,21 +36,18 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, onTabChan
         return (
           <button
             key={tab.id}
+            type="button"
             onClick={() => onTabChange(tab.id)}
-            className={`flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+            className={`flex flex-col items-center justify-center py-1.5 px-3 transition-colors active:scale-95 touch-manipulation cursor-pointer ${
               isActive
-                ? 'text-[var(--md-sys-color-primary,#1A73E8)] dark:text-[var(--md-sys-color-primary,#8AB4F8)] font-semibold'
-                : 'text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)] hover:text-black dark:hover:text-white'
+                ? 'text-[#1A73E8] dark:text-[#8AB4F8] font-medium'
+                : 'text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-white'
             }`}
           >
-            <div className={`px-4 py-1 rounded-full transition-all ${
-              isActive 
-                ? 'bg-[var(--md-sys-color-primary-container,#D3E3FD)] dark:bg-[var(--md-sys-color-primary-container,#0842A0)] text-[var(--md-sys-color-on-primary-container,#041E49)] dark:text-[var(--md-sys-color-on-primary-container,#D3E3FD)]' 
-                : 'bg-transparent'
-            }`}>
+            <div className="flex items-center justify-center">
               <Icon className="w-5 h-5" aria-hidden="true" focusable="false" />
             </div>
-            <span className="text-[11px] mt-0.5 tracking-tight">{tab.label}</span>
+            <span className="text-[11px] mt-1 tracking-tight">{tab.label}</span>
           </button>
         );
       })}
