@@ -339,8 +339,12 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           </p>
 
           {/* 5. Categories: Text separated by middle dots (NO bubble badges) */}
-          <div className="text-[13px] text-[#5F6368] dark:text-[#9AA0A6] flex flex-wrap items-center gap-1.5">
-            {heroStory.category && <span>{getLocalizedCategory(heroStory.category)}</span>}
+          <div className="text-[13px] text-[#5F6368] dark:text-[#9AA0A6] flex flex-wrap items-center gap-1.5 mt-2">
+            {heroStory.category && (
+              <span className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
+                {getLocalizedCategory(heroStory.category)}
+              </span>
+            )}
             {(heroStory.sourcePublisher || heroStory.source) && (
               <>
                 <span>·</span>
@@ -354,10 +358,10 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                   href={heroStory.sourceUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline inline-flex items-center gap-0.5 ml-1"
+                  className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  Source: {heroStory.sourcePublisher || heroStory.source || 'Filing'} ↗
+                  Source: {heroStory.sourcePublisher || heroStory.source || 'CNA'} ↗
                 </a>
               </>
             )}
@@ -561,9 +565,13 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                 </div>
 
                 {/* 5. Categories & Sources: Dot-separated metadata (NO bubble badges) */}
-                <div className="pt-3 border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between gap-2 text-[12px] text-[#5F6368] dark:text-[#9AA0A6]">
+                <div className="pt-3 border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between gap-2 text-[12px] text-[#5F6368] dark:text-[#9AA0A6] mt-2">
                   <div className="flex flex-wrap items-center gap-1.5 truncate">
-                    {item.category && <span>{getLocalizedCategory(item.category)}</span>}
+                    {item.category && (
+                      <span className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
+                        {getLocalizedCategory(item.category)}
+                      </span>
+                    )}
                     {(item.sourcePublisher || item.source) && (
                       <>
                         <span>·</span>
@@ -577,10 +585,10 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                           href={item.sourceUrl} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline inline-flex items-center gap-0.5 shrink-0"
+                          className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline shrink-0"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          Source ↗
+                          Source: {item.sourcePublisher || item.source || 'CNA'} ↗
                         </a>
                       </>
                     )}
