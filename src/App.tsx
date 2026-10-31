@@ -3,10 +3,11 @@ import { supabase } from './lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 import { useWebMCP } from './hooks/useWebMCP';
 import { TopAppBar } from './components/TopAppBar';
-import { BottomNavBar } from './components/BottomNavBar';
 import { Footer } from './components/Footer';
 import { NewsFeedScreen } from './components/NewsFeedScreen';
 import { TerminalScreen } from './components/TerminalScreen';
+import { DirectoryScreen } from './components/DirectoryScreen';
+import { AboutScreen } from './components/AboutScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { useTranslation } from 'react-i18next';
@@ -104,8 +105,6 @@ const ScreenSkeleton = () => (
   </div>
 );
 
-const DirectoryScreen = lazyWithRetry(() => import('./components/DirectoryScreen').then(m => ({ default: m.DirectoryScreen })));
-const AboutScreen = lazyWithRetry(() => import('./components/AboutScreen').then(m => ({ default: m.AboutScreen })));
 const MagazineScreen = lazyWithRetry(() => import('./components/MagazineScreen').then(m => ({ default: m.MagazineScreen })));
 const AcademyScreen = lazyWithRetry(() => import('./components/AcademyScreen').then(m => ({ default: m.AcademyScreen })));
 const RegisterScreen = lazyWithRetry(() => import('./components/RegisterScreen').then(m => ({ default: m.RegisterScreen })));
@@ -688,12 +687,8 @@ export default function App({ path: propPath, initialData }: AppProps) {
           </ErrorBoundary>
         </main>
 
-        {/* Global Footer & Mobile Bottom Navigation Bar */}
+        {/* Global Footer */}
         {activeTab !== 'terminal' && <Footer />}
-        <BottomNavBar
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-        />
 
         {/* PWA Home Screen Onboarding Prompt */}
         {mountDeferredUI && (

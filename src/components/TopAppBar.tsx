@@ -17,14 +17,15 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   onLanguageChange,
   isDarkMode,
   onToggleTheme,
-  unreadCount = 0,
   activeTab = 'news',
   onTabChange,
 }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
 
   const activeLang = currentLang || language || 'en';
 
@@ -59,11 +60,27 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   };
 
   const languages = [
-    { code: 'en', label: 'English' },
-    { code: 'el', label: 'Ελληνικά' },
-    { code: 'ru', label: 'Русский' },
-    { code: 'he', label: 'עברית' },
+    { code: 'en', label: 'English', short: 'EN' },
+    { code: 'el', label: 'Ελληνικά', short: 'ΕΛ' },
+    { code: 'ru', label: 'Русский', short: 'РУ' },
+    { code: 'he', label: 'עברית', short: 'עב' },
   ];
+
+  const handleSelectLanguage = (langCode: string) => {
+    if (typeof document !== 'undefined') {
+      if (langCode === 'he') {
+        document.documentElement.setAttribute('dir', 'rtl');
+        document.documentElement.setAttribute('lang', 'he');
+      } else {
+        document.documentElement.setAttribute('dir', 'ltr');
+        document.documentElement.setAttribute('lang', langCode);
+      }
+    }
+    if (onLanguageChange) {
+      onLanguageChange(langCode);
+    }
+    setLangDropdownOpen(false);
+  };
 
   // Keyboard shortcut listener: Cmd+K / / to open search, Escape to close
   useEffect(() => {
@@ -81,12 +98,23 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
       } else if (e.key === 'Escape') {
         if (searchOpen) setSearchOpen(false);
         if (drawerOpen) setDrawerOpen(false);
+        if (langDropdownOpen) setLangDropdownOpen(false);
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setLangDropdownOpen(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [searchOpen, drawerOpen]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [searchOpen, drawerOpen, langDropdownOpen]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,17 +144,20 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   const isMembersActive = activeTab === 'members' || (typeof window !== 'undefined' && window.location.pathname.startsWith('/members'));
   const isAboutActive = activeTab === 'about' || (typeof window !== 'undefined' && window.location.pathname.startsWith('/about'));
 
+  const currentLangObj = languages.find((l) => l.code === activeLang) || languages[0];
+
   return (
     <>
-      {/* MINIMAL TOP BAR */}
+      {/* 64px FIXED HEADER BAR */}
       <header className="sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-[#131314]/95 backdrop-blur-md border-b border-[#F1F3F4] dark:border-[#282A2C] px-4 sm:px-8 flex items-center justify-between transition-colors">
-        {/* Left: Hamburger + Google-style Logo Lockup */}
+        
+        {/* Left: Mobile ☰ + Energeia Wordmark / Desktop Logo Lockup */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open Navigation Menu"
-            className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3] transition-colors cursor-pointer"
+            className="w-10 h-10 -ml-2 flex items-center justify-center rounded-full hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3] transition-colors cursor-pointer md:hidden"
           >
             <svg className="w-5 h-5 fill-none stroke-currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -143,26 +174,26 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </a>
         </div>
 
-        {/* Center: Desktop Navigation Tabs (Hidden on mobile) */}
-        <nav className="hidden md:flex items-center gap-1" aria-label="Desktop Navigation">
+        {/* Center: Desktop Clean Text Links with Active Google Blue Bottom Border */}
+        <nav className="hidden md:flex items-center gap-6 h-full" aria-label="Desktop Navigation">
           <a
             href="/"
             onClick={(e) => handleNavClick(e, '/', 'news')}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
               isNewsActive
-                ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C]'
+                ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
+                : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
             }`}
           >
-            News & Intelligence
+            News &amp; Intelligence
           </a>
           <a
             href="/terminal"
             onClick={(e) => handleNavClick(e, '/terminal', 'terminal')}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
               isTerminalActive
-                ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C]'
+                ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
+                : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
             }`}
           >
             Helios Terminal
@@ -170,10 +201,10 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           <a
             href="/members"
             onClick={(e) => handleNavClick(e, '/members', 'members')}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
               isMembersActive
-                ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C]'
+                ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
+                : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
             }`}
           >
             Ecosystem Directory
@@ -181,18 +212,19 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           <a
             href="/about"
             onClick={(e) => handleNavClick(e, '/about', 'about')}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
               isAboutActive
-                ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C]'
+                ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
+                : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
             }`}
           >
             About Energeia
           </a>
         </nav>
 
-        {/* Right: Search Trigger */}
-        <div className="flex items-center gap-2">
+        {/* Right: Search, Language Dropdown Pill, and Dark Mode Toggle */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Search Trigger */}
           <button
             type="button"
             onClick={() => {
@@ -206,12 +238,67 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
+
+          {/* Desktop Language Dropdown Pill (EN ⌄) */}
+          <div className="relative hidden md:block" ref={langDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+              className="h-9 px-3 rounded-full border border-[#DADCE0] dark:border-[#444746] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-xs font-medium text-[#444746] dark:text-[#C4C7C5] flex items-center gap-1.5 transition-colors cursor-pointer"
+              aria-label="Select language"
+              aria-expanded={langDropdownOpen}
+            >
+              <span>{currentLangObj.short}</span>
+              <svg className="w-3.5 h-3.5 text-[#5F6368] dark:text-[#9AA0A6] fill-none stroke-currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {langDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-[#1E1F20] rounded-xl shadow-lg border border-[#F1F3F4] dark:border-[#282A2C] py-1.5 z-50 animate-scale-up">
+                {languages.map((l) => (
+                  <button
+                    key={l.code}
+                    type="button"
+                    onClick={() => handleSelectLanguage(l.code)}
+                    className={`w-full px-4 py-2 text-xs text-left flex items-center justify-between transition-colors cursor-pointer ${
+                      activeLang === l.code
+                        ? 'bg-[#E8F0FE] dark:bg-[#0842A0]/40 text-[#1A73E8] dark:text-[#8AB4F8] font-semibold'
+                        : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                    }`}
+                  >
+                    <span>{l.label}</span>
+                    <span className="text-[10px] text-[#5F6368] dark:text-[#9AA0A6] uppercase">{l.short}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Antigravity Dark Mode Toggle (☀/☾) */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={effectiveDarkMode ? "Switch to Light Mode" : "Switch to Antigravity Dark Mode"}
+            className="hidden md:flex w-10 h-10 items-center justify-center rounded-full hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-[#5F6368] dark:text-[#9AA0A6] transition-colors cursor-pointer"
+          >
+            {effectiveDarkMode ? (
+              <svg className="w-5 h-5 text-amber-400 fill-none stroke-currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="5" strokeWidth="2"/>
+                <path strokeLinecap="round" strokeWidth="2" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-[#5F6368] fill-none stroke-currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
+          </button>
         </div>
       </header>
 
-      {/* SLIDE-OVER DRAWER (BACKDROP + CONTENT) */}
+      {/* MOBILE SLIDE-OVER DRAWER (MATERIAL 3) */}
       {drawerOpen && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-50 flex md:hidden">
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
@@ -220,11 +307,14 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           />
 
           {/* Drawer Panel */}
-          <div className="relative z-10 w-[280px] max-w-[80vw] h-full bg-white dark:bg-[#1E1F20] flex flex-col justify-between p-6 shadow-xl border-r border-[#F1F3F4] dark:border-[#282A2C]">
-            {/* Top section: Header & Navigation Links */}
+          <div className="relative z-10 w-[300px] max-w-[85vw] h-full bg-white dark:bg-[#1E1F20] flex flex-col justify-between p-6 shadow-2xl border-r border-[#F1F3F4] dark:border-[#282A2C] overflow-y-auto">
+            {/* Top: Brand Header & Close */}
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#F1F3F4] dark:border-[#282A2C] mb-6">
-                <span className="text-lg font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">Energeia</span>
+                <div className="flex items-center gap-1.5 text-lg font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+                  <span>Energeia</span>
+                  <span className="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-sm">Intelligence</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => setDrawerOpen(false)}
@@ -237,24 +327,25 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 </button>
               </div>
 
-              <nav className="flex flex-col gap-1" aria-label="Mobile Navigation">
+              {/* Main Navigation Stack: 18px font size, py-3 tap area */}
+              <nav className="flex flex-col gap-1" aria-label="Mobile Navigation Stack">
                 <a
                   href="/"
-                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-3 rounded-xl text-[18px] font-medium transition-colors ${
                     isNewsActive
                       ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                      : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                      : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
                   }`}
                   onClick={(e) => handleNavClick(e, '/', 'news')}
                 >
-                  News & Intelligence
+                  News &amp; Intelligence
                 </a>
                 <a
                   href="/terminal"
-                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-3 rounded-xl text-[18px] font-medium transition-colors ${
                     isTerminalActive
                       ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                      : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                      : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
                   }`}
                   onClick={(e) => handleNavClick(e, '/terminal', 'terminal')}
                 >
@@ -262,10 +353,10 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 </a>
                 <a
                   href="/members"
-                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-3 rounded-xl text-[18px] font-medium transition-colors ${
                     isMembersActive
                       ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                      : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                      : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
                   }`}
                   onClick={(e) => handleNavClick(e, '/members', 'members')}
                 >
@@ -273,10 +364,10 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 </a>
                 <a
                   href="/about"
-                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-3 rounded-xl text-[18px] font-medium transition-colors ${
                     isAboutActive
                       ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                      : 'text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                      : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
                   }`}
                   onClick={(e) => handleNavClick(e, '/about', 'about')}
                 >
@@ -285,46 +376,46 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
               </nav>
             </div>
 
-            {/* Bottom section: Language Selector & Theme Toggle */}
-            <div className="pt-6 border-t border-[#F1F3F4] dark:border-[#282A2C] flex flex-col gap-4">
-              {/* Language Selector */}
+            {/* Bottom: Language Matrix, Theme Switcher, and Statutory Details */}
+            <div className="pt-6 border-t border-[#F1F3F4] dark:border-[#282A2C] flex flex-col gap-5">
+              {/* Language Matrix: 2x2 Grid */}
               <div>
-                <label className="block text-[11px] font-medium tracking-wider text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-2">
-                  Language
+                <label className="block text-[11px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-2.5">
+                  Language Matrix
                 </label>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {languages.map((lang) => (
+                <div className="grid grid-cols-2 gap-2">
+                  {languages.map((l) => (
                     <button
-                      key={lang.code}
+                      key={l.code}
                       type="button"
-                      onClick={() => onLanguageChange && onLanguageChange(lang.code)}
-                      className={`px-2.5 py-1.5 text-xs rounded-md transition-colors text-center cursor-pointer ${
-                        activeLang === lang.code
-                          ? 'bg-[#E8F0FE] dark:bg-[#0842A0] text-[#1A73E8] dark:text-[#8AB4F8] font-medium'
-                          : 'bg-[#F8F9FA] dark:bg-[#131314] text-[#444746] dark:text-[#C4C7C5] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C]'
+                      onClick={() => handleSelectLanguage(l.code)}
+                      className={`px-3 py-2 text-xs rounded-lg transition-colors text-center cursor-pointer border ${
+                        activeLang === l.code
+                          ? 'bg-[#E8F0FE] dark:bg-[#0842A0] text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
+                          : 'bg-[#F8F9FA] dark:bg-[#131314] text-[#444746] dark:text-[#C4C7C5] border-[#DADCE0] dark:border-[#444746] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C]'
                       }`}
                     >
-                      {lang.label}
+                      {l.label}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Theme Toggle & Alerts */}
-              <div className="flex items-center justify-between pt-2">
+              {/* Theme Switcher Row */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-xs font-medium text-[#444746] dark:text-[#C4C7C5]">Appearance</span>
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="flex items-center gap-2 text-xs text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] cursor-pointer"
+                  className="px-3 py-1.5 rounded-full border border-[#DADCE0] dark:border-[#444746] bg-[#F8F9FA] dark:bg-[#131314] text-xs font-medium text-[#1F1F1F] dark:text-[#E3E3E3] flex items-center gap-1.5 cursor-pointer hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C]"
                 >
-                  <span>{effectiveDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                  {effectiveDarkMode ? 'Antigravity Dark' : 'Light Mode'}
                 </button>
+              </div>
 
-                {unreadCount > 0 && (
-                  <span className="text-[11px] bg-[#E8F0FE] dark:bg-[#0842A0] text-[#1A73E8] dark:text-[#8AB4F8] px-2 py-0.5 rounded-full font-medium">
-                    {unreadCount} Alerts
-                  </span>
-                )}
+              {/* Statutory Details */}
+              <div className="pt-2 text-[11px] text-[#5F6368] dark:text-[#9AA0A6] tracking-tight">
+                M3J2 LTD • Reg. HE 438859
               </div>
             </div>
           </div>

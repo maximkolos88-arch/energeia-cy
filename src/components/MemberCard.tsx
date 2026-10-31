@@ -1,11 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DirectoryMember } from '../models/types';
-import { 
-  MapPin, ArrowRight, CheckCircle2, Building2, User, Leaf, 
-  Globe, Linkedin, ShieldCheck
-} from 'lucide-react';
-import { getLocalizedTag } from '../utils/tagLocalization';
+import { Building2, User, Leaf } from 'lucide-react';
 
 interface MemberCardProps {
   member: DirectoryMember;
@@ -14,7 +10,7 @@ interface MemberCardProps {
 }
 
 export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick, onClaimProfile }) => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const getLocalizedDescription = (m: DirectoryMember): string => {
     const lang = i18n.language || 'en';
@@ -26,134 +22,67 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onClick, onClaim
 
   const getMemberIcon = () => {
     if (member.type === 'Company') {
-      if (member.roleOrCategory.toLowerCase().includes('esg')) {
-        return <Leaf className="w-6 h-6 text-[var(--md-sys-color-primary,#1A73E8)]" />;
+      if (member.roleOrCategory?.toLowerCase().includes('esg')) {
+        return <Leaf className="w-5 h-5 text-[#1A73E8] dark:text-[#8AB4F8]" />;
       }
-      return <Building2 className="w-6 h-6 text-[var(--md-sys-color-primary,#1A73E8)]" />;
+      return <Building2 className="w-5 h-5 text-[#1A73E8] dark:text-[#8AB4F8]" />;
     }
-    return <User className="w-6 h-6 text-[var(--md-sys-color-primary,#1A73E8)]" />;
-  };
-
-  const getLocalizedCategory = (catName: string): string => {
-    if (!catName) return '';
-    const name = catName.trim().toLowerCase();
-    if (name === 'all news') return t('categories.allNews', 'All Sectors');
-    if (name.includes('renew') || name.includes('solar')) return t('categories.renewables', 'Solar & Renewables');
-    if (name.includes('oil') || name.includes('gas')) return t('categories.oilGas', 'Oil & Gas');
-    if (name.includes('govern') || name.includes('policy')) return t('categories.govPolicy', 'Regulator & Policy');
-    if (name.includes('grant') || name.includes('subsidy')) return t('categories.grantsSubsidies', 'Grants & Subsidies');
-    if (name.includes('trading') || name.includes('electric')) return t('categories.electricityTrading', 'Grid & Electricity');
-    if (name.includes('maritime') || name.includes('offshore')) return t('categories.maritimeOffshore', 'Maritime & Offshore');
-    if (name.includes('engineering') || name.includes('epc')) return t('categories.engineeringEpc', 'EPC Contractor');
-    return catName;
+    return <User className="w-5 h-5 text-[#1A73E8] dark:text-[#8AB4F8]" />;
   };
 
   return (
-    <div
+    <article
       onClick={onClick}
-      className="google-publication-card p-6 flex flex-col justify-between group cursor-pointer"
+      className="bg-white dark:bg-[#1E1F20] border border-[#E0E2E0] dark:border-[#333537] rounded-[20px] p-6 hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C] transition-all duration-200 flex flex-col justify-between group cursor-pointer"
     >
-      <div className="space-y-4">
-        {/* Top Section: 56px x 56px Crisp Vector Logo Container */}
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#FFFFFF] border border-[var(--md-sys-color-outline-variant,#E0E2E0)] p-2 flex items-center justify-center shrink-0 shadow-2xs">
-            {(member.logoUrl || member.imageUrl) ? (
-              <img
-                src={member.logoUrl || member.imageUrl}
-                alt={member.name}
-                width={40}
-                height={40}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-contain"
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
-            ) : (
-              getMemberIcon()
-            )}
-          </div>
-          
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <h3 className="text-base font-medium text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-[var(--md-sys-color-on-surface,#E3E3E3)] group-hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:group-hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors truncate tracking-tight">
-                {member.name}
-              </h3>
-              {member.isVerified && (
-                <CheckCircle2 className="w-4 h-4 text-[var(--md-sys-color-primary,#1A73E8)] dark:text-[var(--md-sys-color-primary,#8AB4F8)] shrink-0" aria-label="Verified Organization" />
-              )}
-            </div>
-            
-            <p className="text-xs text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)] truncate mt-0.5">
-              {member.roleOrCategory}
-            </p>
-          </div>
+      <div>
+        {/* Unbordered 48px x 48px rounded logo container */}
+        <div className="w-12 h-12 rounded-xl bg-[#F1F3F4] dark:bg-[#282A2C] flex items-center justify-center shrink-0 mb-4 overflow-hidden">
+          {(member.logoUrl || member.imageUrl) ? (
+            <img
+              src={member.logoUrl || member.imageUrl}
+              alt={member.name}
+              width={36}
+              height={36}
+              loading="lazy"
+              decoding="async"
+              className="w-9 h-9 object-contain"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+          ) : (
+            getMemberIcon()
+          )}
         </div>
 
-        {/* Category Pill Badge */}
-        {member.category && (
-          <div>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[var(--md-sys-color-primary-container,#D3E3FD)] dark:bg-[var(--md-sys-color-primary-container,#0842A0)] text-[var(--md-sys-color-on-primary-container,#041E49)] dark:text-[var(--md-sys-color-on-primary-container,#D3E3FD)]">
-              {getLocalizedCategory(member.category)}
-            </span>
-          </div>
-        )}
+        {/* Company/Entity Name in 18px Medium (#1F1F1F) */}
+        <h3 className="text-[18px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors line-clamp-1 mb-1">
+          {member.name}
+        </h3>
 
-        {/* Expertise Tags */}
-        {member.expertiseTags && member.expertiseTags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {member.expertiseTags.slice(0, 3).map((tag, idx) => (
-              <span
-                key={idx}
-                className="px-2 py-0.5 rounded-md bg-white dark:bg-[#131314] text-[var(--md-sys-color-on-surface-variant,#444746)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)] text-[10px] font-medium border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)]"
-              >
-                {getLocalizedTag(tag, t)}
-              </span>
-            ))}
-          </div>
-        )}
+        {/* Sector tag as plain text (no bubble badge) */}
+        <p className="text-[13px] text-[#5F6368] dark:text-[#9AA0A6] font-normal mb-3">
+          {member.roleOrCategory || member.category || 'Energy Organization'}
+        </p>
 
-        {/* Clamped Description */}
-        {member.showDescription === true && getLocalizedDescription(member) && (
-          <p className="text-xs text-[var(--md-sys-color-on-surface-variant,#444746)] dark:text-[var(--md-sys-color-on-surface-variant,#C4C7C5)] line-clamp-3 leading-relaxed">
+        {/* Short corporate bio (2 lines maximum) */}
+        {getLocalizedDescription(member) && (
+          <p className="text-[14px] text-[#444746] dark:text-[#C4C7C5] leading-relaxed line-clamp-2">
             {getLocalizedDescription(member)}
           </p>
         )}
       </div>
 
-      {/* Card Footer */}
-      <div className="pt-4 border-t border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] mt-4 space-y-2">
-        <div className="flex items-center justify-between gap-2">
-          {member.location ? (
-            <div className="flex items-center gap-1.5 text-xs text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)] truncate">
-              <MapPin className="w-3.5 h-3.5 text-[var(--md-sys-color-primary,#1A73E8)] shrink-0" aria-hidden="true" />
-              <span className="truncate">{member.location}</span>
-            </div>
-          ) : <span />}
-
-          <span className="text-[var(--md-sys-color-primary,#1A73E8)] dark:text-[var(--md-sys-color-primary,#8AB4F8)] text-xs font-medium flex items-center gap-1 group-hover:underline">
-            <span>View Profile</span>
-            <ArrowRight className="w-3.5 h-3.5 directional-icon transition-transform group-hover:translate-x-1" aria-hidden="true" />
-          </span>
-        </div>
-
-        {/* GDPR Article 14: Claim or Update Profile Notice */}
-        <div className="pt-1 flex items-center justify-between text-[10px] text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)]">
-          <span>GDPR Art. 14 Public Directory</span>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClaimProfile ? onClaimProfile(member) : onClick();
-            }}
-            className="hover:underline text-[var(--md-sys-color-primary,#1A73E8)] dark:text-[var(--md-sys-color-primary,#8AB4F8)] bg-transparent border-0 p-0 cursor-pointer"
-          >
-            Claim / Update Profile ↗
-          </button>
-        </div>
+      {/* Card Footer: Location and outward arrow link ↗ */}
+      <div className="pt-4 mt-4 border-t border-[#F1F3F4] dark:border-[#333537] flex items-center justify-between text-[12px] text-[#5F6368] dark:text-[#9AA0A6]">
+        <span>{member.location || 'Cyprus'}</span>
+        <span className="text-[#1A73E8] dark:text-[#8AB4F8] font-medium group-hover:underline inline-flex items-center gap-0.5">
+          <span>Portal</span>
+          <span aria-hidden="true">&#8599;</span>
+        </span>
       </div>
-    </div>
+    </article>
   );
 };
 

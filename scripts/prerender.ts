@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { createClient } from '@supabase/supabase-js';
+import { INITIAL_DIRECTORY_MEMBERS } from '../src/services/repositories/DirectoryRepository';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -128,6 +129,10 @@ async function loadData() {
     }
   } catch (err) {
     console.warn('Supabase participants fetch warning during prerender:', err);
+  }
+
+  if (!directoryMembers || directoryMembers.length === 0) {
+    directoryMembers = INITIAL_DIRECTORY_MEMBERS;
   }
 
   return { newsItems, directoryMembers, magazines, courses };
