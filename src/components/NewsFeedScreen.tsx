@@ -267,119 +267,81 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
   }, [newsItems]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-6 pb-24 md:pb-16 animate-fade-in">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-16 animate-fade-in">
       <SEOManager article={selectedArticle} />
-      <h1 className="sr-only">Energeia - Cyprus Energy News & Market Intelligence</h1>
+      
+      {/* Section Title (Google Research Header) */}
+      <h1 className="text-[32px] sm:text-[40px] font-normal text-[#1F1F1F] dark:text-[#E3E3E3] leading-tight mb-8">
+        The latest energy intelligence <br className="hidden sm:inline" />from Cyprus
+      </h1>
 
-      {/* Editorial Split Hero Publication (research.google standard) */}
+      {/* Main Publication Article Item (Google Research Publication Layout) */}
       {heroStory && !searchQuery && (
-        <section 
-          aria-label="Featured Intelligence Story"
-          className="mb-8 rounded-[var(--radius-card,24px)] bg-[var(--md-sys-color-surface-container-low,#F8F9FA)] dark:bg-[var(--md-sys-color-surface-container-low,#1E1F20)] border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] p-6 md:p-8 lg:p-10 transition-all hover:border-[var(--md-sys-color-primary-container,#D3E3FD)]"
+        <article 
+          onClick={() => openArticle(heroStory)}
+          className="group cursor-pointer mb-10 pb-8 border-b border-[#F1F3F4] dark:border-[#282A2C]"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
-            {/* Inline-Start: Editorial Copy (7 cols) */}
-            <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <span className="px-3 py-1 rounded-full text-xs font-medium tracking-tight bg-[var(--md-sys-color-primary-container,#D3E3FD)] dark:bg-[var(--md-sys-color-primary-container,#0842A0)] text-[var(--md-sys-color-on-primary-container,#041E49)] dark:text-[var(--md-sys-color-on-primary-container,#D3E3FD)] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
-                  <span>Featured Intelligence</span>
-                </span>
-                
-                {heroStory.category && (
-                  <span 
-                    style={{
-                      backgroundColor: getBadgeColors(heroStory.category).bg,
-                      color: getBadgeColors(heroStory.category).text,
-                    }}
-                    className="px-2.5 py-1 rounded-full text-xs font-semibold"
-                  >
-                    {getLocalizedCategory(heroStory.category)}
-                  </span>
-                )}
-                
-                <time 
-                  dateTime={heroStory.publishedAt} 
-                  className="text-xs font-mono text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)]"
-                >
-                  {formatDate(heroStory.publishedAt)}
-                </time>
+          {/* 1. Image on TOP with soft radius */}
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[#F1F3F4] dark:bg-[#1E1F20] mb-4 border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)]">
+            {heroStory.imageUrl || heroStory.image_url ? (
+              <img
+                src={getOptimizedImageUrl(heroStory.imageUrl || heroStory.image_url, 1200, 675)}
+                alt={getLocalizedValue(heroStory, 'title', language)}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                fetchPriority="high"
+                loading="eager"
+                decoding="sync"
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-[#F1F3F4] dark:bg-[#1E1F20] text-[#5F6368]">
+                <Compass className="w-12 h-12 stroke-1" aria-hidden="true" />
               </div>
-
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium tracking-tight text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-[var(--md-sys-color-on-surface,#E3E3E3)] leading-tight [text-wrap:balance]">
-                <button
-                  type="button"
-                  onClick={() => openArticle(heroStory)}
-                  className="text-start bg-transparent border-0 p-0 font-inherit text-inherit cursor-pointer hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors focus-visible:outline-2 focus-visible:outline-[var(--md-sys-color-primary,#1A73E8)] rounded-lg"
-                >
-                  {getLocalizedValue(heroStory, 'title', language)}
-                </button>
-              </h2>
-
-              <p className="text-sm sm:text-base text-[var(--md-sys-color-on-surface-variant,#444746)] dark:text-[var(--md-sys-color-on-surface-variant,#C4C7C5)] line-clamp-3 leading-relaxed">
-                {getLocalizedValue(heroStory, 'summary', language) || 'In-depth market intelligence and regulatory analysis for Cyprus energy infrastructure.'}
-              </p>
-
-              {/* Card Footer: EU Article 15 Attribution Pill & Outbound / Read Full Analysis Action */}
-              <div className="pt-2 flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => openArticle(heroStory)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--md-sys-color-primary,#1A73E8)] hover:bg-[var(--md-sys-color-primary-hover,#1557B0)] dark:bg-[var(--md-sys-color-primary,#8AB4F8)] dark:hover:bg-[#AECBFA] text-white dark:text-[#062E6F] text-xs font-medium transition-all shadow-xs cursor-pointer group"
-                  >
-                    <span>Read Full Analysis</span>
-                    <ArrowRight className="w-4 h-4 directional-icon transition-transform group-hover:translate-x-1" aria-hidden="true" />
-                  </button>
-
-                  {(heroStory.sourcePublisher || heroStory.source) && (
-                    <span className="text-[11px] text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)]">
-                      Source: {heroStory.sourcePublisher || heroStory.source}
-                    </span>
-                  )}
-                </div>
-
-                {heroStory.sourceUrl && (
-                  <a
-                    href={heroStory.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)] hover:bg-[var(--md-sys-color-surface-container,#F1F3F4)] dark:hover:bg-[#282A2C] transition-colors"
-                    title="Original Filing (EU Directive 2019/790 Art. 15)"
-                  >
-                    <span>Original Source</span>
-                    <ExternalLink className="w-3 h-3" aria-hidden="true" />
-                  </a>
-                )}
-              </div>
-            </div>
-
-            {/* Inline-End: 16:9 Thumbnail with fetchpriority="high" (5 cols) */}
-            <div className="lg:col-span-5 aspect-video w-full rounded-[var(--radius-card,24px)] overflow-hidden border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] bg-neutral-100 dark:bg-neutral-800 shrink-0">
-              {heroStory.imageUrl || heroStory.image_url ? (
-                <img
-                  src={getOptimizedImageUrl(heroStory.imageUrl || heroStory.image_url, 720, 405)}
-                  alt={getLocalizedValue(heroStory, 'title', language)}
-                  width={720}
-                  height={405}
-                  fetchPriority="high"
-                  loading="eager"
-                  decoding="sync"
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-[var(--md-sys-color-surface-container,#F1F3F4)] dark:bg-[var(--md-sys-color-surface-container,#282A2C)] text-[var(--md-sys-color-secondary-text,#5F6368)]">
-                  <Compass className="w-12 h-12 stroke-1" aria-hidden="true" />
-                </div>
-              )}
-            </div>
-
+            )}
           </div>
-        </section>
+
+          {/* 2. Date: Uppercase, small, muted */}
+          <time dateTime={heroStory.publishedAt} className="block text-[12px] font-medium tracking-wider text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-2 font-mono">
+            {formatDate(heroStory.publishedAt)}
+          </time>
+
+          {/* 3. Headline: Google Sans style, medium weight, crisp */}
+          <h2 className="text-[22px] sm:text-[26px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] leading-snug group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors mb-3">
+            {getLocalizedValue(heroStory, 'title', language)}
+          </h2>
+
+          {/* 4. Analytical summary */}
+          <p className="text-[15px] text-[#444746] dark:text-[#C4C7C5] leading-relaxed mb-3 line-clamp-2">
+            {getLocalizedValue(heroStory, 'summary', language) || 'Greek conglomerate HELLENiQ Energy has agreed to acquire Cypriot fuel supplier Staroil through its subsidiary, HELLENiQ Energy Cyprus.'}
+          </p>
+
+          {/* 5. Categories: Text separated by middle dots (NO bubble badges) */}
+          <div className="text-[13px] text-[#5F6368] dark:text-[#9AA0A6] flex flex-wrap items-center gap-1.5">
+            {heroStory.category && <span>{getLocalizedCategory(heroStory.category)}</span>}
+            {(heroStory.sourcePublisher || heroStory.source) && (
+              <>
+                <span>·</span>
+                <span>{heroStory.sourcePublisher || heroStory.source}</span>
+              </>
+            )}
+            {heroStory.sourceUrl && (
+              <>
+                <span>·</span>
+                <a 
+                  href={heroStory.sourceUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline inline-flex items-center gap-0.5 ml-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Source: {heroStory.sourcePublisher || heroStory.source || 'Filing'} ↗
+                </a>
+              </>
+            )}
+          </div>
+        </article>
       )}
 
       {/* Live Cyprus Grid Telemetry Strip (Google Finance / Research Data Pill Bar) */}
@@ -526,43 +488,23 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
         </div>
       )}
 
-      {/* 3-Column Bento Publication Grid */}
+      {/* 3-Column Bento Publication Grid (Google Research Grid) */}
       {!loading && !empty && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {(searchQuery ? newsItems : gridStories).map((item) => {
             const titleText = getLocalizedValue(item, 'title', language);
             const thumbUrl = getOptimizedImageUrl(item.imageUrl || item.image_url, 480, 270);
-            const badge = getBadgeColors(item.category);
 
             return (
               <article
                 key={item.id}
                 onClick={() => openArticle(item)}
-                className="google-publication-card p-6 flex flex-col justify-between group cursor-pointer"
+                className="google-publication-card p-5 flex flex-col justify-between group cursor-pointer"
               >
                 <div>
-                  {/* Top Row: Category Pill & Monospace Date */}
-                  <div className="flex items-center justify-between mb-3 text-xs">
-                    {item.category ? (
-                      <span
-                        style={{ backgroundColor: badge.bg, color: badge.text }}
-                        className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-tight"
-                      >
-                        {getLocalizedCategory(item.category)}
-                      </span>
-                    ) : <span />}
-
-                    <time 
-                      dateTime={item.publishedAt}
-                      className="text-xs font-mono text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)]"
-                    >
-                      {formatDate(item.publishedAt)}
-                    </time>
-                  </div>
-
-                  {/* Thumbnail Image */}
+                  {/* 1. Thumbnail Image on TOP */}
                   {thumbUrl && (
-                    <div className="w-full aspect-video rounded-2xl overflow-hidden mb-4 bg-neutral-100 dark:bg-neutral-800 border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)]">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px] bg-[#F1F3F4] dark:bg-[#1E1F20] mb-3.5 border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)]">
                       <img
                         src={thumbUrl}
                         alt={titleText}
@@ -570,7 +512,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                         height={270}
                         loading="lazy"
                         decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         onError={(e) => {
                           (e.target as HTMLElement).style.display = 'none';
                         }}
@@ -578,33 +520,53 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                     </div>
                   )}
 
-                  {/* Headline (Google Sans 20px Medium) */}
-                  <h3 className="text-lg md:text-xl font-medium tracking-tight text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-[var(--md-sys-color-on-surface,#E3E3E3)] line-clamp-2 mb-2 group-hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:group-hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors leading-snug">
+                  {/* 2. Date: Uppercase, small, muted, font-mono */}
+                  <time 
+                    dateTime={item.publishedAt}
+                    className="block text-[11px] font-mono font-medium tracking-wider text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-1.5"
+                  >
+                    {formatDate(item.publishedAt)}
+                  </time>
+
+                  {/* 3. Headline: Google Sans style, medium weight, crisp */}
+                  <h3 className="text-[17px] sm:text-[18px] font-medium tracking-tight text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-[var(--md-sys-color-on-surface,#E3E3E3)] line-clamp-2 mb-2 group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors leading-snug">
                     {titleText}
                   </h3>
 
-                  {/* Analytical Summary (14px Google Sans Text) */}
-                  <p className="text-xs md:text-sm text-[var(--md-sys-color-on-surface-variant,#444746)] dark:text-[var(--md-sys-color-on-surface-variant,#C4C7C5)] line-clamp-3 leading-relaxed mb-4">
+                  {/* 4. Analytical summary */}
+                  <p className="text-[13px] sm:text-[14px] text-[var(--md-sys-color-on-surface-variant,#444746)] dark:text-[var(--md-sys-color-on-surface-variant,#C4C7C5)] line-clamp-2 leading-relaxed mb-4">
                     {getLocalizedValue(item, 'summary', language) || 'No summary available.'}
                   </p>
                 </div>
 
-                {/* Card Footer: EU Article 15 Source Pill & Hover-Highlighted Arrow */}
-                <div className="pt-4 border-t border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-1.5 truncate">
-                    {(item.sourcePublisher || item.source) ? (
-                      <span className="text-[11px] font-medium text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)] truncate">
-                        Source: {item.sourcePublisher || item.source}
-                      </span>
-                    ) : (
-                      <span className="text-[11px] font-medium text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[var(--md-sys-color-secondary-text,#9AA0A6)]">
-                        Energeia Intelligence
-                      </span>
+                {/* 5. Categories & Sources: Dot-separated metadata (NO bubble badges) */}
+                <div className="pt-3 border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between gap-2 text-[12px] text-[#5F6368] dark:text-[#9AA0A6]">
+                  <div className="flex flex-wrap items-center gap-1.5 truncate">
+                    {item.category && <span>{getLocalizedCategory(item.category)}</span>}
+                    {(item.sourcePublisher || item.source) && (
+                      <>
+                        <span>·</span>
+                        <span className="truncate">{item.sourcePublisher || item.source}</span>
+                      </>
+                    )}
+                    {item.sourceUrl && (
+                      <>
+                        <span>·</span>
+                        <a 
+                          href={item.sourceUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline inline-flex items-center gap-0.5 shrink-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Source ↗
+                        </a>
+                      </>
                     )}
                   </div>
 
-                  <div className="w-9 h-9 rounded-full bg-white dark:bg-[#131314] border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] group-hover:bg-[var(--md-sys-color-primary,#1A73E8)] group-hover:border-[var(--md-sys-color-primary,#1A73E8)] text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-white group-hover:text-white flex items-center justify-center shrink-0 transition-colors shadow-2xs">
-                    <ArrowRight className="w-4 h-4 directional-icon transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  <div className="w-8 h-8 rounded-full bg-white dark:bg-[#131314] border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] group-hover:bg-[#1A73E8] group-hover:border-[#1A73E8] text-[#1F1F1F] dark:text-white group-hover:text-white flex items-center justify-center shrink-0 transition-colors shadow-2xs">
+                    <ArrowRight className="w-3.5 h-3.5 directional-icon transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                   </div>
                 </div>
               </article>
