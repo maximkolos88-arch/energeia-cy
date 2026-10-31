@@ -18,17 +18,12 @@ export const Footer: React.FC = () => {
       {/* Top Bar: Statutory Corporate Identification */}
       <div className="max-w-7xl mx-auto pb-8 mb-8 border-b border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-1.5 rounded-xl bg-[var(--md-sys-color-primary,#1A73E8)] dark:bg-[var(--md-sys-color-primary,#8AB4F8)] text-white dark:text-[#062E6F] flex items-center justify-center shadow-xs">
-            <EnergeiaLogo className="w-4 h-auto" />
-          </div>
-          <div>
-            <span className="font-medium text-base text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-white tracking-tight">
-              Energeia
-            </span>
-            <span className="text-xs text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] ml-2 font-normal">
-              Cyprus Energy Intelligence
-            </span>
-          </div>
+          <EnergeiaLogo
+            variant="monochrome"
+            className="text-[#5F6368] dark:text-[#9AA0A6]"
+            showDescriptor={true}
+            descriptor="Cyprus Energy Intelligence"
+          />
         </div>
 
         <div className="text-xs text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] font-mono">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { EnergeiaLogo } from './EnergeiaLogo';
 
 interface LoginScreenProps {
   onSuccess?: () => void;
@@ -33,9 +34,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onSuccess }) => {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/20 mb-4">
-            <ShieldCheck className="w-8 h-8 text-[#1CA350]" />
-          </div>
+          <EnergeiaLogo variant="gradient" descriptor="Admin" className="h-10 mb-6 justify-center" />
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Admin Portal</h1>
           <p className="text-sm text-slate-500 dark:text-gray-400">
             Sign in with your credentials to access dashboard configurations.

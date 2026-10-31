@@ -1,4 +1,5 @@
 import React from 'react';
+import { EnergeiaLogo } from '../EnergeiaLogo';
 import {
   BarChart2, Newspaper, FileText, Users, BookOpen, GraduationCap, Inbox, ChevronLeft, ChevronRight, ShieldCheck, X
 } from 'lucide-react';
@@ -47,14 +48,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       {/* Sidebar Header Logo */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-zinc-800 shrink-0">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-zinc-950 font-black tracking-wider text-base shadow-sm shrink-0">
-            EC
-          </div>
-          {!isCollapsed && (
+          {isCollapsed ? (
+            <EnergeiaLogo variant="monochrome" showDescriptor={false} className="text-zinc-200 w-8 overflow-hidden" />
+          ) : (
             <div className="flex flex-col min-w-0">
-              <span className="font-bold text-sm text-zinc-100 tracking-tight whitespace-nowrap">Energeia Panel</span>
-              <span className="text-[10px] text-emerald-400 font-medium tracking-wide uppercase whitespace-nowrap flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" /> System Admin
+              <EnergeiaLogo variant="monochrome" showDescriptor={false} className="text-zinc-200" />
+              <span className="text-[10px] text-zinc-400 font-medium tracking-wide uppercase whitespace-nowrap flex items-center gap-1 mt-1 pl-1">
+                <ShieldCheck className="w-3 h-3 text-emerald-400" /> System Admin
               </span>
             </div>
           )}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserPlus, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { EnergeiaLogo } from './EnergeiaLogo';
 
 export const RegisterScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -84,9 +85,7 @@ export const RegisterScreen: React.FC = () => {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
-            <UserPlus className="w-6 h-6 text-primary" />
-          </div>
+          <EnergeiaLogo variant="gradient" descriptor="Network" className="h-10 mb-6 justify-center" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">{t('register.title')}</h1>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
             {t('register.subtitle')}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { EnergeiaLogo } from '../EnergeiaLogo';
 import {
   Search, Sun, Moon, Database, RefreshCw, X, Menu, LogOut, ShieldCheck, Sparkles, CheckCircle
 } from 'lucide-react';
@@ -46,17 +47,15 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
-              E
-            </div>
-            <div>
-              <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <EnergeiaLogo variant="gradient" descriptor="Console" className="h-7" />
+            <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-zinc-200 dark:border-zinc-800">
+              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
                 {activeModuleName}
-                <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40 dark:border-emerald-800/40">
-                  Live Admin
-                </span>
-              </h1>
+              </span>
+              <span className="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40 dark:border-emerald-800/40">
+                Live Admin
+              </span>
             </div>
           </div>
         </div>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <defs>
+    <linearGradient id="favicon-ag-spectrum" x1="2" y1="16" x2="30" y2="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2B66FF" />
+      <stop offset="16%" stop-color="#00D4FF" />
+      <stop offset="34%" stop-color="#00E676" />
+      <stop offset="52%" stop-color="#FFD600" />
+      <stop offset="68%" stop-color="#FF5722" />
+      <stop offset="82%" stop-color="#FF1744" />
+      <stop offset="93%" stop-color="#A828FF" />
+      <stop offset="100%" stop-color="#3875FF" />
+    </linearGradient>
+  </defs>
+
+  <g fill="url(#favicon-ag-spectrum)">
+    <rect x="2" y="7" width="28" height="5" rx="2.5" />
+    <rect x="2" y="17" width="7" height="5" rx="2.5" />
+    <rect x="12.5" y="17" width="7" height="5" rx="2.5" />
+    <rect x="23" y="17" width="7" height="5" rx="2.5" />
+  </g>
+</svg>

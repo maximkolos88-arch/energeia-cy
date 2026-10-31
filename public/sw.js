@@ -7,12 +7,13 @@ try {
   // Ignore if offline or blocked
 }
 
-const CACHE_NAME = 'energeia-cache-v12';
+const CACHE_NAME = 'energeia-cache-v13';
 const ASSETS_TO_CACHE = [
   '/manifest.json',
-  '/apple-touch-icon.png?v=4',
-  '/icon-192.png?v=4',
-  '/icon-512.png?v=4'
+  '/favicon.svg',
+  '/apple-touch-icon.png?v=5',
+  '/icon-192.png?v=5',
+  '/icon-512.png?v=5'
 ];
 
 // Install Event: Activate immediately with skipWaiting()

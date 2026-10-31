@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { EnergeiaLogo } from './EnergeiaLogo';
 
 export interface TopAppBarProps {
   currentLang?: string;
@@ -167,10 +168,10 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           <a 
             href="/" 
             onClick={(e) => handleNavClick(e, '/', 'news')}
-            className="flex items-center gap-1.5 text-[20px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight cursor-pointer"
+            className="flex items-center cursor-pointer"
+            aria-label="Energeia Research Home"
           >
-            <span>Energeia</span>
-            <span className="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-sm hidden sm:inline">| Research</span>
+            <EnergeiaLogo variant="gradient" showDescriptor={true} descriptor="Research" hideDescriptorOnMobile={true} />
           </a>
         </div>
 
@@ -311,10 +312,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
             {/* Top: Brand Header & Close */}
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#F1F3F4] dark:border-[#282A2C] mb-6">
-                <div className="flex items-center gap-1.5 text-lg font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
-                  <span>Energeia</span>
-                  <span className="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-sm">Intelligence</span>
-                </div>
+                <EnergeiaLogo variant="gradient" showDescriptor={true} descriptor="Research" />
                 <button
                   type="button"
                   onClick={() => setDrawerOpen(false)}
