@@ -9,8 +9,8 @@ import { NewsRepository } from '../services/repositories/NewsRepository';
 import { SEOManager } from './seo/SEOManager';
 import { useInitialData } from '../context/InitialDataContext';
 import { getOptimizedImageUrl } from '../utils/imageProxy';
+import { GoogleResearchArticle } from './GoogleResearchArticle';
 import { 
-  ArrowRight, 
   ExternalLink, 
   AlertTriangle, 
   RefreshCw, 
@@ -23,8 +23,7 @@ import {
   Landmark,
   Gift,
   Layers,
-  Activity,
-  Compass
+  Activity
 } from 'lucide-react';
 
 interface NewsFeedScreenProps {
@@ -297,84 +296,23 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
 
       {/* Main Publication Article Item (Google Research Publication Layout) */}
       {heroStory && !searchQuery && (
-        <article 
-          onClick={() => openArticle(heroStory)}
-          className="group cursor-pointer w-full mb-10 pb-8 border-b border-[#F1F3F4] dark:border-[#282A2C]"
-          style={{ maxWidth: '840px', marginInline: 'auto', paddingBlock: '24px' }}
-        >
-          {/* 1. Image on TOP with soft radius */}
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[#F1F3F4] dark:bg-[#1E1F20] mb-4">
-            {heroStory.imageUrl || heroStory.image_url ? (
-              <img
-                src={getOptimizedImageUrl(heroStory.imageUrl || heroStory.image_url, 1200, 675)}
-                alt={getLocalizedValue(heroStory, 'title', language)}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                fetchPriority="high"
-                loading="eager"
-                decoding="sync"
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-[#F1F3F4] dark:bg-[#1E1F20] text-[#5F6368]">
-                <Compass className="w-12 h-12 stroke-1" aria-hidden="true" />
-              </div>
-            )}
-          </div>
-
-          {/* 2. Date: Uppercase, small, muted */}
-          <time dateTime={heroStory.publishedAt} className="block text-[12px] font-medium tracking-wider text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-2 font-mono">
-            {formatDate(heroStory.publishedAt)}
-          </time>
-
-          {/* 3. Headline: Google Sans style, medium weight, crisp */}
-          <h2 className="text-[22px] sm:text-[28px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] leading-snug hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors mb-3">
-            <a 
-              href={`/news/${heroStory.slug || heroStory.id}`} 
-              onClick={(e) => { 
-                e.preventDefault(); 
-                openArticle(heroStory); 
-              }}
-            >
-              {getLocalizedValue(heroStory, 'title', language)}
-            </a>
-          </h2>
-
-          {/* 4. Analytical summary */}
-          <p className="text-[15px] text-[#444746] dark:text-[#C4C7C5] leading-relaxed mb-3 line-clamp-2">
-            {getLocalizedValue(heroStory, 'summary', language) || 'Greek conglomerate HELLENiQ Energy has agreed to acquire Cypriot fuel supplier Staroil through its subsidiary, HELLENiQ Energy Cyprus.'}
-          </p>
-
-          {/* 5. Categories: Text separated by middle dots (NO bubble badges) */}
-          <div className="text-[13px] text-[#5F6368] dark:text-[#9AA0A6] flex flex-wrap items-center gap-1.5 mt-2">
-            {heroStory.category && (
-              <span className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
-                {getLocalizedCategory(heroStory.category)}
-              </span>
-            )}
-            {(heroStory.sourcePublisher || heroStory.source) && (
-              <>
-                <span>·</span>
-                <span>{heroStory.sourcePublisher || heroStory.source}</span>
-              </>
-            )}
-            {heroStory.sourceUrl && (
-              <>
-                <span>·</span>
-                <a 
-                  href={heroStory.sourceUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Source: {heroStory.sourcePublisher || heroStory.source || 'CNA'} ↗
-                </a>
-              </>
-            )}
-          </div>
-        </article>
+        <GoogleResearchArticle
+          isHero={true}
+          article={{
+            id: heroStory.id,
+            title: getLocalizedValue(heroStory, 'title', language),
+            slug: heroStory.slug || heroStory.id,
+            date: heroStory.publishedAt || '',
+            summary: getLocalizedValue(heroStory, 'summary', language) || 'Greek conglomerate HELLENiQ Energy has agreed to acquire Cypriot fuel supplier Staroil through its subsidiary, HELLENiQ Energy Cyprus.',
+            imageUrl: getOptimizedImageUrl(heroStory.imageUrl || heroStory.image_url, 1200, 675),
+            category: getLocalizedCategory(heroStory.category),
+            subCategory: heroStory.sourcePublisher || heroStory.source || undefined,
+            sourceName: heroStory.sourcePublisher || heroStory.source || undefined,
+            sourceUrl: heroStory.sourceUrl || undefined,
+          }}
+          onOpen={() => openArticle(heroStory)}
+          className="mb-10 pb-8"
+        />
       )}
 
       {/* Live Cyprus Grid Telemetry Strip (Google Finance / Research Data Pill Bar) */}
@@ -521,102 +459,27 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
         </div>
       )}
 
-      {/* 3-Column Bento Publication Grid (Google Research Grid) */}
+      {/* Google Research Publications Feed */}
       {!loading && !empty && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {(searchQuery ? newsItems : gridStories).map((item) => {
-            const titleText = getLocalizedValue(item, 'title', language);
-            const thumbUrl = getOptimizedImageUrl(item.imageUrl || item.image_url, 480, 270);
-
-            return (
-              <article
-                key={item.id}
-                onClick={() => openArticle(item)}
-                className="google-publication-card p-5 flex flex-col justify-between group cursor-pointer"
-              >
-                <div>
-                  {/* 1. Thumbnail Image on TOP */}
-                  {thumbUrl && (
-                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px] bg-[#F1F3F4] dark:bg-[#1E1F20] mb-3.5 border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)]">
-                      <img
-                        src={thumbUrl}
-                        alt={titleText}
-                        width={480}
-                        height={270}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  {/* 2. Date: Uppercase, small, muted, font-mono */}
-                  <time 
-                    dateTime={item.publishedAt}
-                    className="block text-[11px] font-mono font-medium tracking-wider text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-1.5"
-                  >
-                    {formatDate(item.publishedAt)}
-                  </time>
-
-                  {/* 3. Headline: Google Sans style, medium weight, crisp */}
-                  <h3 className="text-[17px] sm:text-[18px] font-medium tracking-tight text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-[var(--md-sys-color-on-surface,#E3E3E3)] line-clamp-2 mb-2 hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors leading-snug">
-                    <a 
-                      href={`/news/${item.slug || item.id}`} 
-                      onClick={(e) => { 
-                        e.preventDefault(); 
-                        openArticle(item); 
-                      }}
-                    >
-                      {titleText}
-                    </a>
-                  </h3>
-
-                  {/* 4. Analytical summary */}
-                  <p className="text-[13px] sm:text-[14px] text-[var(--md-sys-color-on-surface-variant,#444746)] dark:text-[var(--md-sys-color-on-surface-variant,#C4C7C5)] line-clamp-2 leading-relaxed mb-4">
-                    {getLocalizedValue(item, 'summary', language) || 'No summary available.'}
-                  </p>
-                </div>
-
-                {/* 5. Categories & Sources: Dot-separated metadata (NO bubble badges) */}
-                <div className="pt-3 border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between gap-2 text-[12px] text-[#5F6368] dark:text-[#9AA0A6] mt-2">
-                  <div className="flex flex-wrap items-center gap-1.5 truncate">
-                    {item.category && (
-                      <span className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
-                        {getLocalizedCategory(item.category)}
-                      </span>
-                    )}
-                    {(item.sourcePublisher || item.source) && (
-                      <>
-                        <span>·</span>
-                        <span className="truncate">{item.sourcePublisher || item.source}</span>
-                      </>
-                    )}
-                    {item.sourceUrl && (
-                      <>
-                        <span>·</span>
-                        <a 
-                          href={item.sourceUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline shrink-0"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Source: {item.sourcePublisher || item.source || 'CNA'} ↗
-                        </a>
-                      </>
-                    )}
-                  </div>
-
-                  <div className="w-8 h-8 rounded-full bg-white dark:bg-[#131314] border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] group-hover:bg-[#1A73E8] group-hover:border-[#1A73E8] text-[#1F1F1F] dark:text-white group-hover:text-white flex items-center justify-center shrink-0 transition-colors shadow-2xs">
-                    <ArrowRight className="w-3.5 h-3.5 directional-icon transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+        <div className="flex flex-col w-full divide-y divide-[#F1F3F4] dark:divide-[#282A2C]">
+          {(searchQuery ? newsItems : gridStories).map((item) => (
+            <GoogleResearchArticle
+              key={item.id}
+              article={{
+                id: item.id,
+                title: getLocalizedValue(item, 'title', language),
+                slug: item.slug || item.id,
+                date: item.publishedAt || '',
+                summary: getLocalizedValue(item, 'summary', language) || '',
+                imageUrl: getOptimizedImageUrl(item.imageUrl || item.image_url, 960, 540),
+                category: getLocalizedCategory(item.category),
+                subCategory: item.sourcePublisher || item.source || undefined,
+                sourceName: item.sourcePublisher || item.source || undefined,
+                sourceUrl: item.sourceUrl || undefined,
+              }}
+              onOpen={() => openArticle(item)}
+            />
+          ))}
         </div>
       )}
 
