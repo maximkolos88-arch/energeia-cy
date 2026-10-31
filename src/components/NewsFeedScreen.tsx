@@ -270,10 +270,30 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     <div className="w-full max-w-[840px] mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-16 animate-fade-in" style={{ maxWidth: '840px', marginInline: 'auto', paddingBlock: '24px' }}>
       <SEOManager article={selectedArticle} />
       
-      {/* Section Title (Google Research Header) */}
-      <h1 className="text-[32px] sm:text-[40px] font-normal text-[#1F1F1F] dark:text-[#E3E3E3] leading-tight mb-8">
-        The latest energy intelligence <br className="hidden sm:inline" />from Cyprus
-      </h1>
+      {/* Section Title (Google Research Header & Follow Us Links) */}
+      <div className="mb-8 sm:mb-12">
+        <h1 className="text-[32px] sm:text-[44px] font-normal tracking-tight text-[#1F1F1F] dark:text-[#E3E3E3] leading-[1.15] mb-6">
+          The latest energy intelligence <br className="hidden sm:inline" />from Cyprus
+        </h1>
+
+        <div className="flex flex-col gap-2">
+          <span className="text-[11px] font-medium tracking-wider text-[#5F6368] dark:text-[#9AA0A6] uppercase">
+            Follow Us
+          </span>
+          <div className="flex items-center gap-4 text-[#1F1F1F] dark:text-[#E3E3E3]">
+            {/* Crisp monochrome SVG icons: X, LinkedIn, RSS */}
+            <a href="https://x.com/energeiacy" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="hover:opacity-70 transition-opacity">
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://linkedin.com/company/energeiacy" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hover:opacity-70 transition-opacity">
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.25c-.97 0-1.75.79-1.75 1.76s.78 1.76 1.75 1.76 1.75-.79 1.75-1.76-.78-1.76-1.75-1.76"/></svg>
+            </a>
+            <a href="/feed.xml" target="_blank" rel="noopener noreferrer" aria-label="RSS Feed" className="hover:opacity-70 transition-opacity">
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27zm0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
 
       {/* Main Publication Article Item (Google Research Publication Layout) */}
       {heroStory && !searchQuery && (
