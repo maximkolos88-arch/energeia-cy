@@ -9,14 +9,27 @@ import { ArticleRepository } from '../services/repositories/ArticleRepository';
 import { NewsItem, DirectoryMember, MagazineIssue, AcademyCourse, Article, ArticleCategory } from '../models/types';
 import { AdminHeader } from './admin/AdminHeader';
 import { AdminSidebar, AdminModule } from './admin/AdminSidebar';
-import { AdminDashboardView } from './admin/AdminDashboardView';
-import { AdminNewsView } from './admin/AdminNewsView';
-import { AdminArticlesView } from './admin/AdminArticlesView';
-import { AdminDirectoryView } from './admin/AdminDirectoryView';
-import { AdminMagazineView } from './admin/AdminMagazineView';
-import { AdminAcademyView } from './admin/AdminAcademyView';
-import { AdminApplicationsView } from './admin/AdminApplicationsView';
 import { AdminArticle, AdminDirectoryMember, AdminNewsItem, AdminMagazineIssue, AdminAcademyCourse } from './admin/adminTypes';
+
+const AdminDashboardView = React.lazy(() => import('./admin/AdminDashboardView').then(m => ({ default: m.AdminDashboardView })));
+const AdminNewsView = React.lazy(() => import('./admin/AdminNewsView').then(m => ({ default: m.AdminNewsView })));
+const AdminArticlesView = React.lazy(() => import('./admin/AdminArticlesView').then(m => ({ default: m.AdminArticlesView })));
+const AdminDirectoryView = React.lazy(() => import('./admin/AdminDirectoryView').then(m => ({ default: m.AdminDirectoryView })));
+const AdminMagazineView = React.lazy(() => import('./admin/AdminMagazineView').then(m => ({ default: m.AdminMagazineView })));
+const AdminAcademyView = React.lazy(() => import('./admin/AdminAcademyView').then(m => ({ default: m.AdminAcademyView })));
+const AdminApplicationsView = React.lazy(() => import('./admin/AdminApplicationsView').then(m => ({ default: m.AdminApplicationsView })));
+
+const AdminViewSkeleton = () => (
+  <div className="p-6 space-y-4 animate-pulse">
+    <div className="h-8 w-48 bg-neutral-200 dark:bg-neutral-800 rounded-lg"></div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="h-32 bg-neutral-100 dark:bg-neutral-800/60 rounded-xl"></div>
+      <div className="h-32 bg-neutral-100 dark:bg-neutral-800/60 rounded-xl"></div>
+      <div className="h-32 bg-neutral-100 dark:bg-neutral-800/60 rounded-xl"></div>
+    </div>
+    <div className="h-64 bg-neutral-100 dark:bg-neutral-800/60 rounded-xl"></div>
+  </div>
+);
 
 interface AdminPanelProps {
   onClose: () => void;
@@ -547,7 +560,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 <span className="text-xs font-medium">Syncing database records...</span>
               </div>
             ) : (
-              <>
+              <React.Suspense fallback={<AdminViewSkeleton />}>
                 {activeModule === 'dashboard' && (
                   <AdminDashboardView
                     newsList={newsList}
@@ -649,7 +662,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   />
                 )}
 
-              </>
+              </React.Suspense>
             )}
           </main>
 

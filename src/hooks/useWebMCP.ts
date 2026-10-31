@@ -87,15 +87,26 @@ export function useWebMCP<Args = Record<string, unknown>, Result = unknown>({
   const [detectTick, redetect] = React.useReducer((n: number) => n + 1, 0);
 
   React.useEffect(() => {
-    const modelCtx = typeof document !== 'undefined' ? (document as any).modelContext : undefined;
+    // Chrome 149+ WebMCP Standard: Feature detect document.modelContext first, fallback to navigator.modelContext
+    const getModelContext = () => {
+      if (typeof document !== 'undefined' && (document as any).modelContext) {
+        return (document as any).modelContext;
+      }
+      if (typeof navigator !== 'undefined' && (navigator as any).modelContext) {
+        return (navigator as any).modelContext;
+      }
+      return undefined;
+    };
+
+    const modelCtx = getModelContext();
     const supported = Boolean(modelCtx);
 
     if (!supported) {
       setState({ supported: false, registered: false, error: null });
-      if (typeof document === 'undefined') return;
+      if (typeof window === 'undefined') return;
       let attempts = 0;
       const timer = setInterval(() => {
-        if ((document as any).modelContext) {
+        if (getModelContext()) {
           clearInterval(timer);
           redetect();
         } else if (++attempts >= 20) {

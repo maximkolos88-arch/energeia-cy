@@ -70,6 +70,8 @@
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/ai-catalog.json", "destination": "/.well-known/ai-catalog.json" },
+    { "source": "/ard.json", "destination": "/.well-known/ard.json" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

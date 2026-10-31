@@ -30,7 +30,15 @@ i18n
     }
   });
 
+export function syncDocumentDirection(lang: string): void {
+  if (typeof document === 'undefined') return;
+  const isRTL = lang === 'he';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+}
+
 export async function loadLanguageBundle(lang: string): Promise<void> {
+  syncDocumentDirection(lang);
   if (lang === 'en' || i18n.hasResourceBundle(lang, 'translation')) {
     await i18n.changeLanguage(lang);
     return;
@@ -43,10 +51,15 @@ export async function loadLanguageBundle(lang: string): Promise<void> {
     i18n.addResourceBundle(lang, 'translation', bundle, true, true);
   }
   await i18n.changeLanguage(lang);
+  syncDocumentDirection(lang);
 }
 
-if (typeof window !== 'undefined' && initialLang !== 'en') {
-  loadLanguageBundle(initialLang);
+if (typeof window !== 'undefined') {
+  if (initialLang !== 'en') {
+    loadLanguageBundle(initialLang);
+  } else {
+    syncDocumentDirection('en');
+  }
 }
 
 export default i18n;

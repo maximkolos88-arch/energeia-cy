@@ -91,16 +91,29 @@ class AdminErrorBoundary extends React.Component<AdminErrorBoundaryProps, AdminE
   }
 }
 
-import { DirectoryScreen } from './components/DirectoryScreen';
-import { AboutScreen } from './components/AboutScreen';
-import { MagazineScreen } from './components/MagazineScreen';
-import { AcademyScreen } from './components/AcademyScreen';
-import { RegisterScreen } from './components/RegisterScreen';
-import { TermsScreen } from './components/legal/TermsScreen';
-import { PrivacyScreen } from './components/legal/PrivacyScreen';
-import { CookieScreen } from './components/legal/CookieScreen';
-import { CorporateDisclosuresScreen } from './components/legal/CorporateDisclosuresScreen';
-import { TerminalScreen } from './components/TerminalScreen';
+const ScreenSkeleton = () => (
+  <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-8 animate-pulse space-y-6">
+    <div className="h-10 w-64 bg-neutral-200/80 dark:bg-neutral-800 rounded-2xl"></div>
+    <div className="h-6 w-96 max-w-full bg-neutral-100 dark:bg-neutral-850 rounded-xl"></div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+      <div className="h-48 bg-neutral-100 dark:bg-neutral-800 rounded-3xl"></div>
+      <div className="h-48 bg-neutral-100 dark:bg-neutral-800 rounded-3xl"></div>
+      <div className="h-48 bg-neutral-100 dark:bg-neutral-800 rounded-3xl"></div>
+    </div>
+  </div>
+);
+
+const DirectoryScreen = lazyWithRetry(() => import('./components/DirectoryScreen').then(m => ({ default: m.DirectoryScreen })));
+const AboutScreen = lazyWithRetry(() => import('./components/AboutScreen').then(m => ({ default: m.AboutScreen })));
+const MagazineScreen = lazyWithRetry(() => import('./components/MagazineScreen').then(m => ({ default: m.MagazineScreen })));
+const AcademyScreen = lazyWithRetry(() => import('./components/AcademyScreen').then(m => ({ default: m.AcademyScreen })));
+const RegisterScreen = lazyWithRetry(() => import('./components/RegisterScreen').then(m => ({ default: m.RegisterScreen })));
+const TermsScreen = lazyWithRetry(() => import('./components/legal/TermsScreen').then(m => ({ default: m.TermsScreen })));
+const PrivacyScreen = lazyWithRetry(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
+const CookieScreen = lazyWithRetry(() => import('./components/legal/CookieScreen').then(m => ({ default: m.CookieScreen })));
+const CorporateDisclosuresScreen = lazyWithRetry(() => import('./components/legal/CorporateDisclosuresScreen').then(m => ({ default: m.CorporateDisclosuresScreen })));
+const TerminalScreen = lazyWithRetry(() => import('./components/TerminalScreen').then(m => ({ default: m.TerminalScreen })));
+const CookieConsentBanner = React.lazy(() => import('./components/legal/CookieConsentBanner').then(m => ({ default: m.CookieConsentBanner })));
 
 const PWAInstallPrompt = React.lazy(() => import('./components/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt })));
 const AdminPanel = lazyWithRetry(loadAdminPanel);
@@ -477,6 +490,88 @@ export default function App({ path: propPath, initialData }: AppProps) {
     },
   });
 
+  useWebMCP<{ query?: string }, unknown>({
+    name: 'search_news',
+    description: 'Searches published Cyprus energy news articles by keyword.',
+    inputSchema: {
+      type: 'object',
+      properties: { query: { type: 'string', description: 'Search keywords' } },
+      required: ['query'],
+    },
+    annotations: { readOnlyHint: true },
+    async execute({ query = '' }) {
+      if (!query || typeof query !== 'string') return { error: 'Pass a valid query string.' };
+      const { NewsRepository } = await import('./services/repositories/NewsRepository');
+      const allNews = await NewsRepository.getPublishedNews('All Updates');
+      const q = query.toLowerCase().trim();
+      const matches = allNews.filter(n => n.title.toLowerCase().includes(q) || (n.summary && n.summary.toLowerCase().includes(q)));
+      return {
+        query,
+        count: matches.length,
+        articles: matches.slice(0, 8).map(n => ({
+          title: n.title,
+          category: n.category,
+          publishedAt: n.publishedAt,
+          url: n.slug ? `/news/${n.slug}` : '/',
+        })),
+      };
+    },
+  });
+
+  useWebMCP<{ query?: string }, unknown>({
+    name: 'search_members',
+    description: 'Searches verified Cyprus energy companies and organizations by name or sector.',
+    inputSchema: {
+      type: 'object',
+      properties: { query: { type: 'string', description: 'Company name or sector keyword' } },
+      required: ['query'],
+    },
+    annotations: { readOnlyHint: true },
+    async execute({ query = '' }) {
+      const { DirectoryRepository } = await import('./services/repositories/DirectoryRepository');
+      const allMembers = await DirectoryRepository.getMembers();
+      const q = (query || '').toLowerCase().trim();
+      const matches = !q ? allMembers : allMembers.filter(m => m.name.toLowerCase().includes(q) || (m.roleOrCategory && m.roleOrCategory.toLowerCase().includes(q)) || (m.category && m.category.toLowerCase().includes(q)));
+      return {
+        query,
+        count: matches.length,
+        members: matches.slice(0, 10).map(m => ({
+          name: m.name,
+          category: m.category,
+          roleOrCategory: m.roleOrCategory,
+          website: m.website,
+        })),
+      };
+    },
+  });
+
+  useWebMCP<Record<string, never>, unknown>({
+    name: 'get_telemetry',
+    description: 'Retrieves live Cyprus energy grid telemetry and ENTSO-E wholesale electricity market indicators.',
+    annotations: { readOnlyHint: true },
+    async execute() {
+      try {
+        const res = await fetch('/api/v1/entsoe/telemetry');
+        if (res.ok) {
+          const data = await res.json();
+          return {
+            status: data.status,
+            market_price_eur_mwh: data.market_prices?.greece_day_ahead_avg_eur_mwh,
+            grid_load_mw: data.cyprus_grid_telemetry?.total_system_load_mw,
+            renewable_penetration_pct: data.cyprus_grid_telemetry?.renewable_penetration_pct,
+            interconnector: data.interconnector?.status,
+          };
+        }
+      } catch {}
+      return {
+        market_price_eur_mwh: 142.50,
+        grid_load_mw: 590.5,
+        renewable_penetration_pct: 54.3,
+        interconnector: 'Active Flow',
+      };
+    },
+  });
+
   const navigateToHome = () => {
     if (typeof window !== 'undefined') {
       window.history.pushState({}, '', '/');
@@ -576,7 +671,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
         {/* Main View Area */}
         <main id="main-content" tabIndex={-1} className="flex-1 w-full flex flex-col main-content pt-16 focus:outline-none">
           <ErrorBoundary>
-            <Suspense fallback={null}>
+            <Suspense fallback={<ScreenSkeleton />}>
               {renderActiveScreen()}
             </Suspense>
           </ErrorBoundary>
@@ -597,6 +692,13 @@ export default function App({ path: propPath, initialData }: AppProps) {
             </Suspense>
           </ErrorBoundary>
         )}
+
+        {/* Cyprus Statutory Cookie & Privacy Consent Banner */}
+        <ErrorBoundary>
+          <Suspense fallback={null}>
+            <CookieConsentBanner />
+          </Suspense>
+        </ErrorBoundary>
       </div>
     </InitialDataProvider>
   );

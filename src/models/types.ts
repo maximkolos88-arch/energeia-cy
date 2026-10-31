@@ -25,6 +25,7 @@ export interface NewsItem {
   imageUrl?: string; // Main article/OpenGraph image URL
   image_url?: string; // Database column fallback alias
   source?: string;
+  sourcePublisher?: string;
   sourceUrl?: string;
   originalUrl?: string;
   publishedAt: string; // ISO date string or formatted date
