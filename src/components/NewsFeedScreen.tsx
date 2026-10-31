@@ -267,7 +267,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
   }, [newsItems]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-16 animate-fade-in">
+    <div className="w-full max-w-[840px] mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-16 animate-fade-in" style={{ maxWidth: '840px', marginInline: 'auto', paddingBlock: '24px' }}>
       <SEOManager article={selectedArticle} />
       
       {/* Section Title (Google Research Header) */}
@@ -279,10 +279,11 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
       {heroStory && !searchQuery && (
         <article 
           onClick={() => openArticle(heroStory)}
-          className="group cursor-pointer mb-10 pb-8 border-b border-[#F1F3F4] dark:border-[#282A2C]"
+          className="group cursor-pointer w-full mb-10 pb-8 border-b border-[#F1F3F4] dark:border-[#282A2C]"
+          style={{ maxWidth: '840px', marginInline: 'auto', paddingBlock: '24px' }}
         >
           {/* 1. Image on TOP with soft radius */}
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[#F1F3F4] dark:bg-[#1E1F20] mb-4 border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)]">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[#F1F3F4] dark:bg-[#1E1F20] mb-4">
             {heroStory.imageUrl || heroStory.image_url ? (
               <img
                 src={getOptimizedImageUrl(heroStory.imageUrl || heroStory.image_url, 1200, 675)}
