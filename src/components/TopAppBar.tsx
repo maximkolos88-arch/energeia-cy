@@ -149,7 +149,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   return (
     <>
       {/* 64px FIXED HEADER BAR */}
-      <header className="sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-[#131314]/95 backdrop-blur-md border-b border-[#F1F3F4] dark:border-[#282A2C] px-4 sm:px-8 flex items-center justify-between transition-colors">
+      <header role="banner" className="google-header sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-[#131314]/95 backdrop-blur-md border-b border-[#F1F3F4] dark:border-[#282A2C] px-4 sm:px-8 flex items-center justify-between transition-colors">
         
         {/* Left: Mobile ☰ + Energeia Wordmark / Desktop Logo Lockup */}
         <div className="flex items-center gap-3">

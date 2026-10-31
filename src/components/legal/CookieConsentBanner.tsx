@@ -39,11 +39,12 @@ export const CookieConsentBanner: React.FC = () => {
   if (!isOpen) return null;
 
   return (
-    <aside
+    <dialog
+      open
       role="dialog"
       aria-label="Cookie and Privacy Consent"
       aria-modal="false"
-      className="fixed bottom-6 inset-inline-start-6 z-50 max-w-sm w-[calc(100vw-3rem)] rounded-[var(--radius-card,24px)] bg-white dark:bg-[#1E1F20] border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] p-5 shadow-2xl animate-scale-up select-none"
+      className="fixed bottom-6 inset-inline-start-6 z-50 max-w-sm w-[calc(100vw-3rem)] rounded-[var(--radius-card,24px)] bg-white dark:bg-[#1E1F20] border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] p-5 shadow-2xl animate-scale-up select-none m-0"
     >
       <div className="flex items-start gap-3.5 mb-3">
         <div className="p-2 rounded-xl bg-[var(--md-sys-color-primary-container,#D3E3FD)] dark:bg-[var(--md-sys-color-primary-container,#0842A0)] text-[var(--md-sys-color-on-primary-container,#041E49)] dark:text-[var(--md-sys-color-on-primary-container,#D3E3FD)] shrink-0">
@@ -59,11 +60,11 @@ export const CookieConsentBanner: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 pt-2">
+      <div className="flex items-center gap-2.5 pt-2">
         <button
           type="button"
           onClick={handleEssentialOnly}
-          className="flex-1 h-9 px-3 rounded-full text-xs font-medium border border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] text-[var(--md-sys-color-on-surface-variant,#444746)] dark:text-[var(--md-sys-color-on-surface-variant,#C4C7C5)] hover:bg-[var(--md-sys-color-surface-container,#F1F3F4)] dark:hover:bg-[#282A2C] transition-colors cursor-pointer"
+          className="flex-1 h-9 px-3 rounded-full text-xs font-medium border border-[#DADCE0] dark:border-[#5F6368] text-[#1A73E8] dark:text-[#8AB4F8] bg-[#F8F9FA] dark:bg-[#282A2C] hover:bg-[#F1F3F4] dark:hover:bg-[#333537] transition-colors cursor-pointer"
         >
           Essential Only
         </button>
@@ -71,7 +72,7 @@ export const CookieConsentBanner: React.FC = () => {
         <button
           type="button"
           onClick={handleAcceptAll}
-          className="flex-1 h-9 px-3 rounded-full text-xs font-medium bg-[var(--md-sys-color-primary,#1A73E8)] hover:bg-[var(--md-sys-color-primary-hover,#1557B0)] dark:bg-[var(--md-sys-color-primary,#8AB4F8)] dark:hover:bg-[#AECBFA] text-white dark:text-[#062E6F] transition-colors cursor-pointer shadow-xs"
+          className="flex-1 h-9 px-3 rounded-full text-xs font-medium border border-[#DADCE0] dark:border-[#5F6368] text-[#1A73E8] dark:text-[#8AB4F8] bg-[#F8F9FA] dark:bg-[#282A2C] hover:bg-[#F1F3F4] dark:hover:bg-[#333537] transition-colors cursor-pointer"
         >
           Accept All
         </button>
@@ -85,7 +86,7 @@ export const CookieConsentBanner: React.FC = () => {
           Read Cyprus Statutory Cookie Policy
         </a>
       </div>
-    </aside>
+    </dialog>
   );
 };
 

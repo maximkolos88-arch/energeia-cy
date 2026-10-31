@@ -305,8 +305,8 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
       <SEOManager article={selectedArticle} />
 
       {/* 1. Masthead & Social Strip (Section 1) */}
-      <div className="max-w-[1280px] mx-auto px-6 pt-10 pb-8">
-        <h1 className="text-[36px] sm:text-[52px] font-normal tracking-[-0.03em] text-[#1F1F1F] dark:text-[#E3E3E3] leading-[1.12]">
+      <section aria-labelledby="masthead-heading" className="masthead-container max-w-[1280px] mx-auto px-6 pt-10 pb-8">
+        <h1 id="masthead-heading" className="text-[36px] sm:text-[52px] font-normal tracking-[-0.03em] text-[#1F1F1F] dark:text-[#E3E3E3] leading-[1.12]">
           The latest energy intelligence <br className="hidden sm:inline" />from Cyprus
         </h1>
         <div className="mt-6 flex flex-col gap-2">
@@ -316,20 +316,20 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           <div className="flex items-center gap-4 text-[#1F1F1F] dark:text-[#E3E3E3]">
             {/* Crisp monochrome SVG icons: X, LinkedIn, RSS */}
             <a href="https://x.com/energeiacy" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="hover:opacity-70 transition-opacity">
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
             </a>
             <a href="https://linkedin.com/company/energeiacy" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hover:opacity-70 transition-opacity">
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.25c-.97 0-1.75.79-1.75 1.76s.78 1.76 1.75 1.76 1.75-.79 1.75-1.76-.78-1.76-1.75-1.76"/></svg>
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.25c-.97 0-1.75.79-1.75 1.76s.78 1.76 1.75 1.76 1.75-.79 1.75-1.76-.78-1.76-1.75-1.76"/></svg>
             </a>
             <a href="/feed.xml" target="_blank" rel="noopener noreferrer" aria-label="RSS Feed" className="hover:opacity-70 transition-opacity">
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27zm0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93z"/></svg>
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27zm0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93z"/></svg>
             </a>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* 2. Material 3 Filter Chips with View Transitions (Section 5) */}
-      <div className="w-full border-b border-[#F1F3F4] dark:border-[#282A2C] bg-white/95 dark:bg-[#131314]/95 backdrop-blur-md sticky top-16 z-30 transition-colors">
+      <nav aria-label="Topic Filters" className="filter-chip-bar w-full border-b border-[#F1F3F4] dark:border-[#282A2C] bg-white/95 dark:bg-[#131314]/95 backdrop-blur-md sticky top-16 z-30 transition-colors">
         <div className="max-w-[1280px] mx-auto px-6 flex items-center gap-2 overflow-x-auto no-scrollbar py-3">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategoryParam === cat.id;
@@ -353,7 +353,7 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
             );
           })}
         </div>
-      </div>
+      </nav>
 
       {/* 3. Main Content Container */}
       <div className="max-w-[1280px] mx-auto px-6 pt-6 pb-20">
@@ -452,130 +452,141 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           </div>
         )}
 
-        {/* Desktop 12-Column Split Hero (Section 3) */}
-        {!loading && featuredArticle && !searchQuery && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pb-12 lg:pb-16 mb-12 lg:mb-16 border-b border-[#F1F3F4] dark:border-[#282A2C] items-center">
-            <div className="lg:col-span-7 order-2 lg:order-1 flex flex-col justify-center">
-              <time className="text-[12px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-3 font-mono">
-                {formatDate(featuredArticle.date)}
-              </time>
-              <h2 className="text-[28px] lg:text-[38px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight leading-[1.18] mb-4">
+        {/* Publication Grid */}
+        <section aria-label="Recent Publications" className="publication-feed">
+          {/* Desktop 12-Column Split Hero (Section 3) */}
+          {!loading && featuredArticle && !searchQuery && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pb-12 lg:pb-16 mb-12 lg:mb-16 border-b border-[#F1F3F4] dark:border-[#282A2C] items-center">
+              <div className="lg:col-span-7 order-2 lg:order-1 flex flex-col justify-center">
+                <time className="text-[12px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-3 font-mono">
+                  {formatDate(featuredArticle.date)}
+                </time>
+                <h2 className="text-[28px] lg:text-[38px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight leading-[1.18] mb-4">
+                  <a 
+                    href={`/news/${featuredArticle.slug}`} 
+                    onClick={(e) => handleOpenArticle(e, featuredArticle)}
+                    className="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors"
+                  >
+                    {featuredArticle.title}
+                  </a>
+                </h2>
+                <p className="text-[16px] text-[#444746] dark:text-[#C4C7C5] leading-relaxed mb-4 line-clamp-3">
+                  {featuredArticle.summary}
+                </p>
+                <div className="text-[13px] text-[#5F6368] dark:text-[#9AA0A6] flex flex-wrap items-center gap-1.5">
+                  <span className="text-[#1F1F1F] dark:text-[#E3E3E3] font-medium">{featuredArticle.category}</span>
+                  <span>·</span>
+                  <span>Corporate Strategy</span>
+                  {featuredArticle.sourceUrl && (
+                    <>
+                      <span>·</span>
+                      <a 
+                        href={featuredArticle.sourceUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Source: {featuredArticle.sourceName || 'CNA'} ↗
+                      </a>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="lg:col-span-5 order-1 lg:order-2">
                 <a 
                   href={`/news/${featuredArticle.slug}`} 
                   onClick={(e) => handleOpenArticle(e, featuredArticle)}
-                  className="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors"
+                  className="block overflow-hidden rounded-[24px] aspect-[16/9] bg-[#F1F3F4] dark:bg-[#1E1F20]"
                 >
-                  {featuredArticle.title}
+                  <img 
+                    src={featuredArticle.imageUrl} 
+                    alt={featuredArticle.title} 
+                    className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-300"
+                    fetchPriority="high"
+                    loading="eager"
+                    decoding="async"
+                  />
                 </a>
-              </h2>
-              <p className="text-[16px] text-[#444746] dark:text-[#C4C7C5] leading-relaxed mb-4 line-clamp-3">
-                {featuredArticle.summary}
-              </p>
-              <div className="text-[13px] text-[#5F6368] dark:text-[#9AA0A6] flex flex-wrap items-center gap-1.5">
-                <span className="text-[#1F1F1F] dark:text-[#E3E3E3] font-medium">{featuredArticle.category}</span>
-                <span>·</span>
-                <span>Corporate Strategy</span>
-                {featuredArticle.sourceUrl && (
-                  <>
-                    <span>·</span>
-                    <a 
-                      href={featuredArticle.sourceUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Source: {featuredArticle.sourceName || 'CNA'} ↗
-                    </a>
-                  </>
-                )}
               </div>
             </div>
+          )}
 
-            <div className="lg:col-span-5 order-1 lg:order-2">
-              <a 
-                href={`/news/${featuredArticle.slug}`} 
-                onClick={(e) => handleOpenArticle(e, featuredArticle)}
-                className="block overflow-hidden rounded-[24px] aspect-[16/9] bg-[#F1F3F4] dark:bg-[#1E1F20]"
-              >
-                <img 
-                  src={featuredArticle.imageUrl} 
-                  alt={featuredArticle.title} 
-                  className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-300"
-                  fetchPriority="high"
-                  loading="eager"
-                  decoding="async"
-                />
-              </a>
+          {/* Secondary 3-Column Publication Grid (Section 3) */}
+          {!loading && !empty && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+              {(searchQuery ? allArticles : remainingArticles).map((article) => (
+                <article key={article.id} className="group flex flex-col bg-transparent">
+                  {article.imageUrl && (
+                    <a 
+                      href={`/news/${article.slug}`} 
+                      onClick={(e) => handleOpenArticle(e, article)}
+                      className="block overflow-hidden rounded-[20px] aspect-[16/9] bg-[#F1F3F4] dark:bg-[#1E1F20] mb-4"
+                    >
+                      <img 
+                        src={article.imageUrl} 
+                        alt={article.title} 
+                        className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </a>
+                  )}
+
+                  <time className="text-[11px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-2 font-mono">
+                    {formatDate(article.date)}
+                  </time>
+
+                  <h3 className="text-[20px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight leading-snug mb-2 group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
+                    <a 
+                      href={`/news/${article.slug}`}
+                      onClick={(e) => handleOpenArticle(e, article)}
+                    >
+                      {article.title}
+                    </a>
+                  </h3>
+
+                  <p className="text-[14px] text-[#444746] dark:text-[#C4C7C5] leading-relaxed line-clamp-2 mb-3">
+                    {article.summary}
+                  </p>
+
+                  <div className="mt-auto text-[13px] text-[#5F6368] dark:text-[#9AA0A6] flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#F1F3F4] dark:border-[#282A2C]">
+                    <span className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">{article.category}</span>
+                    <span>·</span>
+                    <span>Corporate Strategy</span>
+                    {article.sourceUrl && (
+                      <>
+                        <span>·</span>
+                        <a 
+                          href={article.sourceUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Source: {article.sourceName || 'CNA'} ↗
+                        </a>
+                      </>
+                    )}
+                  </div>
+                </article>
+              ))}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Secondary 3-Column Publication Grid (Section 3) */}
-        {!loading && !empty && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-            {(searchQuery ? allArticles : remainingArticles).map((article) => (
-              <article key={article.id} className="group flex flex-col bg-transparent">
-                {article.imageUrl && (
-                  <a 
-                    href={`/news/${article.slug}`} 
-                    onClick={(e) => handleOpenArticle(e, article)}
-                    className="block overflow-hidden rounded-[20px] aspect-[16/9] bg-[#F1F3F4] dark:bg-[#1E1F20] mb-4"
-                  >
-                    <img 
-                      src={article.imageUrl} 
-                      alt={article.title} 
-                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                )}
-
-                <time className="text-[11px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-2 font-mono">
-                  {formatDate(article.date)}
-                </time>
-
-                <h3 className="text-[20px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight leading-snug mb-2 group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
-                  <a 
-                    href={`/news/${article.slug}`}
-                    onClick={(e) => handleOpenArticle(e, article)}
-                  >
-                    {article.title}
-                  </a>
-                </h3>
-
-                <p className="text-[14px] text-[#444746] dark:text-[#C4C7C5] leading-relaxed line-clamp-2 mb-3">
-                  {article.summary}
-                </p>
-
-                <div className="mt-auto text-[12px] text-[#5F6368] dark:text-[#9AA0A6] flex items-center gap-1.5 pt-2 border-t border-[#F1F3F4] dark:border-[#282A2C]">
-                  <span className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">{article.category}</span>
-                  <span>·</span>
-                  <a 
-                    href={`/news/${article.slug}`}
-                    onClick={(e) => handleOpenArticle(e, article)}
-                    className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
-                  >
-                    Read ↗
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-
-        {/* Load More Button */}
-        {!loading && hasMore && (
-          <div className="mt-14 text-center">
-            <button
-              onClick={loadMore}
-              className="px-8 py-3 bg-[#F8F9FA] dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#444746] text-[#1A73E8] dark:text-[#8AB4F8] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-xs font-semibold rounded-full transition-all cursor-pointer"
-            >
-              {t('news.loadMore', 'Load More Publications')}
-            </button>
-          </div>
-        )}
+          {/* Load More Button */}
+          {!loading && hasMore && (
+            <div className="mt-14 text-center">
+              <button
+                onClick={loadMore}
+                className="px-8 py-3 bg-[#F8F9FA] dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#444746] text-[#1A73E8] dark:text-[#8AB4F8] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-xs font-semibold rounded-full transition-all cursor-pointer"
+              >
+                {t('news.loadMore', 'Load More Publications')}
+              </button>
+            </div>
+          )}
+        </section>
       </div>
 
       {/* Full Article Bottom Sheet / Modal Reader */}

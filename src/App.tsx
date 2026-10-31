@@ -679,7 +679,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
         />
 
         {/* Main View Area */}
-        <main id="main-content" tabIndex={-1} className="flex-1 w-full flex flex-col main-content pt-16 focus:outline-none">
+        <main id="main-content" tabIndex={-1} role="main" className="google-main flex-1 w-full flex flex-col main-content focus:outline-none">
           <ErrorBoundary>
             <Suspense fallback={<ScreenSkeleton />}>
               {renderActiveScreen()}
@@ -700,11 +700,13 @@ export default function App({ path: propPath, initialData }: AppProps) {
         )}
 
         {/* Cyprus Statutory Cookie & Privacy Consent Banner */}
-        <ErrorBoundary>
-          <Suspense fallback={null}>
-            <CookieConsentBanner />
-          </Suspense>
-        </ErrorBoundary>
+        {mountDeferredUI && (
+          <ErrorBoundary>
+            <Suspense fallback={null}>
+              <CookieConsentBanner />
+            </Suspense>
+          </ErrorBoundary>
+        )}
       </div>
     </InitialDataProvider>
   );

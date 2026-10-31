@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="w-full bg-[var(--md-sys-color-surface-container-low,#F8F9FA)] dark:bg-[#131314] border-t border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] pt-12 pb-24 md:pb-12 px-4 md:px-6 mt-16 transition-colors">
+    <footer role="contentinfo" className="google-footer w-full bg-[var(--md-sys-color-surface-container-low,#F8F9FA)] dark:bg-[#131314] border-t border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] pt-12 pb-24 md:pb-12 px-4 md:px-6 mt-16 transition-colors">
       
       {/* Top Bar: Statutory Corporate Identification */}
       <div className="max-w-7xl mx-auto pb-8 mb-8 border-b border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
