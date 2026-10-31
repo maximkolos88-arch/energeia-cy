@@ -19,6 +19,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDark, setIsDark] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -61,14 +62,15 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
         e.preventDefault();
         setIsSearchOpen(true);
         setTimeout(() => searchInputRef.current?.focus(), 50);
-      } else if (e.key === 'Escape' && isSearchOpen) {
-        setIsSearchOpen(false);
+      } else if (e.key === 'Escape') {
+        if (isSearchOpen) setIsSearchOpen(false);
+        if (menuOpen) setMenuOpen(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSearchOpen]);
+  }, [isSearchOpen, menuOpen]);
 
   // Handle Search Submission
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -121,14 +123,213 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   const navItems = allNavItems.filter(item => item.enabled);
 
   return (
-    <header className="top-app-header w-full transition-colors select-none">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-4">
+    <header className="top-app-header sticky top-0 z-50 bg-white/95 dark:bg-[#131314]/95 backdrop-blur-md border-b border-[#F1F3F4] dark:border-[#282A2C] transition-colors select-none">
+      
+      {/* Mobile Top Header (md:hidden) */}
+      <div className="md:hidden px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button 
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)} 
+            aria-label="Open Navigation Menu"
+            aria-expanded={menuOpen}
+            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3] transition-colors cursor-pointer"
+          >
+            <svg className="w-5 h-5 text-[#1F1F1F] dark:text-[#E3E3E3]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+          <a 
+            href="/" 
+            onClick={(e) => {
+              e.preventDefault();
+              onTabChange('news');
+              if (window.location.pathname !== '/') {
+                window.history.pushState({}, '', '/');
+                window.dispatchEvent(new Event('popstate'));
+              }
+            }}
+            className="flex items-center gap-1.5 text-[20px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight cursor-pointer"
+          >
+            <span>Energeia</span>
+            <span className="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-sm">Research</span>
+          </a>
+        </div>
+
+        <button 
+          type="button"
+          onClick={() => {
+            setIsSearchOpen(true);
+            setTimeout(() => searchInputRef.current?.focus(), 50);
+          }}
+          aria-label="Search"
+          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] transition-colors cursor-pointer"
+        >
+          <svg className="w-5 h-5 text-[#5F6368] dark:text-[#9AA0A6]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile Search Overlay Bar (md:hidden) */}
+      {isSearchOpen && (
+        <div className="md:hidden absolute inset-0 z-50 bg-white/98 dark:bg-[#131314]/98 backdrop-blur-md px-4 flex items-center gap-2 border-b border-[#F1F3F4] dark:border-[#282A2C] animate-fade-in">
+          <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center gap-2">
+            <Search className="w-4 h-4 text-[#5F6368] dark:text-[#9AA0A6] shrink-0" aria-hidden="true" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('search.placeholder', 'Search intelligence, assets...')}
+              className="w-full h-10 bg-transparent text-sm text-[#1F1F1F] dark:text-[#E3E3E3] placeholder-[#5F6368] dark:placeholder-[#9AA0A6] focus:outline-none"
+              autoFocus
+            />
+          </form>
+          <button
+            type="button"
+            onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+            aria-label="Close search"
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-[#5F6368] dark:text-[#9AA0A6] cursor-pointer"
+          >
+            <X className="w-5 h-5" aria-hidden="true" />
+          </button>
+        </div>
+      )}
+
+      {/* Mobile Navigation Drawer Overlay (md:hidden) */}
+      {menuOpen && (
+        <div 
+          className="md:hidden fixed inset-0 top-16 z-50 bg-black/40 backdrop-blur-xs transition-opacity"
+          onClick={() => setMenuOpen(false)}
+        >
+          <div 
+            className="w-4/5 max-w-sm h-full bg-white dark:bg-[#1E1F20] shadow-2xl p-6 flex flex-col justify-between overflow-y-auto border-r border-[#F1F3F4] dark:border-[#282A2C]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div>
+              {/* Drawer Brand */}
+              <div className="flex items-center justify-between pb-4 border-b border-[#F1F3F4] dark:border-[#282A2C] mb-5">
+                <div className="flex items-center gap-2 text-xl font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+                  <div className="p-1 rounded-lg bg-[var(--md-sys-color-primary,#1A73E8)] dark:bg-[var(--md-sys-color-primary,#8AB4F8)] text-white dark:text-[#062E6F] flex items-center justify-center">
+                    <EnergeiaLogo className="w-4 h-auto" />
+                  </div>
+                  <span>Energeia</span>
+                  <span className="text-[#5F6368] dark:text-[#9AA0A6] font-normal text-sm">Research</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Close Navigation Menu"
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-[#5F6368] dark:text-[#9AA0A6] transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" aria-hidden="true" />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <nav aria-label="Mobile Drawer Navigation" className="flex flex-col gap-1.5">
+                {navItems.map((item) => {
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        onTabChange(item.id);
+                        setMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center px-4 py-3 rounded-xl text-base font-medium transition-colors text-left cursor-pointer ${
+                        isActive
+                          ? 'bg-[var(--md-sys-color-primary-container,#D3E3FD)] dark:bg-[var(--md-sys-color-primary-container,#0842A0)] text-[var(--md-sys-color-primary,#1A73E8)] dark:text-[var(--md-sys-color-primary,#8AB4F8)] font-semibold'
+                          : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C]'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Bottom Drawer Actions: Language, Theme, Subscribe */}
+            <div className="pt-6 border-t border-[#F1F3F4] dark:border-[#282A2C] flex flex-col gap-4">
+              {/* Language Selector */}
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold text-[#5F6368] dark:text-[#9AA0A6] uppercase tracking-wider">Language</span>
+                <div 
+                  role="group" 
+                  aria-label="Language selector"
+                  className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#E0E2E0] dark:border-[#444746]"
+                >
+                  {(['en', 'el', 'ru', 'he'] as const).map((lang) => {
+                    const isActive = language === lang;
+                    const labelMap: Record<string, string> = { en: 'EN', el: 'ΕΛ', ru: 'РУ', he: 'עב' };
+                    return (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => {
+                          onLanguageChange(lang);
+                        }}
+                        aria-pressed={isActive}
+                        className={`py-2 text-xs font-semibold rounded-lg transition-all text-center cursor-pointer ${
+                          isActive
+                            ? 'bg-[var(--md-sys-color-primary,#1A73E8)] dark:bg-[var(--md-sys-color-primary,#8AB4F8)] text-white dark:text-[#062E6F] shadow-xs'
+                            : 'text-[#5F6368] dark:text-[#9AA0A6] hover:text-black dark:hover:text-white'
+                        }`}
+                      >
+                        {labelMap[lang]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Theme & Subscribe Controls */}
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  aria-label={isDark ? "Switch to Light Theme" : "Switch to Antigravity Dark Theme"}
+                  className="flex-1 py-2.5 px-3 rounded-xl border border-[#E0E2E0] dark:border-[#444746] bg-[#F8F9FA] dark:bg-[#131314] text-xs font-medium text-[#1F1F1F] dark:text-[#E3E3E3] flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                >
+                  {isDark ? (
+                    <>
+                      <Sun className="w-4 h-4 text-amber-400" aria-hidden="true" />
+                      <span>Light</span>
+                    </>
+                  ) : (
+                    <>
+                      <Moon className="w-4 h-4 text-[#5F6368]" aria-hidden="true" />
+                      <span>Dark</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSubscribeClick}
+                  className="py-2.5 px-4 text-xs font-medium text-[var(--md-sys-color-primary,#1A73E8)] dark:text-[var(--md-sys-color-primary,#8AB4F8)] bg-[var(--md-sys-color-primary-container,#D3E3FD)] dark:bg-[var(--md-sys-color-primary-container,#0842A0)] rounded-xl flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Bell className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Alerts</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Top Header Layout (hidden md:flex) */}
+      <div className="hidden md:flex max-w-7xl mx-auto px-4 md:px-6 h-16 items-center justify-between gap-4">
         
         {/* Left Section: research.google Product Lockup & Desktop Navigation */}
         <div className="flex items-center gap-6 lg:gap-8 min-w-0">
           
           {/* Google Product Lockup: Energeia | Cyprus Energy Intelligence */}
           <button 
+            type="button"
             onClick={() => onTabChange('news')}
             aria-label="Energeia Home"
             className="flex items-center gap-3 shrink-0 cursor-pointer bg-transparent border-0 p-0 text-start group rounded-xl focus-visible:outline-2 focus-visible:outline-[var(--md-sys-color-primary,#1A73E8)]"
@@ -149,12 +350,13 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </button>
 
           {/* Desktop Navigation with 3px Google Blue Bottom Indicator */}
-          <nav aria-label="Primary Navigation" className="hidden md:flex items-center gap-1 h-16">
+          <nav aria-label="Primary Navigation" className="flex items-center gap-1 h-16">
             {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (
                 <button
                   key={item.id}
+                  type="button"
                   onClick={() => onTabChange(item.id)}
                   className={`relative h-16 px-3.5 flex items-center text-sm font-medium transition-colors cursor-pointer ${
                     isActive
@@ -223,6 +425,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           {/* Subscribe to News Button */}
           <button
             id="subscribe-news-btn"
+            type="button"
             onClick={handleSubscribeClick}
             aria-label={t('nav.subscribeNews', 'Subscribe to Alerts')}
             title={t('nav.subscribeNews', 'Subscribe to Alerts')}
