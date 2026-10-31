@@ -42,7 +42,13 @@ const initialData: InitialData | undefined = typeof window !== 'undefined' ? (wi
 const currentPathname = typeof window !== 'undefined' ? window.location.pathname : '/';
 const isClientOnlyRoute = currentPathname.startsWith('/admin');
 if (isClientOnlyRoute && rootElement) {
-  rootElement.innerHTML = '';
+  rootElement.innerHTML = `
+    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background-color:#ffffff;gap:12px;font-family:system-ui,-apple-system,sans-serif;">
+      <div style="width:32px;height:32px;border:2px solid #10b981;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <p style="font-size:14px;color:#64748b;font-weight:500;">Loading Admin Portal...</p>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
+  `;
 }
 const hasPrerenderedDOM = Boolean(!isClientOnlyRoute && rootElement && rootElement.hasChildNodes() && rootElement.children.length > 0);
 

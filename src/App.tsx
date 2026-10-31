@@ -363,9 +363,17 @@ export default function App({ path: propPath, initialData }: AppProps) {
 
     let isSubscribed = true;
 
+    // Failsafe timer: prevent hanging forever in authChecking state if getSession() stalls
+    const authTimeout = setTimeout(() => {
+      if (isSubscribed) {
+        setAuthChecking(false);
+      }
+    }, 1500);
+
     supabase.auth.getSession()
       .then(({ data: { session } }) => {
         if (isSubscribed) {
+          clearTimeout(authTimeout);
           setSession(session);
           setAuthChecking(false);
         }
@@ -373,6 +381,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
       .catch((err) => {
         console.warn('Auth session check error:', err);
         if (isSubscribed) {
+          clearTimeout(authTimeout);
           setAuthChecking(false);
         }
       });
@@ -381,6 +390,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (isSubscribed) {
+        clearTimeout(authTimeout);
         setSession(session);
         setAuthChecking(false);
       }
@@ -388,6 +398,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
 
     return () => {
       isSubscribed = false;
+      clearTimeout(authTimeout);
       subscription.unsubscribe();
     };
   }, [isAdminRoute]);
