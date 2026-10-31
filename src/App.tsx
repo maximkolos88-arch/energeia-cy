@@ -6,6 +6,7 @@ import { TopAppBar } from './components/TopAppBar';
 import { BottomNavBar } from './components/BottomNavBar';
 import { Footer } from './components/Footer';
 import { NewsFeedScreen } from './components/NewsFeedScreen';
+import { TerminalScreen } from './components/TerminalScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { useTranslation } from 'react-i18next';
@@ -112,7 +113,6 @@ const TermsScreen = lazyWithRetry(() => import('./components/legal/TermsScreen')
 const PrivacyScreen = lazyWithRetry(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
 const CookieScreen = lazyWithRetry(() => import('./components/legal/CookieScreen').then(m => ({ default: m.CookieScreen })));
 const CorporateDisclosuresScreen = lazyWithRetry(() => import('./components/legal/CorporateDisclosuresScreen').then(m => ({ default: m.CorporateDisclosuresScreen })));
-const TerminalScreen = lazyWithRetry(() => import('./components/TerminalScreen').then(m => ({ default: m.TerminalScreen })));
 const CookieConsentBanner = React.lazy(() => import('./components/legal/CookieConsentBanner').then(m => ({ default: m.CookieConsentBanner })));
 
 const PWAInstallPrompt = React.lazy(() => import('./components/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt })));
