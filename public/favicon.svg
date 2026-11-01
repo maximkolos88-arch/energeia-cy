@@ -1,21 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 46 34" width="46" height="34" fill="none">
   <defs>
-    <linearGradient id="favicon-ag-spectrum" x1="2" y1="16" x2="30" y2="16" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#2B66FF" />
-      <stop offset="16%" stop-color="#00D4FF" />
-      <stop offset="34%" stop-color="#00E676" />
-      <stop offset="52%" stop-color="#FFD600" />
-      <stop offset="68%" stop-color="#FF5722" />
-      <stop offset="82%" stop-color="#FF1744" />
-      <stop offset="93%" stop-color="#A828FF" />
-      <stop offset="100%" stop-color="#3875FF" />
+    <linearGradient id="fav-cyprus" x1="2" y1="17" x2="44" y2="17" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="18%" stop-color="#FFF8EE" />
+      <stop offset="38%" stop-color="#FFA726" />
+      <stop offset="54%" stop-color="#D46200" />
+      <stop offset="70%" stop-color="#B85100" />
+      <stop offset="85%" stop-color="#6B882A" />
+      <stop offset="100%" stop-color="#3C4E1C" />
     </linearGradient>
   </defs>
-
-  <g fill="url(#favicon-ag-spectrum)">
-    <rect x="2" y="7" width="28" height="5" rx="2.5" />
-    <rect x="2" y="17" width="7" height="5" rx="2.5" />
-    <rect x="12.5" y="17" width="7" height="5" rx="2.5" />
-    <rect x="23" y="17" width="7" height="5" rx="2.5" />
+  <g fill="url(#fav-cyprus)" stroke="rgba(31,31,31,0.15)" stroke-width="0.8">
+    <rect x="2" y="5" width="42" height="6.5" rx="3.25" />
+    <rect x="2" y="19.5" width="10" height="6.5" rx="3.25" />
+    <rect x="18" y="19.5" width="10" height="6.5" rx="3.25" />
+    <rect x="34" y="19.5" width="10" height="6.5" rx="3.25" />
   </g>
 </svg>

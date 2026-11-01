@@ -295,8 +295,8 @@ export const PWAInstallPrompt: React.FC = () => {
             <circle cx="50" cy="50" r="34" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2 2" />
           </svg>
 
-          <div className="relative w-16 h-16 bg-gradient-to-br from-[#16a34a] to-[#15823f] rounded-2xl flex items-center justify-center shadow-lg border border-[#14532d]/25 z-10">
-            <Zap className="w-8 h-8 text-white fill-current" />
+          <div className="relative w-16 h-16 bg-white dark:bg-[#1E1F20] rounded-2xl flex items-center justify-center shadow-lg border border-[#DADCE0] dark:border-[#444746] z-10 p-3">
+            <img src="/favicon.svg" alt="Energeia" className="w-full h-auto" />
           </div>
         </div>
 

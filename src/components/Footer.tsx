@@ -19,10 +19,9 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto pb-8 mb-8 border-b border-[var(--md-sys-color-outline-variant,#E0E2E0)] dark:border-[var(--md-sys-color-outline,#444746)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <EnergeiaLogo
-            variant="monochrome"
             className="text-[#5F6368] dark:text-[#9AA0A6]"
-            showDescriptor={true}
-            descriptor="Cyprus Energy Intelligence"
+            descriptor="Cyprus"
+            variant="monochrome"
           />
         </div>
 

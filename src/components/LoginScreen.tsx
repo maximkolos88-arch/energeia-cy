@@ -34,7 +34,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onSuccess }) => {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <EnergeiaLogo variant="gradient" descriptor="Admin" className="h-10 mb-6 justify-center" />
+          <EnergeiaLogo descriptor="Cyprus" variant="gradient" className="h-10 justify-center mb-6" />
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Admin Portal</h1>
           <p className="text-sm text-slate-500 dark:text-gray-400">
             Sign in with your credentials to access dashboard configurations.

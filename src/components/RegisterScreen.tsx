@@ -85,7 +85,7 @@ export const RegisterScreen: React.FC = () => {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <EnergeiaLogo variant="gradient" descriptor="Network" className="h-10 mb-6 justify-center" />
+          <EnergeiaLogo descriptor="Cyprus" variant="gradient" className="h-10 justify-center mb-6" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">{t('register.title')}</h1>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
             {t('register.subtitle')}
