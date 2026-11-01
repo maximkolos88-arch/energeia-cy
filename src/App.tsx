@@ -745,15 +745,17 @@ export default function App({ path: propPath, initialData, hostname }: AppProps)
         </a>
         <ScrollToTop trigger={`${surface}-${activeTab}`} />
 
-        {/* Sticky Top App Bar with Google 9-Dots App Launcher */}
-        <TopAppBar
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          language={language}
-          onLanguageChange={handleLanguageChange}
-          currentSurface={surface}
-          onSelectSurface={handleSurfaceChange}
-        />
+        {/* Sticky Top App Bar with Google 9-Dots App Launcher (Hidden on Coming Soon Cluster Portal) */}
+        {(surface !== 'cluster' || activeTab !== 'cluster') && (
+          <TopAppBar
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            language={language}
+            onLanguageChange={handleLanguageChange}
+            currentSurface={surface}
+            onSelectSurface={handleSurfaceChange}
+          />
+        )}
 
         {/* Main View Area with Suspense Linear Progress Fallback */}
         <main id="main-content" tabIndex={-1} role="main" className="google-main flex-1 w-full flex flex-col main-content focus:outline-none">
