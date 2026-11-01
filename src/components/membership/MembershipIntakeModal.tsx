@@ -403,10 +403,10 @@ export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
                     onChange={(e: any) => setMembershipTier(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#DADCE0] dark:border-[#444746] text-sm bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-white focus:outline-none focus:border-[#1A73E8]"
                   >
-                    <option value="Strategic Energy Partner (Full Platform + Helios Spotlight)">Strategic Energy Partner (Full Platform + Helios Spotlight)</option>
-                    <option value="Certified EPC & Technology Partner (Directory + RFQ Leads)">Certified EPC &amp; Technology Partner (Directory + RFQ Leads)</option>
+                    <option value="Strategic Patron (Full Platform + Helios Spotlight)">Strategic Patron (Full Platform + Helios Spotlight)</option>
+                    <option value="Corporate Member (Licensed EPCs & BESS Developers)">Corporate Member (Licensed EPCs &amp; BESS Developers)</option>
+                    <option value="Associate Member (Professional Services & Advisory)">Associate Member (Professional Services &amp; Advisory)</option>
                     <option value="Corporate PR & Sponsored Briefing (Single / Multi-Release)">Corporate PR &amp; Sponsored Briefing (Single / Multi-Release)</option>
-                    <option value="Associate Member (Professional Services Listing)">Associate Member (Professional Services Listing)</option>
                   </select>
                 </div>
               </div>
