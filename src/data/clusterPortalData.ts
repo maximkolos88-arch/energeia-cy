@@ -639,3 +639,520 @@ export const FEATURED_PARTNERS = LABS_MEMBERS;
 export const CLUSTER_PORTAL_MEMBERS = LABS_MEMBERS;
 export const CLUSTER_EDITORIAL_BRIEFS = LABS_BRIEFINGS;
 export const STRATEGIC_PILLARS = LABS_WORKING_GROUPS;
+
+// ============================================================================
+// OFFICIAL LABS.GOOGLE ARCHITECTURE & DATA SPECIFICATION (ENERGEIA.CY)
+// ============================================================================
+
+export interface LabsCategoryDefinition {
+  id: string;
+  label: string;
+  slug: string;
+  description: string;
+}
+
+export interface LabsExperimentLifecycle {
+  state: 'TRY_NOW' | 'IN_EVALUATION' | 'IN_EXECUTION' | 'VERIFIED_REGISTRY' | 'ENROLLING' | string;
+  label: string;
+  badge: string;
+  isGated: boolean;
+}
+
+export interface LabsExperimentLayout {
+  bentoSpan: {
+    desktopCols: number;
+    desktopRows: number;
+    mobileCols: number;
+    mobileRows: number;
+  };
+  featured: boolean;
+  visualComponent: string;
+}
+
+export interface LabsExperimentMedia {
+  previewType: string;
+  aspectRatio: string;
+  thumbnailUrl: string;
+  previewLoopUrl?: string;
+}
+
+export interface LabsExperimentMeta {
+  team: string;
+  releasedAt: string;
+  technologiesUsed: string[];
+  tags: string[];
+}
+
+export interface LabsExperimentActions {
+  primary: { label: string; url: string };
+  secondary?: { label: string; url: string };
+}
+
+export interface LabsExperiment {
+  id: string;
+  name: string;
+  internalCodename: string;
+  category: string;
+  tagline: string;
+  summary: string;
+  lifecycle: LabsExperimentLifecycle;
+  layout: LabsExperimentLayout;
+  media: LabsExperimentMedia;
+  meta: LabsExperimentMeta;
+  actions: LabsExperimentActions;
+}
+
+export interface LifeBeyondTheLabItem {
+  id: string;
+  labExperimentName: string;
+  graduatedProduct: string;
+  yearIncubated: number;
+  yearGraduated: number;
+  description: string;
+  productUrl: string;
+}
+
+export interface LabsMembershipTierNew {
+  tierId: string;
+  name: string;
+  badge: string;
+  target: string;
+  deliverables: string[];
+  action: {
+    label: string;
+    modalTierPreselect: 'strategic' | 'corporate' | 'associate';
+  };
+}
+
+export interface LabsFooterConfig {
+  copyright: string;
+  disclaimer: string;
+  operator: {
+    legalEntity: string;
+    registrationNumber: string;
+    headquarters: string;
+    contactEmail: string;
+  };
+  links: Array<{ label: string; url: string }>;
+}
+
+export interface LabsSiteSpec {
+  site: {
+    name: string;
+    domain: string;
+    headline: string;
+    description: string;
+    theme: {
+      light: {
+        background: string;
+        surface: string;
+        surfaceVariant: string;
+        border: string;
+        textPrimary: string;
+        textSecondary: string;
+      };
+      dark: {
+        background: string;
+        surface: string;
+        surfaceVariant: string;
+        border: string;
+        textPrimary: string;
+        textSecondary: string;
+      };
+      accents: {
+        copper: string;
+        olive: string;
+        cyan: string;
+        solarGold: string;
+        googleBlue: string;
+        signalRed: string;
+        gridEmerald: string;
+      };
+    };
+  };
+  categories: LabsCategoryDefinition[];
+  experiments: LabsExperiment[];
+  lifeBeyondTheLab: LifeBeyondTheLabItem[];
+  membershipTiers: LabsMembershipTierNew[];
+  footer: LabsFooterConfig;
+}
+
+export const LABS_SITE_SPEC: LabsSiteSpec = {
+  site: {
+    name: "Energeia",
+    domain: "energeia.cy",
+    headline: "The operating system for Cyprus’s clean energy transition",
+    description: "The national clean energy industry cluster uniting licensed producers, utility BESS developers, grid engineers, and institutional capital across the Republic of Cyprus.",
+    theme: {
+      light: {
+        background: "#F8F9FA",
+        surface: "#FFFFFF",
+        surfaceVariant: "#F1F3F4",
+        border: "rgba(0, 0, 0, 0.06)",
+        textPrimary: "#1F1F1F",
+        textSecondary: "#5F6368"
+      },
+      dark: {
+        background: "#131314",
+        surface: "#1E1F20",
+        surfaceVariant: "#282A2C",
+        border: "rgba(255, 255, 255, 0.08)",
+        textPrimary: "#E3E3E3",
+        textSecondary: "#9AA0A6"
+      },
+      accents: {
+        copper: "#D46200",
+        olive: "#3C4E1C",
+        cyan: "#00E5FF",
+        solarGold: "#FBBC05",
+        googleBlue: "#1A73E8",
+        signalRed: "#EA4335",
+        gridEmerald: "#34A853"
+      }
+    }
+  },
+  categories: [
+    { id: "all", label: "All Surfaces", slug: "all", description: "All cluster surfaces, infrastructure maps, and regulatory sandboxes" },
+    { id: "generation", label: "Generation & PV", slug: "generation", description: "Utility solar PV assets, agro-voltaics, and independent power producers" },
+    { id: "storage", label: "Storage & BESS", slug: "storage", description: "Centralized utility storage pipelines, fast-track tenders, and commercial flexibility" },
+    { id: "grid", label: "Grid & Interconnection", slug: "grid", description: "132 kV transmission telemetry, substation dispatch, and subsea HVDC corridors" },
+    { id: "intelligence", label: "Intelligence & Policy", slug: "intelligence", description: "CERA regulatory decisions, TSOC market clearing rules, and whitepapers" },
+    { id: "directory", label: "B2B Directory", slug: "directory", description: "Accredited operators, licensed EPC contractors, and institutional member dossiers" }
+  ],
+  experiments: [
+    {
+      id: "helios_terminal",
+      name: "Helios Terminal",
+      internalCodename: "3D Geospatial Grid OS",
+      category: "grid",
+      tagline: "Real-time 3D spatial GIS and substation telemetry terminal",
+      summary: "Full-spectrum spatial monitoring across Cyprus: TSOC 132 kV transmission loops, Vasilikos & Dhekelia dispatch, 520+ solar plants, and live grid frequency tracking.",
+      lifecycle: {
+        state: "TRY_NOW",
+        label: "Launch Terminal",
+        badge: "Live Telemetry",
+        isGated: false
+      },
+      layout: {
+        bentoSpan: {
+          desktopCols: 8,
+          desktopRows: 2,
+          mobileCols: 12,
+          mobileRows: 1
+        },
+        featured: true,
+        visualComponent: "live_grid_telemetry_hud"
+      },
+      media: {
+        previewType: "interactive_gis_slice",
+        aspectRatio: "16:9",
+        thumbnailUrl: "https://energeia.cy/assets/helios-preview.webp",
+        previewLoopUrl: "https://energeia.cy/assets/videos/helios-3d-loop.mp4"
+      },
+      meta: {
+        team: "Energeia Spatial Engineering & TSOC Interface",
+        releasedAt: "2026-04-15",
+        technologiesUsed: ["MapLibre GL", "Three.js", "TSOC SCADA Bridge", "WebAssembly"],
+        tags: ["132 kV Grid", "Substations", "Frequency 50Hz", "Curtailment Tracker"]
+      },
+      actions: {
+        primary: { label: "Launch Helios 3D GIS ↗", url: "https://helios.energeia.cy" },
+        secondary: { label: "Inspect API Docs", url: "https://research.energeia.cy/docs/telemetry" }
+      }
+    },
+    {
+      id: "bess_pipeline_tracker",
+      name: "Central BESS Queue",
+      internalCodename: "Flexibility Sandbox",
+      category: "storage",
+      tagline: "Utility battery storage allocation and curtailment mitigation engine",
+      summary: "Tracks allocation status for Cyprus's 320 MWh fast-track utility battery storage tenders across central transmission nodes (Kofinou, Vasilikos, and Moni).",
+      lifecycle: {
+        state: "IN_EVALUATION",
+        label: "Tender Active",
+        badge: "Fast-Track Batch 01",
+        isGated: true
+      },
+      layout: {
+        bentoSpan: {
+          desktopCols: 4,
+          desktopRows: 1,
+          mobileCols: 12,
+          mobileRows: 1
+        },
+        featured: false,
+        visualComponent: "bess_capacity_gauge"
+      },
+      media: {
+        previewType: "interactive_gauge",
+        aspectRatio: "16:9",
+        thumbnailUrl: "https://energeia.cy/assets/bess-queue.webp",
+        previewLoopUrl: "https://energeia.cy/assets/videos/bess-sim.mp4"
+      },
+      meta: {
+        team: "Energeia WG-01 Storage Taskforce",
+        releasedAt: "2026-06-01",
+        technologiesUsed: ["TimescaleDB", "CERA Regulatory Indexer"],
+        tags: ["320 MWh", "Grid Autonomy", "Fast-Track Tender"]
+      },
+      actions: {
+        primary: { label: "Inspect Queue Status", url: "https://research.energeia.cy/briefings/bess-allocation-2026" }
+      }
+    },
+    {
+      id: "great_sea_interconnector",
+      name: "Great Sea Interconnector",
+      internalCodename: "Project EuroAsia HVDC",
+      category: "grid",
+      tagline: "Subsea 525 kV HVDC Crete–Cyprus cross-border power bridge",
+      summary: "Geopolitical and engineering tracking of the €1.9B European Project of Common Interest (PCI 3.10.1) descending to -3,000m seabed trench to end Cyprus's electrical isolation.",
+      lifecycle: {
+        state: "IN_EXECUTION",
+        label: "Milestone Tracker",
+        badge: "PCI 3.10.1 · €1.9B",
+        isGated: false
+      },
+      layout: {
+        bentoSpan: {
+          desktopCols: 4,
+          desktopRows: 1,
+          mobileCols: 12,
+          mobileRows: 1
+        },
+        featured: false,
+        visualComponent: "bathymetric_cable_profile"
+      },
+      media: {
+        previewType: "bathymetric_3d",
+        aspectRatio: "16:9",
+        thumbnailUrl: "https://energeia.cy/assets/gsi-corridor.webp",
+        previewLoopUrl: "https://energeia.cy/assets/videos/gsi-route.mp4"
+      },
+      meta: {
+        team: "EU Infrastructure Taskforce",
+        releasedAt: "2026-01-20",
+        technologiesUsed: ["Nexans Marine Route Engine", "VSC-HVDC Modeling"],
+        tags: ["1,000 MW", "Subsea HVDC", "-3,000m Trench", "Kofinou Converter"]
+      },
+      actions: {
+        primary: { label: "Inspect Corridor ↗", url: "https://helios.energeia.cy?layer=gsi-subsea" }
+      }
+    },
+    {
+      id: "research_briefings",
+      name: "Energeia Research",
+      internalCodename: "Market Intelligence Desk",
+      category: "intelligence",
+      tagline: "Institutional intelligence, CERA statutory rulings, and market briefs",
+      summary: "Editorial whitepaper stream modeling Google Research: day-ahead market reform, TSOC dispatch rules, negative pricing forecasts, and corporate M&A filings.",
+      lifecycle: {
+        state: "TRY_NOW",
+        label: "Read Briefings",
+        badge: "Whitepaper Desk",
+        isGated: false
+      },
+      layout: {
+        bentoSpan: {
+          desktopCols: 6,
+          desktopRows: 1,
+          mobileCols: 12,
+          mobileRows: 1
+        },
+        featured: false,
+        visualComponent: "whitepaper_reader_card"
+      },
+      media: {
+        previewType: "document_preview",
+        aspectRatio: "16:9",
+        thumbnailUrl: "https://energeia.cy/assets/research-cover.webp",
+        previewLoopUrl: "https://energeia.cy/assets/videos/research-briefings.mp4"
+      },
+      meta: {
+        team: "Energeia Editorial Board & Legal Analysts",
+        releasedAt: "2026-05-10",
+        technologiesUsed: ["Structured JSON-LD", "SSG Prerendering", "CERA PDF OCR Engine"],
+        tags: ["CERA Decisions", "Market Reform", "Wholesale Rules", "PPA Pricing"]
+      },
+      actions: {
+        primary: { label: "Open Research Hub ↗", url: "https://research.energeia.cy" }
+      }
+    },
+    {
+      id: "member_registry",
+      name: "Accredited Member Directory",
+      internalCodename: "Cluster B2B Network",
+      category: "directory",
+      tagline: "Accredited registry of verified solar operators, BESS funds, and EPCs",
+      summary: "Commercial B2B registry modeled after TechIsland: company dossiers, HE registrar numbers, operational megawatt pipelines, and certified executive lead routing.",
+      lifecycle: {
+        state: "VERIFIED_REGISTRY",
+        label: "Browse Directory",
+        badge: "50+ Accredited Members",
+        isGated: false
+      },
+      layout: {
+        bentoSpan: {
+          desktopCols: 6,
+          desktopRows: 1,
+          mobileCols: 12,
+          mobileRows: 1
+        },
+        featured: false,
+        visualComponent: "verified_dossier_stack"
+      },
+      media: {
+        previewType: "partner_dossier_grid",
+        aspectRatio: "16:9",
+        thumbnailUrl: "https://energeia.cy/assets/directory-preview.webp",
+        previewLoopUrl: "https://energeia.cy/assets/videos/directory-flow.mp4"
+      },
+      meta: {
+        team: "Cluster Secretariat & Membership Committee",
+        releasedAt: "2026-07-01",
+        technologiesUsed: ["Supabase B2B Registry", "Cyprus Registrar HE Sync"],
+        tags: ["Bioland", "Muskita", "Green Energy Group", "EAC", "Verified EPC"]
+      },
+      actions: {
+        primary: { label: "Explore Members ↗", url: "https://members.energeia.cy" },
+        secondary: { label: "Claim Profile", url: "https://energeia.cy/register" }
+      }
+    },
+    {
+      id: "energeia_academy",
+      name: "Energeia Academy",
+      internalCodename: "Workforce & Grid Standards",
+      category: "intelligence",
+      tagline: "Engineering standards, high-voltage safety, and installer certifications",
+      summary: "Technical upskilling hub standardizing commercial solar installation, utility substation operations, battery system commissioning, and European grid codes.",
+      lifecycle: {
+        state: "ENROLLING",
+        label: "Browse Tracks",
+        badge: "Technical Certifications",
+        isGated: false
+      },
+      layout: {
+        bentoSpan: {
+          desktopCols: 12,
+          desktopRows: 1,
+          mobileCols: 12,
+          mobileRows: 1
+        },
+        featured: false,
+        visualComponent: "curriculum_module_ticker"
+      },
+      media: {
+        previewType: "course_browser",
+        aspectRatio: "21:9",
+        thumbnailUrl: "https://energeia.cy/assets/academy-banner.webp",
+        previewLoopUrl: "https://energeia.cy/assets/videos/academy-walkthrough.mp4"
+      },
+      meta: {
+        team: "Energeia Standards Committee & Academic Partners",
+        releasedAt: "2026-08-15",
+        technologiesUsed: ["LMS Engine", "EAC Safety Code Framework"],
+        tags: ["Class A Electrical", "HV Substation Safety", "Installer Certification"]
+      },
+      actions: {
+        primary: { label: "Open Academy ↗", url: "https://academy.energeia.cy" }
+      }
+    }
+  ],
+  lifeBeyondTheLab: [
+    {
+      id: "net_billing_to_utility_boom",
+      labExperimentName: "5 MWp Net-Billing Sandbox",
+      graduatedProduct: "850+ MWp National PV Pipeline",
+      yearIncubated: 2023,
+      yearGraduated: 2025,
+      description: "Originally launched as an experimental distributed generation sandbox with CERA, now graduated into the national private solar foundation generating 19.8% of the Republic's electricity.",
+      productUrl: "https://research.energeia.cy/case-studies/net-billing-scale"
+    },
+    {
+      id: "kofinou_pilot_to_bess_code",
+      labExperimentName: "Kofinou Substation Inverter Pilot",
+      graduatedProduct: "2026 National Utility BESS Grid Code",
+      yearIncubated: 2024,
+      yearGraduated: 2026,
+      description: "Technical field testing of virtual inertia and zero-voltage ride-through at Kofinou graduated into the statutory grid-connection code for all 320 MWh battery storage tender applicants.",
+      productUrl: "https://research.energeia.cy/case-studies/bess-grid-code"
+    },
+    {
+      id: "curtailment_taskforce_to_ppa",
+      labExperimentName: "Midday Curtailment Mitigation Taskforce",
+      graduatedProduct: "Direct B2B Green Corporate PPA Framework",
+      yearIncubated: 2025,
+      yearGraduated: 2026,
+      description: "An emergency working group addressing solar clipping evolved into the formal bilateral PPA framework enabling industrial off-takers to contract directly with private IPPs.",
+      productUrl: "https://members.energeia.cy/ppas"
+    }
+  ],
+  membershipTiers: [
+    {
+      tierId: "strategic_patron",
+      name: "Strategic Patron",
+      badge: "Board & Institutional IPP",
+      target: "Utility asset owners (20+ MWp pipeline), systemic banks, major BESS infrastructure funds",
+      deliverables: [
+        "Permanent homepage brand showcase & board-level positioning",
+        "Dedicated interactive asset dossier on Helios 3D GIS Terminal",
+        "Guaranteed publication rights for corporate & commissioning briefings in Energeia Research",
+        "Co-chair steering seats on CERA & TSOC regulatory consultation working groups"
+      ],
+      action: {
+        "label": "Request Patron Accreditation",
+        "modalTierPreselect": "strategic"
+      }
+    },
+    {
+      tierId: "corporate_member",
+      name: "Corporate Member",
+      badge: "Licensed EPC & Operator",
+      target: "Commercial solar developers, high-voltage contractors, equipment distributors, BESS integrators",
+      deliverables: [
+        "Verified B2B Directory Dossier with certified lead routing",
+        "Up to 6 published project commissioning and expansion releases per year",
+        "Voting representation in Grid Modernization and Wholesale Market working groups",
+        "Access to institutional B2B supplier networking delegations"
+      ],
+      action: {
+        "label": "Apply for Corporate Tier",
+        "modalTierPreselect": "corporate"
+      }
+    },
+    {
+      tierId: "associate_member",
+      name: "Associate Member",
+      badge: "Professional Services",
+      target: "Energy law practices, ESG compliance consultants, technical auditors, insurance syndicates",
+      deliverables: [
+        "Accredited professional registry listing in Member Directory",
+        "Bi-annual legal or ESG regulatory whitepaper publication rights",
+        "Direct inquiry routing for project finance and statutory compliance"
+      ],
+      action: {
+        "label": "Join as Associate",
+        "modalTierPreselect": "associate"
+      }
+    }
+  ],
+  footer: {
+    copyright: "© 2026 Energeia. All rights reserved.",
+    disclaimer: "Energeia is the independent energy industry cluster of the Republic of Cyprus. Data streamed from TSOC and CERA is for institutional monitoring and analytical orientation.",
+    operator: {
+      legalEntity: "M3J2 LTD",
+      registrationNumber: "HE 438859",
+      headquarters: "Limassol, Cyprus",
+      contactEmail: "secretariat@energeia.cy"
+    },
+    links: [
+      { label: "Cluster Manifesto", url: "https://energeia.cy/manifesto" },
+      { label: "Research Desk", url: "https://research.energeia.cy" },
+      { label: "Helios GIS Terminal", url: "https://helios.energeia.cy" },
+      { label: "B2B Member Registry", url: "https://members.energeia.cy" },
+      { label: "Academy Certifications", url: "https://academy.energeia.cy" },
+      { label: "Privacy Policy", url: "https://energeia.cy/privacy" },
+      { label: "Statutory Governance", url: "https://energeia.cy/governance" }
+    ]
+  }
+};
+
