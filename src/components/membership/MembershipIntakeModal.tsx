@@ -18,21 +18,22 @@ import { supabase } from '../../lib/supabase';
 export interface MembershipIntakeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultTier?: 'Strategic Partner' | 'Corporate Member' | 'Associate / Academic';
+  defaultTier?: string;
 }
 
 export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
   isOpen,
   onClose,
-  defaultTier = 'Corporate Member',
+  defaultTier = 'Strategic Energy Partner (Full Platform + Helios Spotlight)',
 }) => {
   const [companyName, setCompanyName] = useState('');
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [contactName, setContactName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('+357 ');
-  const [specialization, setSpecialization] = useState('Solar PV & Generation');
+  const [specialization, setSpecialization] = useState('Solar PV & Utility Generation');
   const [membershipTier, setMembershipTier] = useState(defaultTier);
+  const [placementTimeline, setPlacementTimeline] = useState('Immediate (Current Month Onboarding)');
   const [operationsSummary, setOperationsSummary] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -89,6 +90,7 @@ export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
       phone: phone.trim(),
       specialization,
       membership_tier: membershipTier,
+      placement_timeline: placementTimeline,
       operations_summary: operationsSummary.trim(),
       created_at: new Date().toISOString(),
       status: 'pending_review'
@@ -157,11 +159,16 @@ export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
         <div className="px-6 py-5 border-b border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between">
           <div>
             <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8] block">
-              Cyprus Energy Cluster
+              Commercial Partner Network &amp; PR Desk
             </span>
             <h2 id="intake-title" className="text-xl font-medium text-[#1F1F1F] dark:text-[#E3E3E3] mt-0.5">
-              {submittedRef ? 'Application Submitted' : 'Membership Intake Application'}
+              {submittedRef ? 'Placement Inquiry Registered' : 'Corporate Partner Onboarding & Placement Inquiry'}
             </h2>
+            {!submittedRef && (
+              <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1">
+                Select a commercial package to feature your company profile, assets, and announcements on Energeia.cy.
+              </p>
+            )}
           </div>
           <button
             type="button"
@@ -184,10 +191,10 @@ export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
 
               <div>
                 <h3 className="text-xl font-medium text-[#1F1F1F] dark:text-white">
-                  Intake Dossier Received
+                  Placement Inquiry Registered
                 </h3>
                 <p className="text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-2 max-w-sm mx-auto leading-relaxed">
-                  Your organization's application to join the Cyprus National Energy Cluster has been registered for accreditation review.
+                  Your corporate onboarding request has been dispatched to the Energeia Commercial Desk. An institutional media kit, bespoke placement proposal, and formal rate card will be transmitted to your executive email within 24 hours.
                 </p>
               </div>
 
@@ -195,7 +202,7 @@ export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
               <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#DADCE0] dark:border-[#3C4043] flex items-center justify-between max-w-xs mx-auto">
                 <div className="text-left">
                   <span className="text-[10px] uppercase font-semibold text-[#5F6368] dark:text-[#9AA0A6] block">
-                    Dossier Reference
+                    Inquiry Reference
                   </span>
                   <span className="text-base font-mono font-medium text-[#1F1F1F] dark:text-white">
                     {submittedRef}
@@ -211,14 +218,14 @@ export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
                 </button>
               </div>
 
-              {/* Cluster SLA Notice */}
+              {/* Commercial SLA Notice */}
               <div className="p-4 rounded-2xl bg-[#E8F0FE]/60 dark:bg-[#0842A0]/20 border border-[#1A73E8]/20 text-xs text-[#1F1F1F] dark:text-[#E3E3E3] text-left space-y-1">
                 <div className="font-semibold text-[#1A73E8] dark:text-[#8AB4F8] flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4" />
-                  <span>Accreditation SLA</span>
+                  <span>Commercial Desk Rate Card SLA</span>
                 </div>
                 <p className="text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
-                  The Cluster Secretariat and Accreditation Committee will review company corporate filings and verify HE documentation within <strong>2–3 business days</strong>.
+                  The Energeia Commercial Accounts team provides a guaranteed response within <strong>24 business hours</strong> with technical onboarding specs, Helios pin coordinates, and contract terms.
                 </p>
               </div>
 
@@ -389,24 +396,42 @@ export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5">
-                    Membership Tier
+                    Commercial Placement Tier *
                   </label>
                   <select
                     value={membershipTier}
                     onChange={(e: any) => setMembershipTier(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#DADCE0] dark:border-[#444746] text-sm bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-white focus:outline-none focus:border-[#1A73E8]"
                   >
-                    <option value="Corporate Member">Corporate Member</option>
-                    <option value="Strategic Partner">Strategic Partner</option>
-                    <option value="Associate / Academic">Associate / Academic</option>
+                    <option value="Strategic Energy Partner (Full Platform + Helios Spotlight)">Strategic Energy Partner (Full Platform + Helios Spotlight)</option>
+                    <option value="Certified EPC & Technology Partner (Directory + RFQ Leads)">Certified EPC &amp; Technology Partner (Directory + RFQ Leads)</option>
+                    <option value="Corporate PR & Sponsored Briefing (Single / Multi-Release)">Corporate PR &amp; Sponsored Briefing (Single / Multi-Release)</option>
+                    <option value="Associate Member (Professional Services Listing)">Associate Member (Professional Services Listing)</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Placement Timeline / Budget Option */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5">
+                  Estimated Budget / Placement Timeline
+                </label>
+                <select
+                  value={placementTimeline}
+                  onChange={(e) => setPlacementTimeline(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#DADCE0] dark:border-[#444746] text-sm bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-white focus:outline-none focus:border-[#1A73E8]"
+                >
+                  <option value="Immediate (Current Month Onboarding)">Immediate (Current Month Onboarding)</option>
+                  <option value="Q1 / Q2 2027 Pipeline">Q1 / Q2 2027 Pipeline</option>
+                  <option value="Annual Enterprise Corporate Contract">Annual Enterprise Corporate Contract</option>
+                  <option value="Custom PR & Media Campaign">Custom PR &amp; Media Campaign</option>
+                </select>
               </div>
 
               {/* Summary of Cyprus Energy Operations */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5">
-                  Cyprus Operations &amp; Capacity (MWp/Projects)
+                  Corporate Assets &amp; Pipeline Scope (MWp/Projects)
                 </label>
                 <textarea
                   rows={3}
@@ -427,11 +452,11 @@ export const MembershipIntakeModal: React.FC<MembershipIntakeModalProps> = ({
                   {loading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white dark:border-[#062E6F] border-t-transparent rounded-full animate-spin" />
-                      <span>Transmitting Dossier...</span>
+                      <span>Transmitting Placement Inquiry...</span>
                     </>
                   ) : (
                     <>
-                      <span>Submit Accreditation Application</span>
+                      <span>Request Partner Proposal &amp; Rate Card</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}

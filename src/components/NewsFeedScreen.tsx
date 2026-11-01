@@ -267,6 +267,9 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
       category: getLocalizedCategory(item.category),
       sourceName: item.sourcePublisher || item.source || undefined,
       sourceUrl: item.sourceUrl || undefined,
+      isPartnerBriefing: item.isPartnerBriefing,
+      sponsorName: item.sponsorName,
+      sponsorLogoUrl: item.sponsorLogoUrl,
     };
   }, [newsItems, language]);
 
@@ -283,6 +286,9 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
       category: getLocalizedCategory(item.category),
       sourceName: item.sourcePublisher || item.source || undefined,
       sourceUrl: item.sourceUrl || undefined,
+      isPartnerBriefing: item.isPartnerBriefing,
+      sponsorName: item.sponsorName,
+      sponsorLogoUrl: item.sponsorLogoUrl,
     }));
   }, [newsItems, language]);
 
@@ -298,6 +304,9 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
       category: getLocalizedCategory(item.category),
       sourceName: item.sourcePublisher || item.source || undefined,
       sourceUrl: item.sourceUrl || undefined,
+      isPartnerBriefing: item.isPartnerBriefing,
+      sponsorName: item.sponsorName,
+      sponsorLogoUrl: item.sponsorLogoUrl,
     }));
   }, [newsItems, language]);
 
@@ -480,9 +489,16 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           {!loading && featuredArticle && !searchQuery && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pb-12 lg:pb-16 mb-12 lg:mb-16 border-b border-[#F1F3F4] dark:border-[#282A2C] items-center">
               <div className="lg:col-span-7 order-2 lg:order-1 flex flex-col justify-center">
-                <time className="text-[12px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-3 font-mono">
-                  {formatDate(featuredArticle.date)}
-                </time>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <time className="text-[12px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase font-mono">
+                    {formatDate(featuredArticle.date)}
+                  </time>
+                  {featuredArticle.isPartnerBriefing && (
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#D46200] text-white shadow-2xs">
+                      Partner Briefing {featuredArticle.sponsorName ? `· ${featuredArticle.sponsorName}` : ''}
+                    </span>
+                  )}
+                </div>
                 <h2 className="text-[28px] lg:text-[38px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight leading-[1.18] mb-4">
                   <a 
                     href={`/news/${featuredArticle.slug}`} 
@@ -556,9 +572,16 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
                     </a>
                   )}
 
-                  <time className="text-[11px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-2 font-mono">
-                    {formatDate(article.date)}
-                  </time>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <time className="text-[11px] font-medium tracking-[0.08em] text-[#5F6368] dark:text-[#9AA0A6] uppercase font-mono">
+                      {formatDate(article.date)}
+                    </time>
+                    {article.isPartnerBriefing && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#D46200] text-white shadow-2xs">
+                        Partner Briefing
+                      </span>
+                    )}
+                  </div>
 
                   <h3 className="text-[20px] font-medium text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight leading-snug mb-2 group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
                     <a 

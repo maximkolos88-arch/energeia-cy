@@ -33,6 +33,9 @@ export interface NewsItem {
   status: NewsStatus;
   isDraft?: boolean;
   isEditorial?: boolean;
+  isPartnerBriefing?: boolean;
+  sponsorName?: string;
+  sponsorLogoUrl?: string;
   readTimeMinutes?: number;
   readCount?: number;
   viewsCount?: number;

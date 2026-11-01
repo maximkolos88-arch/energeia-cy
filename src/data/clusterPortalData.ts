@@ -59,136 +59,180 @@ export const NATIONAL_METRICS: NationalMetric[] = [
 ];
 
 // ============================================================================
-// SECTION 3: THE 4 STRATEGIC WORKING PILLARS (TECHISLAND MODEL)
+// SECTION 3: COMMERCIAL PARTNER TIERS (THE MONETIZATION MATRIX)
 // ============================================================================
 
-export interface StrategicPillar {
-  number: string;
+export interface CommercialTier {
+  id: string;
+  name: string;
+  subtitle: string;
+  targetAudience: string;
+  priceLabel: string;
+  billingFrequency: string;
+  deliverables: string[];
+  badge: string;
+  badgeColor: string;
+  isPopular?: boolean;
+}
+
+export const COMMERCIAL_TIERS: CommercialTier[] = [
+  {
+    id: 'tier-1-strategic',
+    name: 'Strategic Energy Partner',
+    subtitle: 'Flagship platform placement for utility power producers, systemic infrastructure banks, and large-scale BESS developers.',
+    targetAudience: 'National utilities, licensed IPPs (50MW+), institutional capital, and centralized storage operators',
+    priceLabel: 'Custom Corporate Proposal',
+    billingFrequency: 'Annual Enterprise Placement',
+    badge: 'Flagship Tier',
+    badgeColor: 'text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200 dark:border-amber-800/40',
+    isPopular: true,
+    deliverables: [
+      'Dedicated high-priority corporate dossier with live generation telemetry & verified pipeline metrics',
+      'Branded operational asset pins & high-voltage grid interconnection display on Helios 3D GIS terminal',
+      'Unlimited corporate PR briefings & guaranteed editorial distribution across Research feed & Google News',
+      'Featured executive commentary & high-level energy policy roundtable representation',
+      'Direct priority lead routing for institutional investor, sovereign fund & commercial PPA inquiries',
+    ],
+  },
+  {
+    id: 'tier-2-epc-tech',
+    name: 'Certified EPC & Technology Partner',
+    subtitle: 'Procurement-focused placement for high-voltage contractors, equipment vendors, and balance-of-plant specialists.',
+    targetAudience: 'Class A electrical contractors, substation builders, BESS container vendors, and inverter distributors',
+    priceLabel: 'Annual Corporate Subscription',
+    billingFrequency: 'Billed Annually',
+    badge: 'High-Growth Tier',
+    badgeColor: 'text-blue-700 bg-blue-50 dark:bg-blue-950/40 dark:text-blue-300 border-blue-200 dark:border-blue-800/40',
+    deliverables: [
+      'Verified Directory placement with official "Certified EPC Supplier" institutional badge',
+      'Direct B2B RFQ & commercial tender lead routing from prosumers, hotels, and utility developers',
+      'Quarterly turnkey project spotlights & commissioned plant case studies published on the portal',
+      'Inbound procurement inquiry notifications with verified buyer credentials and contact details',
+      'Priority inclusion in the Cyprus national equipment distribution & subcontracting registry',
+    ],
+  },
+  {
+    id: 'tier-3-associate',
+    name: 'Associate & Professional Services',
+    subtitle: 'Institutional visibility for top-tier energy law practices, ESG sustainability auditors, and financial advisory desks.',
+    targetAudience: 'Corporate energy legal counsel, transaction advisors, technical auditors, and ESG assurance specialists',
+    priceLabel: 'Annual Professional Listing',
+    billingFrequency: 'Billed Annually',
+    badge: 'Professional Tier',
+    badgeColor: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40',
+    deliverables: [
+      'Standard verified corporate registry listing & lead partner profile with direct booking links',
+      'CERA regulatory commentary & legal policy analysis publication rights in the Energeia Research feed',
+      'Inbound advisory, project finance & deal structuring lead forwarding',
+      'Official institutional accreditation badge for corporate communications and website trust seal',
+      'Invitations to closed-door commercial roundtables with European Commission & MED-TSO delegates',
+    ],
+  },
+];
+
+// ============================================================================
+// SECTION 4: COMMERCIAL SERVICES (WHAT PARTNERS PAY FOR)
+// ============================================================================
+
+export interface CommercialService {
   id: string;
   title: string;
   headline: string;
   description: string;
-  keyInitiatives: string[];
-  iconKey: 'battery' | 'scale' | 'network' | 'shield';
+  features: string[];
+  iconKey: 'dossier' | 'spatial' | 'pr' | 'rfq';
   accentColor: string;
+  badge: string;
 }
 
-export const STRATEGIC_PILLARS: StrategicPillar[] = [
+export const COMMERCIAL_SERVICES: CommercialService[] = [
   {
-    number: '01',
-    id: 'grid-autonomy-bess',
-    title: 'Grid Autonomy & BESS Deployment',
-    headline: 'Resolving transmission bottlenecks and curtailment',
-    description: 'Resolving transmission bottlenecks, expediting central and distributed battery storage, and ending midday solar curtailment across the 132 kV network.',
-    keyInitiatives: [
-      '150MW+ Centralized Storage Tenders',
-      'Behind-the-Meter Commercial BESS Rules',
-      'Fast Frequency Response (FFR) Standards',
+    id: 'service-dossier',
+    title: 'Institutional Directory Dossier',
+    headline: 'Authoritative B2B Profile & Lead Funnel',
+    description: 'Comprehensive digital corporate passport detailing licensed operating capacity (MWp), CERA permits, key executive contacts, and direct inbound commercial RFQ inquiry forms.',
+    features: [
+      'Verified Corporate Standing & HE Registration Audit',
+      'Operating & Pipeline MWp Asset Portfolio Metrics',
+      'Direct Executive Routing & Inbound Lead Capture',
+      'SEO-Indexed Corporate Landing Page with Domain Authority'
     ],
-    iconKey: 'battery',
-    accentColor: 'amber',
-  },
-  {
-    number: '02',
-    id: 'wholesale-market',
-    title: 'Wholesale Market & Regulatory Modernization',
-    headline: 'Constructive advocacy with CERA (PAEK) and TSOC',
-    description: 'Constructive advocacy with CERA (PAEK) and TSOC for competitive market opening and transparent ancillary service mechanisms under the European Target Model.',
-    keyInitiatives: [
-      'Target Model Go-Live Readiness',
-      'Day-Ahead & Balancing Settlement',
-      'Ancillary Services Tariff Design',
-    ],
-    iconKey: 'scale',
+    iconKey: 'dossier',
     accentColor: 'blue',
+    badge: 'B2B Ecosystem Placement',
   },
   {
-    number: '03',
-    id: 'utility-generation',
-    title: 'Utility Generation & Regional Interconnection',
-    headline: 'Multi-megawatt renewables & Mediterranean interconnection',
-    description: 'Supporting multi-megawatt PV installations, agro-voltaics, and the geopolitical realization of the EuroAsia subsea link to terminate Cyprus’s energy isolation.',
-    keyInitiatives: [
-      'Great Sea Interconnector (GSI) 500kV HVDC',
-      'Agro-Voltaic Spatial Licensing Standards',
-      'Private Bilateral Corporate PPAs',
+    id: 'service-spatial',
+    title: 'Helios 3D Spatial Spotlight',
+    headline: 'Branded Infrastructure on the National Grid',
+    description: 'Interactive geospatial mapping of your operational solar parks, 132/66 kV substations, and battery storage containers on the national energy terminal viewed by global energy funds.',
+    features: [
+      'Branded 3D Substation & Solar Farm Map Pins',
+      'TSOC Transmission Grid Node Interconnection Overlay',
+      'Asset Inspector Drawer with Verified Company Branding',
+      'Real-Time Generation & GIS Capacity Telemetry'
     ],
-    iconKey: 'network',
+    iconKey: 'spatial',
+    accentColor: 'amber',
+    badge: 'Helios 3D GIS Sponsorship',
+  },
+  {
+    id: 'service-pr',
+    title: 'Corporate PR & Native Media Desk',
+    headline: 'Guaranteed Distribution Across Industry Channels',
+    description: 'Targeted native publication for asset commissioning milestones, corporate acquisitions, technology whitepapers, and regulatory opinions across Energeia Research and Google News index.',
+    features: [
+      'Featured Editorial Feed Distribution Across Cyprus',
+      'Google News & Industry RSS Syndication',
+      'Distinctive "Partner Briefing" Sponsor Attribution',
+      'Bi-Weekly Executive Newsletter Distribution to CERA/TSOC'
+    ],
+    iconKey: 'pr',
     accentColor: 'purple',
+    badge: 'Intelligence & Native PR Desk',
   },
   {
-    number: '04',
-    id: 'workforce-standards',
-    title: 'Workforce Safety & Engineering Standards',
-    headline: 'High-voltage certification & academic pipelines',
-    description: 'Certifying high-voltage technicians, PV installers, and fostering energy engineering curricula across Cyprus universities to build local technical capacity.',
-    keyInitiatives: [
-      'High-Voltage Switching Certification',
-      'National PV Installer Code of Practice',
-      'University Engineering Fellowships',
+    id: 'service-rfq',
+    title: 'Direct Tender & RFQ Access',
+    headline: 'Inbound Commercial Procurement Leads',
+    description: 'Commercial off-takers, hotel prosumers, and industrial manufacturers submit B2B requests for quotation (RFQs) routed directly to your commercial desk without platform commission.',
+    features: [
+      'Direct Buyer Lead Routing to Corporate Inboxes',
+      'B2B Corporate PPA Offtake Matching Inquiries',
+      'Substation & Turnkey Solar EPC Procurement Tenders',
+      'Pre-Screened Counterparty Verification & KYC'
     ],
-    iconKey: 'shield',
+    iconKey: 'rfq',
     accentColor: 'emerald',
+    badge: 'Direct Tender & RFQ Access',
   },
 ];
 
 // ============================================================================
-// SECTION 4: MEMBERS & STRATEGIC PARTNERS (4 CATEGORIZED TIERS)
+// SECTION 5: VERIFIED CORPORATE PARTNERS (THE COMMERCIAL DIRECTORY)
 // ============================================================================
 
-export type MemberTierKey = 
+export type CommercialTierKey = 
   | 'Strategic Partners' 
-  | 'Corporate Operators' 
-  | 'EPC & Infrastructure Contractors' 
-  | 'Advisory & ESG Members';
-
-export interface TierDefinition {
-  key: MemberTierKey;
-  label: string;
-  badgeCount: number;
-  description: string;
-}
-
-export const MEMBER_TIERS: TierDefinition[] = [
-  {
-    key: 'Strategic Partners',
-    label: 'Strategic Partners',
-    badgeCount: 4,
-    description: 'Sovereign grid operators, statutory market authorities, and cross-border interconnector sponsors.',
-  },
-  {
-    key: 'Corporate Operators',
-    label: 'Corporate Operators',
-    badgeCount: 6,
-    description: 'Licensed independent power producers (IPPs), multi-megawatt solar portfolios, and baseload bioenergy operators.',
-  },
-  {
-    key: 'EPC & Infrastructure Contractors',
-    label: 'EPC & Infrastructure',
-    badgeCount: 5,
-    description: 'Class A electrical contractors, substation builders, BESS integrators, and Tier-1 hardware distributors.',
-  },
-  {
-    key: 'Advisory & ESG Members',
-    label: 'Advisory & ESG',
-    badgeCount: 4,
-    description: 'Top-tier energy legal practices, financial structuring advisors, technical auditors, and ESG assurance specialists.',
-  },
-];
+  | 'Certified EPC & Tech' 
+  | 'Advisory & Services';
 
 export interface PortalMemberEntry extends DirectoryMember {
-  tierCategory: MemberTierKey;
+  tierCategory: CommercialTierKey;
+  commercialBadge: string;
   operationalCapacityText: string;
   logoSvgUrl?: string;
+  isSponsored?: boolean;
 }
 
-export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
-  // Tier 1: Strategic Partners
+export const FEATURED_PARTNERS: PortalMemberEntry[] = [
+  // Strategic Energy Partners
   {
-    id: 'member-eac',
+    id: 'partner-eac',
     name: 'Electricity Authority of Cyprus (EAC / AHK)',
     type: 'Company',
     tierCategory: 'Strategic Partners',
+    commercialBadge: 'National Utility Partner',
     roleOrCategory: 'State Electricity Utility & Distribution System Operator',
     email: 'eacinfo@eac.com.cy',
     phone: '+357 22 201000',
@@ -204,77 +248,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Cyprus state utility responsible for power generation, transmission, and distribution grid operation under DTR regulation.',
     operationalCapacityText: '1,480 MW Generation · 850+ MWp RES Interface',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-tsoc',
-    name: 'Transmission System Operator Cyprus (TSOC / DSM)',
-    type: 'Company',
-    tierCategory: 'Strategic Partners',
-    roleOrCategory: 'National Transmission & Market System Operator',
-    email: 'info@dsm.org.cy',
-    phone: '+357 22 877777',
-    location: 'Nicosia, Cyprus',
-    category: 'Government & Associations',
-    expertiseTags: ['Smart Grids', 'Grid Balancing', 'ENTSO-E Synchronous', 'Dispatch'],
-    logoUrl: '/logos/tsoc.svg',
-    logoSvgUrl: '/logos/tsoc.svg',
-    website: 'https://www.dsm.org.cy',
-    linkedin: 'https://www.linkedin.com/company/cyprus-transmission-system-operator',
-    keyContactName: 'Stavros Stavrinos',
-    keyContactRole: 'Executive Director of System Operations',
-    description: 'Independent statutory operator managing the Cyprus 132/66 kV high-voltage transmission grid, frequency stability, and electricity wholesale market dispatch.',
-    operationalCapacityText: '1,320 MW Peak Transmission Capacity (132/66 kV)',
-    isVerified: true,
-  },
-  {
-    id: 'member-cera',
-    name: 'Cyprus Energy Regulatory Authority (CERA / RAEK)',
-    type: 'Company',
-    tierCategory: 'Strategic Partners',
-    roleOrCategory: 'National Energy Market Regulatory Body (Observer)',
-    email: 'info@cera.org.cy',
-    phone: '+357 22 666363',
-    location: 'Nicosia, Cyprus',
-    category: 'Government & Associations',
-    expertiseTags: ['Policy & Regulatory', 'Market Rules', 'Tariff Methodology', 'Licensing'],
-    logoUrl: '/logos/cera.svg',
-    logoSvgUrl: '/logos/cera.svg',
-    website: 'https://www.cera.org.cy',
-    linkedin: 'https://www.linkedin.com/company/cera-cyprus',
-    keyContactName: 'Dr. Andreas Poullikkas',
-    keyContactRole: 'Chairman of CERA / Energy Systems Strategist',
-    description: 'Autonomous regulatory authority established under Law 122(I)/2003 overseeing electricity, natural gas, consumer protection, and market compliance in Cyprus.',
-    operationalCapacityText: '100% Republic of Cyprus Energy Market Supervision',
-    isVerified: true,
-  },
-  {
-    id: 'member-gsi',
-    name: 'Great Sea Interconnector (EuroAsia HVDC)',
-    type: 'Company',
-    tierCategory: 'Strategic Partners',
-    roleOrCategory: 'Cross-Border Transmission Infrastructure Operator',
-    email: 'info@greatseainterconnector.com',
-    phone: '+357 22 792200',
-    location: 'Nicosia / Athens',
-    category: 'Government & Associations',
-    expertiseTags: ['HVDC Subsea', 'Regional Interconnection', 'Cross-Border Trading', 'ENTSO-E'],
-    logoUrl: '/logos/gsi.svg',
-    logoSvgUrl: '/logos/gsi.svg',
-    website: 'https://greatseainterconnector.com',
-    linkedin: 'https://www.linkedin.com/company/great-sea-interconnector',
-    keyContactName: 'Project Management Directorate',
-    keyContactRole: 'HVDC Technical Director',
-    description: 'Promoter of the 1,208 km subsea 500 kV HVDC cable connecting the electrical grids of Israel, Cyprus, and Crete (Greece), ending Cyprus’s isolated energy status.',
-    operationalCapacityText: '1,000 MW / 500 kV Subsea HVDC Corridor',
-    isVerified: true,
-  },
-
-  // Tier 2: Corporate Operators
-  {
-    id: 'member-bioland',
+    id: 'partner-bioland',
     name: 'Bioland Energy Group',
     type: 'Company',
-    tierCategory: 'Corporate Operators',
+    tierCategory: 'Strategic Partners',
+    commercialBadge: 'Strategic Energy Partner',
     roleOrCategory: 'Utility-Scale Solar PV & BESS Developer',
     email: 'info@biolandenergy.com',
     phone: '+357 24 533833',
@@ -290,12 +271,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Leading independent power producer developing multi-megawatt ground-mounted photovoltaic parks, utility battery storage, and waste recycling facilities across Cyprus.',
     operationalCapacityText: '95+ MWp Operational Solar PV Assets',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-muskita',
+    id: 'partner-muskita',
     name: 'Muskita Solar Systems',
     type: 'Company',
-    tierCategory: 'Corporate Operators',
+    tierCategory: 'Strategic Partners',
+    commercialBadge: 'Strategic Energy Partner',
     roleOrCategory: 'Renewable Power Producer & Industrial PV Operator',
     email: 'solar@muskita.com.cy',
     phone: '+357 25 844444',
@@ -311,12 +294,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Pioneering Cyprus industrial renewable producer with extensive utility solar assets and domestic manufacturing of certified aluminum solar mounting systems.',
     operationalCapacityText: '40+ MWp Commercial & Utility PV Portfolio',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-geg',
+    id: 'partner-geg',
     name: 'Green Energy Group (GEG)',
     type: 'Company',
-    tierCategory: 'Corporate Operators',
+    tierCategory: 'Strategic Partners',
+    commercialBadge: 'Strategic Energy Partner',
     roleOrCategory: 'Utility PV Developer & Substation Specialist',
     email: 'info@geg.com.cy',
     phone: '+357 22 443444',
@@ -332,33 +317,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Vertically integrated renewable energy powerhouse operating large-scale solar farms, private electricity supply licensing, and high-voltage grid connections.',
     operationalCapacityText: '70+ MWp Utility PV & Substation Portfolio',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-akerasi',
-    name: 'Akerasi Bioenergy Plant',
-    type: 'Company',
-    tierCategory: 'Corporate Operators',
-    roleOrCategory: 'Baseload Renewable Power & Biogas Producer',
-    email: 'info@akerasi.com.cy',
-    phone: '+357 24 639300',
-    location: 'Larnaca, Cyprus',
-    category: 'Renewables',
-    expertiseTags: ['Biomass', 'Baseload Generation', 'Waste-to-Energy', 'Anaerobic Digestion'],
-    logoUrl: '/logos/akerasi.svg',
-    logoSvgUrl: '/logos/akerasi.svg',
-    website: 'https://akerasi.com.cy',
-    linkedin: 'https://www.linkedin.com/company/akerasi-energy',
-    keyContactName: 'Andreas Kourris',
-    keyContactRole: 'Plant Operations Director',
-    description: 'Flagship anaerobic digestion facility generating round-the-clock dispatchable green electricity and heat from agricultural and organic residues in Larnaca district.',
-    operationalCapacityText: '15+ MW Biomass Baseload & Biogas Cogeneration',
-    isVerified: true,
-  },
-  {
-    id: 'member-lanitis',
+    id: 'partner-lanitis',
     name: 'Lanitis Energy',
     type: 'Company',
-    tierCategory: 'Corporate Operators',
+    tierCategory: 'Strategic Partners',
+    commercialBadge: 'Strategic Energy Partner',
     roleOrCategory: 'Commercial Power Producer & Energy Trading',
     email: 'energy@lanitis.com',
     phone: '+357 25 820920',
@@ -374,35 +340,16 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Part of the historic Lanitis Group, developing, financing, and operating utility solar parks, corporate bilateral PPAs, and upcoming battery storage assets.',
     operationalCapacityText: '65+ MWp Solar PV Portfolio & Corporate PPAs',
     isVerified: true,
-  },
-  {
-    id: 'member-helleniq',
-    name: 'HELLENiQ Renewables Cyprus',
-    type: 'Company',
-    tierCategory: 'Corporate Operators',
-    roleOrCategory: 'Multi-Megawatt Renewable Energy Operator',
-    email: 'renewables@helleniq.gr',
-    phone: '+357 22 477000',
-    location: 'Nicosia, Cyprus',
-    category: 'Renewables',
-    expertiseTags: ['Solar PV', 'Wind Power', 'BESS', 'Energy Trading'],
-    logoUrl: '/logos/helleniq.svg',
-    logoSvgUrl: '/logos/helleniq.svg',
-    website: 'https://helleniqenergy.gr',
-    linkedin: 'https://www.linkedin.com/company/helleniq-energy',
-    keyContactName: 'Stelios Louca',
-    keyContactRole: 'Cyprus Country Manager',
-    description: 'Clean energy subsidiary of HELLENiQ ENERGY, deploying institutional capital into utility solar parks and battery energy storage across Cyprus and Greece.',
-    operationalCapacityText: '50+ MWp Utility Solar Portfolio',
-    isVerified: true,
+    isSponsored: true,
   },
 
-  // Tier 3: EPC & Infrastructure Contractors
+  // Certified EPC & Technology Partners
   {
-    id: 'member-caramondani',
+    id: 'partner-caramondani',
     name: 'Caramondani Energy Solutions (Caramondani Bros PLC)',
     type: 'Company',
-    tierCategory: 'EPC & Infrastructure Contractors',
+    tierCategory: 'Certified EPC & Tech',
+    commercialBadge: 'Certified Class A EPC',
     roleOrCategory: 'Certified Class A High-Voltage EPC Contractor',
     email: 'info@caramondani.com.cy',
     phone: '+357 22 716100',
@@ -418,12 +365,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Over 60 years of engineering excellence delivering turnkey high-voltage substations, transmission lines, utility solar plants, and specialized desalination infrastructure.',
     operationalCapacityText: '45+ MWp Turnkey Solar Farms & Substations',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-conercon',
+    id: 'partner-conercon',
     name: 'Conercon Energy Solutions (Petrolina Group)',
     type: 'Company',
-    tierCategory: 'EPC & Infrastructure Contractors',
+    tierCategory: 'Certified EPC & Tech',
+    commercialBadge: 'Certified BESS Integrator',
     roleOrCategory: 'Turnkey EPC & BESS Storage System Integrator',
     email: 'info@conercon.com',
     phone: '+357 24 645300',
@@ -439,12 +388,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Renewable energy arm of Petrolina Group providing engineering, procurement, and construction of commercial solar systems, utility ground mounts, and storage integration.',
     operationalCapacityText: '55+ MWp Utility, Industrial & Rooftop Solar',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-bigsolar',
+    id: 'partner-bigsolar',
     name: 'Big Solar Cyprus Ltd',
     type: 'Company',
-    tierCategory: 'EPC & Infrastructure Contractors',
+    tierCategory: 'Certified EPC & Tech',
+    commercialBadge: 'Tier-1 Hardware Distributor',
     roleOrCategory: 'Tier-1 Equipment Distributor & System Integrator',
     email: 'cyprus@bigsolar.com.cy',
     phone: '+357 22 466800',
@@ -460,12 +411,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Authorized national distributor of Tier-1 solar panels, string and central inverters, and utility battery containers, serving certified installers island-wide.',
     operationalCapacityText: '80+ MWp Photovoltaic Hardware Deliveries',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-firstelectric',
+    id: 'partner-firstelectric',
     name: 'First Electric Solar Ltd',
     type: 'Company',
-    tierCategory: 'EPC & Infrastructure Contractors',
+    tierCategory: 'Certified EPC & Tech',
+    commercialBadge: 'High-Voltage Grid Specialist',
     roleOrCategory: 'High-Voltage Grid Substation & Cable Specialist',
     email: 'info@firstelectricsync.com',
     phone: '+357 25 723450',
@@ -481,42 +434,22 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Specialist electrical contractor constructing MV/HV transmission connections, transformer stations, and automated grid protection relays for solar parks.',
     operationalCapacityText: '30+ MWp High-Voltage Grid Substations',
     isVerified: true,
-  },
-  {
-    id: 'member-suntechnics',
-    name: 'Suntechnics Ltd (Green Energy Group)',
-    type: 'Company',
-    tierCategory: 'EPC & Infrastructure Contractors',
-    roleOrCategory: 'Commercial & Industrial Solar Engineering',
-    email: 'info@suntechnics.com.cy',
-    phone: '+357 22 443444',
-    location: 'Nicosia, Cyprus',
-    category: 'Engineering & EPC',
-    expertiseTags: ['C&I Solar', 'EPC', 'BESS Integration', 'O&M Monitoring'],
-    logoUrl: '/logos/suntechnics.svg',
-    logoSvgUrl: '/logos/suntechnics.svg',
-    website: 'https://suntechnics.com.cy',
-    linkedin: 'https://www.linkedin.com/company/suntechnics-ltd',
-    keyContactName: 'Panayiotis Koutsoudis',
-    keyContactRole: 'Operations Manager',
-    description: 'Dedicated EPC engineering contractor focused on large commercial rooftops, net-billing prosumer installations, and agricultural solar microgrids.',
-    operationalCapacityText: '25+ MWp Commercial & Industrial Solar',
-    isVerified: true,
+    isSponsored: true,
   },
 
-  // Tier 4: Advisory & ESG Members
+  // Advisory & Professional Services
   {
-    id: 'member-chryses-demetriades',
+    id: 'partner-chryses-demetriades',
     name: 'Chryses Demetriades & Co. LLC',
     type: 'Company',
-    tierCategory: 'Advisory & ESG Members',
+    tierCategory: 'Advisory & Services',
+    commercialBadge: 'Energy Legal Counsel',
     roleOrCategory: 'Energy Law, CERA Regulatory Licensing & Project Finance',
     email: 'info@demetriades.com',
     phone: '+357 25 800000',
     location: 'Limassol / Nicosia',
     category: 'Professional Services',
     expertiseTags: ['Energy Law', 'CERA Licensing', 'PPA Contracts', 'Project Finance'],
-    logoUrl: '/logos/lanitis.svg', // Fallback or clean monogram
     website: 'https://demetriades.com',
     linkedin: 'https://www.linkedin.com/company/chryses-demetriades-&-co--llc',
     keyContactName: 'Alexandros Tsirides',
@@ -524,12 +457,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Premier Cyprus law firm advising on CERA licensing, wholesale market rules, cross-border HVDC interconnector treaties, and multi-million euro project finance.',
     operationalCapacityText: 'Tier-1 Energy Law & CERA Regulatory Licensing',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-deloitte',
-    name: 'Deloitte Cyprus (Energy & ESG Advisory)',
+    id: 'partner-deloitte',
+    name: 'Deloitte Cyprus (Energy & ESG Practice)',
     type: 'Company',
-    tierCategory: 'Advisory & ESG Members',
+    tierCategory: 'Advisory & Services',
+    commercialBadge: 'Transaction & ESG Advisory',
     roleOrCategory: 'Transaction Advisory, Project Finance & ESG Assurance',
     email: 'cyenergy@deloitte.com',
     phone: '+357 22 360300',
@@ -543,12 +478,14 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Providing comprehensive M&A transaction support, capital raising, feasibility analysis, and CSRD/ESG sustainability reporting for renewable energy operators.',
     operationalCapacityText: 'Energy M&A, Financial Advisory & ESG Assurance',
     isVerified: true,
+    isSponsored: true,
   },
   {
-    id: 'member-pwc',
+    id: 'partner-pwc',
     name: 'PwC Cyprus (Energy & Infrastructure Deals)',
     type: 'Company',
-    tierCategory: 'Advisory & ESG Members',
+    tierCategory: 'Advisory & Services',
+    commercialBadge: 'Market Modeling & Deals',
     roleOrCategory: 'Market Modeling, Target Model Readiness & PPAs',
     email: 'pwc.cyprus@cy.pwc.com',
     phone: '+357 22 555000',
@@ -562,238 +499,119 @@ export const CLUSTER_PORTAL_MEMBERS: PortalMemberEntry[] = [
     description: 'Assisting energy developers with wholesale market dispatch modeling, bankable corporate PPA valuation, and regulatory transformation advisory.',
     operationalCapacityText: 'Target Market Readiness & Corporate PPA Advisory',
     isVerified: true,
-  },
-  {
-    id: 'member-kpmg',
-    name: 'KPMG Cyprus (Sustainability & Decarbonization)',
-    type: 'Company',
-    tierCategory: 'Advisory & ESG Members',
-    roleOrCategory: 'Decarbonization Pathways, Carbon Auditing & Taxonomy',
-    email: 'kpmg@kpmg.com.cy',
-    phone: '+357 22 209000',
-    location: 'Nicosia, Cyprus',
-    category: 'Professional Services',
-    expertiseTags: ['ESG Auditing', 'Carbon Accounting', 'Renewable Certifications', 'Taxonomy'],
-    website: 'https://kpmg.com/cy',
-    linkedin: 'https://www.linkedin.com/company/kpmg-cyprus',
-    keyContactName: 'Christophoros Anayiotos',
-    keyContactRole: 'Board Member & Head of Energy Practice',
-    description: 'Guiding corporate entities through net-zero transition roadmaps, Green Asset Ratios, EU ETS compliance, and carbon footprint audits across the Eastern Mediterranean.',
-    operationalCapacityText: 'Decarbonization Pathways & EU Taxonomy Assurance',
-    isVerified: true,
+    isSponsored: true,
   },
 ];
 
 // ============================================================================
-// SECTION 5: ECOSYSTEM SURFACES & OFFICIAL STATUTORY RESOURCES
+// SECTION 6: CORPORATE PR DESK (SPONSORED BRIEFINGS & PROJECT SPOTLIGHTS)
 // ============================================================================
 
-export interface EcosystemSurfaceItem {
-  id: string;
-  name: string;
-  subdomain: string;
-  path: string;
-  surfaceKey: 'research' | 'helios' | 'members' | 'academy';
-  headline: string;
-  description: string;
-  badge: string;
-  accentColor: string;
-}
-
-export const CLUSTER_SURFACES: EcosystemSurfaceItem[] = [
+export const COMMERCIAL_PARTNER_BRIEFS: NewsItem[] = [
   {
-    id: 'surface-research',
-    name: 'Energeia Research',
-    subdomain: 'research.energeia.cy',
-    path: '/research',
-    surfaceKey: 'research',
-    headline: 'Editorial intelligence & policy filings',
-    description: 'Institutional publications, CERA regulatory decisions, TSOC curtailment analytics, and wholesale market models.',
-    badge: 'Intelligence Stream',
-    accentColor: '#1A73E8',
-  },
-  {
-    id: 'surface-helios',
-    name: 'Helios 3D Terminal',
-    subdomain: 'helios.energeia.cy',
-    path: '/helios',
-    surfaceKey: 'helios',
-    headline: 'Mission-critical energy geospatial GIS',
-    description: 'Interactive map of the 132/66 kV transmission grid, 520+ power stations, subsea HVDC corridor, and live grid frequency.',
-    badge: 'Geospatial HUD',
-    accentColor: '#D46200',
-  },
-  {
-    id: 'surface-members',
-    name: 'Ecosystem Directory',
-    subdomain: 'members.energeia.cy',
-    path: '/members',
-    surfaceKey: 'members',
-    headline: 'Accredited B2B partner registry',
-    description: 'Verified directory of licensed IPPs, EPC contractors, battery storage developers, and energy legal advisors.',
-    badge: 'B2B Registry',
-    accentColor: '#137333',
-  },
-  {
-    id: 'surface-academy',
-    name: 'Energeia Academy',
-    subdomain: 'academy.energeia.cy',
-    path: '/academy',
-    surfaceKey: 'academy',
-    headline: 'Workforce certifications & masterclasses',
-    description: 'High-voltage safety standards, solar engineering certifications, and executive masterclasses with universities.',
-    badge: 'Education & Standards',
-    accentColor: '#7B1FA2',
-  },
-];
+    id: 'commercial-brief-bioland-aradippou',
+    title: 'Bioland Energy Group Commissions 18 MWp Agrivoltaic Cluster in Larnaca District with Integrated Storage Ready Interconnect',
+    slug: 'bioland-energy-commissions-18mwp-agrivoltaic-cluster-larnaca',
+    summary: 'Bioland Energy announces the commercial energization of its flagship 18 MWp agrivoltaic installation in Aradippou, featuring Tier-1 bifacial modules, smart tracker algorithms, and MV connection to the TSOC 132/22 kV substation.',
+    content: `### Commercial Project Milestone
 
-export interface StatutoryResource {
-  id: string;
-  name: string;
-  greekName: string;
-  category: string;
-  description: string;
-  website: string;
-  roleBadge: string;
-}
+**Larnaca, Cyprus** — Bioland Energy Group has formally announced the commercial energization of its landmark 18 MWp agrivoltaic solar installation located in the Aradippou agricultural zone of Larnaca district.
 
-export const STATUTORY_CYPRUS_RESOURCES: StatutoryResource[] = [
-  {
-    id: 'cera-paek',
-    name: 'CERA (PAEK)',
-    greekName: 'Ρυθμιστική Αρχή Ενέργειας Κύπρου (ΡΑΕΚ)',
-    category: 'Statutory Regulator',
-    description: 'Independent state regulator governing electricity licensing, wholesale market competition, and consumer tariffs.',
-    website: 'https://www.cera.org.cy',
-    roleBadge: 'Market Authority',
-  },
-  {
-    id: 'tsoc-dsm',
-    name: 'TSOC (ΔΣΜΚ)',
-    greekName: 'Διαχειριστής Συστήματος Μεταφοράς Κύπρου (ΔΣΜΚ)',
-    category: 'System Operator',
-    description: 'Independent transmission operator managing the 132/66 kV electrical network, grid dispatch, and real-time balancing.',
-    website: 'https://www.dsm.org.cy',
-    roleBadge: 'Transmission & Dispatch',
-  },
-  {
-    id: 'eac-ahk',
-    name: 'Electricity Authority of Cyprus (EAC)',
-    greekName: 'Αρχή Ηλεκτρισμού Κύπρου (ΑΗΚ)',
-    category: 'National Utility & DSO',
-    description: 'Semi-governmental power producer and licensed Distribution System Operator (DSO) serving over 600,000 customers.',
-    website: 'https://www.eac.com.cy',
-    roleBadge: 'DSO & Generation',
-  },
-  {
-    id: 'meci-yeeb',
-    name: 'Ministry of Energy, Commerce & Industry (YEEB)',
-    greekName: 'Υπουργείο Ενέργειας, Εμπορίου και Βιομηχανίας (ΥΕΕΒ)',
-    category: 'Government Ministry',
-    description: 'Executive energy service custodian of the National Energy & Climate Plan (NECP 2030), renewable subsidies, and offshore gas policy.',
-    website: 'https://meci.gov.cy',
-    roleBadge: 'National Energy Policy',
-  },
-];
+The facility represents one of the largest private capital investments in dispatch-optimized renewable generation in Cyprus, incorporating advanced dual-use agricultural zoning methodologies that allow continued sheep grazing and forage production beneath elevated tracker arrays.
 
-// ============================================================================
-// SECTION 6: CLUSTER NEWS & POLICY BRIEFINGS (ASSOCIATION EDITORIAL STREAM)
-// ============================================================================
+### Technical & Engineering Architecture
 
-export const CLUSTER_EDITORIAL_BRIEFS: NewsItem[] = [
-  {
-    id: 'cluster-brief-bess-framework',
-    title: 'Energeia Position Paper: Accelerated Framework for Behind-the-Meter Commercial BESS Integration in Cyprus',
-    slug: 'position-paper-commercial-bess-framework-cyprus',
-    summary: 'Technical and economic proposals submitted to CERA advocating for fast-track behind-the-meter battery installations for commercial and industrial producers to mitigate midday solar curtailment.',
-    content: `### Executive Summary
+1. **High-Efficiency Bifacial Generation**: Equipped with Tier-1 n-type TOPCon bifacial modules achieving over 22.4% module efficiency and up to 18% additional albedo boost from calcified ground cover.
+2. **Substation & MV Connection**: Direct 22 kV underground feeder connecting to the EAC/TSOC primary distribution substation, equipped with automated remote terminal units (RTUs) for dynamic curtailment control.
+3. **Storage-Ready Inverter Configuration**: Centralized string inverters pre-configured for DC-coupled 8 MWh containerized lithium-iron-phosphate (LFP) battery storage retrofit under the upcoming Ministry fast-track storage tender.
 
-As solar photovoltaic penetration exceeds 850 MWp across the isolated electrical system of Cyprus, midday renewable curtailment has reached critical levels, frequently surpassing 25% of instantaneous production during low-demand spring and autumn weekends.
+### Commercial Off-Take & B2B Inquiries
 
-The Cyprus Clean Energy Industry Cluster (**Energeia**) has formally submitted an urgent regulatory position paper to the Cyprus Energy Regulatory Authority (**CERA / ΡΑΕΚ**) and the Transmission System Operator of Cyprus (**TSOC / ΔΣΜΚ**), outlining an accelerated regulatory and technical framework for Behind-the-Meter (**BTM**) Commercial and Industrial (**C&I**) Battery Energy Storage Systems.
-
-### Key Regulatory Recommendations
-
-1. **Expedited Fast-Track Permitting**: Exemption from full environmental impact assessments for containerized lithium iron phosphate (LFP) installations under 2 MWh deployed within existing industrial boundaries.
-2. **Dynamic Net-Billing Self-Consumption**: Permitting C&I producers to soak excess solar energy during peak midday generation hours and discharge during evening peak tariff windows (18:00–22:00) without incurring arbitrary DSO network standby fees.
-3. **Harmonized Safety & Grid Compliance Codes**: Implementation of EN 50549-2 and IEC 62619 standards for battery inverter synchronization with the EAC distribution grid.
-4. **Fast Frequency Response (FFR) Participation**: Structuring a transitional ancillary service compensation mechanism allowing aggregated BTM storage fleets to offer sub-second frequency stabilization to the TSOC dispatch center.
-
-### Economic Impact Assessment
-
-Implementing this framework is projected to unlock over 65 MWh of private storage investment within 14 months, avoiding an estimated 38,000 metric tons of CO2 emissions from conventional heavy-fuel-oil units at the Dhekelia power station while directly protecting industrial competitiveness.`,
-    category: 'Policy & Regulatory',
-    source: 'Energeia Policy Secretariat',
-    sourcePublisher: 'Cyprus Clean Energy Cluster',
-    sourceUrl: 'https://energeia.cy/research',
-    publishedAt: '2026-10-28T08:00:00Z',
-    createdAt: '2026-10-28T08:00:00Z',
+Energy produced by the facility will be marketed through private bilateral contracts and the interim electricity pool. Industrial off-takers interested in corporate power purchase agreements (CPPAs) can request formal term sheets through the Bioland Energy corporate dossier on Energeia.`,
+    category: 'Renewables',
+    source: 'Bioland Energy Press Desk',
+    sourcePublisher: 'Bioland Energy Group',
+    sourceUrl: 'https://biolandenergy.com',
+    publishedAt: '2026-10-29T08:00:00Z',
+    createdAt: '2026-10-29T08:00:00Z',
     status: 'Published',
     readTimeMinutes: 4,
     imageUrl: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1200&auto=format&fit=crop&q=80',
-    isEditorial: true,
+    isEditorial: false,
+    isPartnerBriefing: true,
+    sponsorName: 'Bioland Energy Group',
+    sponsorLogoUrl: '/logos/bioland.svg',
   },
   {
-    id: 'cluster-brief-tsoc-wholesale',
-    title: 'Cluster Secretariat Submits Recommendations on TSOC Wholesale Market Rules Ahead of 2026 Trial Operations',
-    slug: 'cluster-recommendations-tsoc-wholesale-market-rules',
-    summary: 'Comprehensive feedback on the interim market rules, proposing transparent imbalance settlement pricing and streamlined clearing mechanisms for private bilateral contracts.',
-    content: `### Transitioning from Interim Bilateral Regime to the European Target Model
+    id: 'commercial-brief-caramondani-bess-contract',
+    title: 'Caramondani Bros PLC Awarded Turnkey High-Voltage 132 kV Substation Contract for 40 MWh Utility BESS Project',
+    slug: 'caramondani-awarded-turnkey-132kv-substation-contract-bess',
+    summary: 'Caramondani Energy Solutions secures the turnkey balance-of-plant (BOP) contract for one of Cyprus’s premier fast-track centralized battery energy storage facilities, delivering transformer integration and protection relays.',
+    content: `### High-Voltage EPC Contract Award
 
-The transition of the Cyprus electricity market from the interim bilateral contractual regime (approved under CERA Regulatory Decision 01/2017) to the fully liberalized European Target Model marks the most significant reform of the island’s energy architecture in two decades.
+**Nicosia, Cyprus** — Caramondani Energy Solutions, a division of Caramondani Bros PLC, has been formally selected as the lead engineering, procurement, and construction (EPC) partner for a flagship 40 MWh utility-scale battery energy storage system (BESS) installation in central Cyprus.
 
-Following the circulation of the TSOC Market Rules Draft (Version 4.2), the Energeia Wholesale Market Working Group (WG 03) convened leading independent power producers, licensed traders, and corporate off-takers to compile a consensus memorandum.
+The project marks a major milestone in high-voltage grid infrastructure execution, engineered to provide sub-second fast frequency response (FFR) and synthetic inertia to the Transmission System Operator of Cyprus (TSOC).
 
-### Core Areas of Submission
+### Engineering Scope of Delivery
 
-1. **Dual-Pricing Imbalance Settlement Risk**: The proposed punitive penalties for intermittent solar forecasting deviations risk bankrupting small-to-medium PV aggregators in the absence of a liquid intra-day balancing market. Energeia proposes a transitional 12-month tolerance band (±15%) pegged to marginal thermal costs.
-2. **Transparent Ancillary Service Remuneration**: The TSOC must establish competitive auctions for primary and secondary frequency control rather than relying on mandatory non-remunerated EAC generation dispatch.
-3. **Clearing House & Credit Collateral Standards**: Streamlining bank guarantee requirements for private suppliers entering bilateral Corporate Power Purchase Agreements (CPPAs) with commercial hotels and manufacturing centers in Limassol and Nicosia.
+* **132/22 kV Step-Up Substation**: Complete civil and electrical works, including high-voltage GIS switchgear, outdoor busbars, and 50 MVA power transformers.
+* **SCADA & Relay Integration**: State-of-the-art telecontrol relays communicating synchronously with the TSOC National Control Center in Strovolos via dual redundant fiber optic loops.
+* **Thermal Management & Fire Suppression**: NFPA 855-compliant containerized containment with automated aerosol suppression and continuous thermal imaging sensors.
 
-### Next Steps & Stakeholder Hearings
+### Corporate Capabilities
 
-The Cluster Secretariat has requested an institutional hearing with the CERA Board of Directors and the TSOC System Operator in early November 2026 to present the quantitative dispatch simulation model prepared by the Energeia Analytics Unit.`,
-    category: 'Grid & Infrastructure',
-    source: 'Energeia Market Committee',
-    sourcePublisher: 'Cyprus Clean Energy Cluster',
-    sourceUrl: 'https://energeia.cy/research',
-    publishedAt: '2026-10-15T09:30:00Z',
-    createdAt: '2026-10-15T09:30:00Z',
-    status: 'Published',
-    readTimeMinutes: 6,
-    imageUrl: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&auto=format&fit=crop&q=80',
-    isEditorial: true,
-  },
-  {
-    id: 'cluster-brief-clean-energy-summit',
-    title: 'Cyprus Clean Energy Summit 2026: Annual Gathering of Sovereign & Private Energy Stakeholders in Limassol',
-    slug: 'cyprus-clean-energy-summit-2026-limassol',
-    summary: 'The premier institutional summit uniting European Commission representatives, MED-TSO operators, private IPPs, and institutional financiers at the Parklane Resort, Limassol.',
-    content: `### Convening the Mediterranean Energy Transition
-
-The Board of Directors of **Energeia Cyprus** is proud to announce the **Cyprus Clean Energy Summit 2026**, scheduled to take place at the Parklane Resort & Spa in Limassol, Cyprus, under the auspices of the Ministry of Energy, Commerce & Industry.
-
-As the Eastern Mediterranean emerges as a vital energy corridor connecting Europe, North Africa, and the Levant, the summit will convene over 450 senior delegates representing utility-scale solar developers, institutional infrastructure funds, transmission system operators, and European policymaking institutions.
-
-### Summit Program Tracks
-
-* **Track A — Grid Interconnectivity & HVDC Corridors**: Deep-dive into the technical execution and financing of the Great Sea Interconnector (Crete–Cyprus 500 kV HVDC subsea link), subsea survey progress by Nexans, and cross-border market integration with the European mainland.
-* **Track B — Utility Storage & Solar Modernization**: Overcoming grid saturation, deploying 320 MWh of centralized BESS, battery safety standards, and agro-voltaic dual-use land planning.
-* **Track C — Corporate PPAs & Wholesale Market Go-Live**: Structuring bankable bilateral contracts, green guarantees of origin (GOs), and corporate off-take strategies for multinational enterprises operating in Cyprus.
-* **Track D — Green Hydrogen & Industrial Decarbonization**: Developing the Vasilikos energy corridor, clean bunkering for the Limassol shipping sector, and industrial fuel substitution.
-
-### Registration & Cluster Accreditation
-
-Accredited Energeia cluster members receive priority delegate passes and access to the closed-door sovereign investor roundtable. Non-member organizations and international delegations may apply for admission through the Cluster Secretariat.`,
-    category: 'Market & Finance',
-    source: 'Energeia Executive Directorate',
-    sourcePublisher: 'Cyprus Clean Energy Cluster',
-    sourceUrl: 'https://energeia.cy/research',
-    publishedAt: '2026-09-30T10:00:00Z',
-    createdAt: '2026-09-30T10:00:00Z',
+With over 60 years of engineering leadership in Cyprus and the Middle East, Caramondani Energy Solutions continues to lead high-voltage electrical execution. Developers seeking turnkey balance-of-plant proposals may contact the engineering team via their verified Energeia company dossier.`,
+    category: 'Engineering & EPC',
+    source: 'Caramondani Corporate Communications',
+    sourcePublisher: 'Caramondani Bros PLC',
+    sourceUrl: 'https://caramondani.com.cy',
+    publishedAt: '2026-10-20T09:30:00Z',
+    createdAt: '2026-10-20T09:30:00Z',
     status: 'Published',
     readTimeMinutes: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&auto=format&fit=crop&q=80',
+    isEditorial: false,
+    isPartnerBriefing: true,
+    sponsorName: 'Caramondani Energy Solutions',
+    sponsorLogoUrl: '/logos/caramondani.svg',
+  },
+  {
+    id: 'commercial-brief-muskita-geg-ppa',
+    title: 'Muskita Solar & Green Energy Group Complete €14M Commercial PPA Portfolio for Mediterranean Industrial Consumers',
+    slug: 'muskita-geg-complete-14m-commercial-ppa-portfolio',
+    summary: 'Strategic consortium agreement between Muskita Solar and Green Energy Group delivers long-term fixed bilateral renewable power contracts to major manufacturing and hospitality facilities across Limassol.',
+    content: `### Bilateral Renewable Power Agreement
+
+**Limassol, Cyprus** — In a major expansion of private electricity trading in Cyprus, Muskita Solar Systems and Green Energy Group (GEG) have finalized a multi-asset corporate Power Purchase Agreement (CPPA) consortium delivering clean solar power to premier industrial and hospitality off-takers in Limassol district.
+
+The syndicated portfolio encompasses 22 MWp of dedicated photovoltaic installations linked directly through private bilateral contracts under the CERA interim electricity market framework.
+
+### Strategic Market Impact
+
+1. **Fixed Long-Term Energy Pricing**: Protecting heavy energy consumers from volatile fossil-fuel and EU ETS carbon penalty fluctuations by guaranteeing stable kilowatt-hour rates over 10-year agreements.
+2. **Green Guarantees of Origin (GOs)**: Full certification allowing corporate buyers to meet mandatory European CSRD decarbonization mandates and ESG reporting compliance.
+3. **Advanced Microgrid Synchronization**: Intelligent peak-shaving control matching daytime manufacturing load curves with real-time PV generation output.
+
+### Commercial Participation
+
+Commercial prosumers and industrial facility managers in Cyprus seeking competitive corporate solar off-take terms are invited to submit procurement requests through the Muskita and GEG corporate profiles on Energeia.`,
+    category: 'Market & Finance',
+    source: 'Consortium Press Bureau',
+    sourcePublisher: 'Muskita & Green Energy Group',
+    sourceUrl: 'https://geg.com.cy',
+    publishedAt: '2026-10-10T10:00:00Z',
+    createdAt: '2026-10-10T10:00:00Z',
+    status: 'Published',
+    readTimeMinutes: 4,
     imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop&q=80',
-    isEditorial: true,
+    isEditorial: false,
+    isPartnerBriefing: true,
+    sponsorName: 'Muskita & Green Energy Group',
+    sponsorLogoUrl: '/logos/muskita.svg',
   },
 ];
+
+// Backwards-compatible aliases for other surfaces if imported
+export const CLUSTER_PORTAL_MEMBERS = FEATURED_PARTNERS;
+export const CLUSTER_EDITORIAL_BRIEFS = COMMERCIAL_PARTNER_BRIEFS;

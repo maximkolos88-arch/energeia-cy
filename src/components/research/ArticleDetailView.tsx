@@ -163,11 +163,18 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           
           {/* Taxonomy & Metadata Bar */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-[#5F6368] dark:text-[#9AA0A6]">
-            {article.category && (
+            {article.isPartnerBriefing ? (
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#D46200] text-white flex items-center gap-1 shadow-2xs">
+                <span>Partner Briefing</span>
+                {article.sponsorName && (
+                  <span>· {article.sponsorName}</span>
+                )}
+              </span>
+            ) : article.category ? (
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#E8F0FE] text-[#1A73E8] dark:bg-[#1A73E8]/20 dark:text-[#8AB4F8]">
                 {article.category}
               </span>
-            )}
+            ) : null}
             <span>•</span>
             <time dateTime={article.publishedAt || article.createdAt} className="font-mono uppercase text-[11px] tracking-wider">
               {formattedDate}
@@ -186,15 +193,25 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
           {/* Analyst & Authority Credential */}
           <div className="flex items-center gap-3 pt-2 text-xs text-[#5F6368] dark:text-[#9AA0A6] border-t border-[#F1F3F4] dark:border-[#282A2C]">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFA726] to-[#D46200] flex items-center justify-center text-white font-bold text-xs shrink-0">
-              Ε
-            </div>
+            {article.isPartnerBriefing && article.sponsorLogoUrl ? (
+              <div className="w-8 h-8 rounded-full bg-[#F1F3F4] dark:bg-[#282A2C] border border-[#DADCE0] dark:border-[#444746] p-1 flex items-center justify-center shrink-0">
+                <img src={article.sponsorLogoUrl} alt={article.sponsorName || 'Sponsor'} className="w-full h-full object-contain" />
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFA726] to-[#D46200] flex items-center justify-center text-white font-bold text-xs shrink-0">
+                Ε
+              </div>
+            )}
             <div>
               <div className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
-                Energeia Market Intelligence Desk
+                {article.isPartnerBriefing 
+                  ? (article.sponsorName || 'Corporate Partner')
+                  : 'Energeia Market Intelligence Desk'}
               </div>
               <div className="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">
-                National Energy Cluster Briefing · Cyprus
+                {article.isPartnerBriefing 
+                  ? 'Commercial Partner Dispatch · Verified Cyprus Energy Network'
+                  : 'National Energy Intelligence Briefing · Cyprus'}
               </div>
             </div>
           </div>
