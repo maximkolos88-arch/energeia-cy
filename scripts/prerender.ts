@@ -275,9 +275,17 @@ async function prerender() {
     {
       route: '/',
       meta: {
-        title: 'Energeia - Cyprus Energy News & Market Intelligence',
-        description: 'Cyprus energy news, renewable market intelligence, regulatory policy updates, and clean energy analytics.',
+        title: 'Energeia - Cyprus National Energy Industry Cluster',
+        description: 'The national energy industry cluster uniting solar developers, grid operators, storage pioneers, and policymakers in Cyprus.',
         url: `${SITE_URL}/`
+      }
+    },
+    {
+      route: '/research',
+      meta: {
+        title: 'Energeia Research - Cyprus Energy News & Market Intelligence',
+        description: 'Cyprus energy intelligence stream: CERA regulatory decisions, TSOC grid telemetry, solar analytics, and M&A filings.',
+        url: `${SITE_URL}/research`
       }
     },
     {
@@ -294,6 +302,14 @@ async function prerender() {
         title: 'Cyprus Energy Articles & Insights | Energeia',
         description: 'In-depth analysis, CERA regulatory reviews, and energy transition market reports in Cyprus.',
         url: `${SITE_URL}/articles`
+      }
+    },
+    {
+      route: '/helios',
+      meta: {
+        title: 'Helios Eye — Cyprus National Energy Terminal | Energeia',
+        description: 'Interactive 3D GIS platform monitoring Cyprus renewable infrastructure, 520+ power plants, transmission substations, and live ENTSO-E market telemetry.',
+        url: `${SITE_URL}/helios`
       }
     },
     {

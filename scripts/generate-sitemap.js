@@ -27,8 +27,13 @@ async function generateSitemap() {
 
     const staticRoutes = [
       { url: '/', priority: '1.0', changefreq: 'daily' },
-      { url: '/terminal', priority: '0.9', changefreq: 'daily' },
-      { url: '/about', priority: '0.6', changefreq: 'monthly' }
+      { url: '/research', priority: '0.9', changefreq: 'daily' },
+      { url: '/helios', priority: '0.9', changefreq: 'daily' },
+      { url: '/terminal', priority: '0.8', changefreq: 'daily' },
+      { url: '/members', priority: '0.8', changefreq: 'weekly' },
+      { url: '/academy', priority: '0.8', changefreq: 'weekly' },
+      { url: '/about', priority: '0.7', changefreq: 'monthly' },
+      { url: '/register', priority: '0.7', changefreq: 'monthly' }
     ];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;

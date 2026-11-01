@@ -1,5 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EnergeiaLogo } from './EnergeiaLogo';
+import { AppLauncher } from './navigation/AppLauncher';
+import { 
+  ECOSYSTEM_SURFACES, 
+  EcosystemSurface, 
+  detectCurrentSurface,
+  getSurfaceUrl 
+} from '../utils/ecosystemRouting';
+import { 
+  Building2, 
+  Compass, 
+  Zap, 
+  Users, 
+  GraduationCap 
+} from 'lucide-react';
 
 export interface TopAppBarProps {
   currentLang?: string;
@@ -10,6 +24,8 @@ export interface TopAppBarProps {
   unreadCount?: number;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
+  currentSurface?: EcosystemSurface;
+  onSelectSurface?: (surface: EcosystemSurface) => void;
 }
 
 export const TopAppBar: React.FC<TopAppBarProps> = ({
@@ -18,8 +34,10 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   onLanguageChange,
   isDarkMode,
   onToggleTheme,
-  activeTab = 'news',
+  activeTab = 'cluster',
   onTabChange,
+  currentSurface,
+  onSelectSurface,
 }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -29,6 +47,10 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   const langDropdownRef = useRef<HTMLDivElement>(null);
 
   const activeLang = currentLang || language || 'en';
+
+  // Determine active surface
+  const effectiveSurface: EcosystemSurface = currentSurface || detectCurrentSurface();
+  const surfaceDef = ECOSYSTEM_SURFACES[effectiveSurface] || ECOSYSTEM_SURFACES.cluster;
 
   const [internalDark, setInternalDark] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -121,29 +143,24 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
     e.preventDefault();
     if (typeof window !== 'undefined') {
       const trimmed = searchQuery.trim();
-      const targetUrl = trimmed ? `/?q=${encodeURIComponent(trimmed)}` : '/';
+      const targetUrl = trimmed ? `/research?q=${encodeURIComponent(trimmed)}` : '/research';
       window.history.pushState({}, '', targetUrl);
       window.dispatchEvent(new Event('popstate'));
     }
     setSearchOpen(false);
   };
 
-  const handleNavClick = (e: React.MouseEvent, href: string, tabId: string) => {
+  const handleSurfaceClick = (e: React.MouseEvent, surface: EcosystemSurface, href: string) => {
     setDrawerOpen(false);
-    if (onTabChange) {
+    if (onSelectSurface) {
       e.preventDefault();
-      onTabChange(tabId);
+      onSelectSurface(surface);
       if (typeof window !== 'undefined' && window.location.pathname !== href) {
         window.history.pushState({}, '', href);
         window.dispatchEvent(new Event('popstate'));
       }
     }
   };
-
-  const isNewsActive = activeTab === 'news' || (!activeTab && (typeof window === 'undefined' || window.location.pathname === '/'));
-  const isTerminalActive = activeTab === 'terminal' || (typeof window !== 'undefined' && window.location.pathname.startsWith('/terminal'));
-  const isMembersActive = activeTab === 'members' || (typeof window !== 'undefined' && window.location.pathname.startsWith('/members'));
-  const isAboutActive = activeTab === 'about' || (typeof window !== 'undefined' && window.location.pathname.startsWith('/about'));
 
   const currentLangObj = languages.find((l) => l.code === activeLang) || languages[0];
 
@@ -152,7 +169,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
       {/* 64px FIXED HEADER BAR */}
       <header role="banner" className="google-header sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-[#131314]/95 backdrop-blur-md border-b border-[#F1F3F4] dark:border-[#282A2C] px-4 sm:px-8 flex items-center justify-between transition-colors">
         
-        {/* Left: Mobile ☰ + Energeia Wordmark / Desktop Logo Lockup */}
+        {/* Left: Mobile ☰ + Energeia Wordmark / Desktop Logo Lockup with Surface Descriptor */}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -166,33 +183,44 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </button>
 
           <a 
-            href="/" 
-            onClick={(e) => handleNavClick(e, '/', 'news')}
+            href={surfaceDef.path}
+            onClick={(e) => handleSurfaceClick(e, effectiveSurface, surfaceDef.path)}
             className="flex items-center cursor-pointer"
-            aria-label="Energeia Research Home"
+            aria-label={`Energeia ${surfaceDef.name} Home`}
           >
-            <EnergeiaLogo descriptor="Research" variant="gradient" />
+            <EnergeiaLogo descriptor={surfaceDef.descriptor} variant="gradient" />
           </a>
         </div>
 
-        {/* Center: Desktop Clean Text Links with Active Google Blue Bottom Border */}
+        {/* Center: Desktop Clean Text Links across the 5 Federated Surfaces */}
         <nav className="hidden md:flex items-center gap-6 h-full" aria-label="Desktop Navigation">
           <a
             href="/"
-            onClick={(e) => handleNavClick(e, '/', 'news')}
+            onClick={(e) => handleSurfaceClick(e, 'cluster', '/')}
             className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
-              isNewsActive
+              effectiveSurface === 'cluster' && activeTab !== 'about'
                 ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
                 : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
             }`}
           >
-            News &amp; Intelligence
+            Cluster
           </a>
           <a
-            href="/terminal"
-            onClick={(e) => handleNavClick(e, '/terminal', 'terminal')}
+            href="/research"
+            onClick={(e) => handleSurfaceClick(e, 'research', '/research')}
             className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
-              isTerminalActive
+              effectiveSurface === 'research'
+                ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
+                : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
+            }`}
+          >
+            Research
+          </a>
+          <a
+            href="/helios"
+            onClick={(e) => handleSurfaceClick(e, 'helios', '/helios')}
+            className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
+              effectiveSurface === 'helios'
                 ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
                 : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
             }`}
@@ -201,30 +229,37 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </a>
           <a
             href="/members"
-            onClick={(e) => handleNavClick(e, '/members', 'members')}
+            onClick={(e) => handleSurfaceClick(e, 'members', '/members')}
             className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
-              isMembersActive
+              effectiveSurface === 'members'
                 ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
                 : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
             }`}
           >
-            Ecosystem Directory
+            Directory
           </a>
           <a
-            href="/about"
-            onClick={(e) => handleNavClick(e, '/about', 'about')}
+            href="/academy"
+            onClick={(e) => handleSurfaceClick(e, 'academy', '/academy')}
             className={`h-full flex items-center px-1 text-sm font-medium transition-colors border-b-2 cursor-pointer ${
-              isAboutActive
+              effectiveSurface === 'academy'
                 ? 'text-[#1A73E8] dark:text-[#8AB4F8] border-[#1A73E8] dark:border-[#8AB4F8] font-semibold'
                 : 'text-[#444746] dark:text-[#C4C7C5] hover:text-[#1F1F1F] dark:hover:text-[#E3E3E3] border-transparent'
             }`}
           >
-            About Energeia
+            Academy
           </a>
         </nav>
 
-        {/* Right: Search, Language Dropdown Pill, and Dark Mode Toggle */}
+        {/* Right: Google 9-Dots App Launcher, Search, Language Pill, Theme Switcher */}
         <div className="flex items-center gap-1 sm:gap-2">
+          
+          {/* Google-Style 9-Dots App Launcher (Waffle) */}
+          <AppLauncher 
+            currentSurface={effectiveSurface} 
+            onSelectSurface={onSelectSurface} 
+          />
+
           {/* Search Trigger */}
           <button
             type="button"
@@ -308,11 +343,11 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           />
 
           {/* Drawer Panel */}
-          <div className="relative z-10 w-[300px] max-w-[85vw] h-full bg-white dark:bg-[#1E1F20] flex flex-col justify-between p-6 shadow-2xl border-r border-[#F1F3F4] dark:border-[#282A2C] overflow-y-auto">
+          <div className="relative z-10 w-[310px] max-w-[85vw] h-full bg-white dark:bg-[#1E1F20] flex flex-col justify-between p-6 shadow-2xl border-r border-[#F1F3F4] dark:border-[#282A2C] overflow-y-auto">
             {/* Top: Brand Header & Close */}
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#F1F3F4] dark:border-[#282A2C] mb-6">
-                <EnergeiaLogo descriptor="Cyprus" variant="gradient" />
+                <EnergeiaLogo descriptor={surfaceDef.descriptor} variant="gradient" />
                 <button
                   type="button"
                   onClick={() => setDrawerOpen(false)}
@@ -325,53 +360,109 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 </button>
               </div>
 
-              {/* Main Navigation Stack: 18px font size, py-3 tap area */}
-              <nav className="flex flex-col gap-1" aria-label="Mobile Navigation Stack">
-                <a
-                  href="/"
-                  className={`px-3 py-3 rounded-xl text-[18px] font-medium transition-colors ${
-                    isNewsActive
-                      ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                      : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
-                  }`}
-                  onClick={(e) => handleNavClick(e, '/', 'news')}
-                >
-                  News &amp; Intelligence
-                </a>
-                <a
-                  href="/terminal"
-                  className={`px-3 py-3 rounded-xl text-[18px] font-medium transition-colors ${
-                    isTerminalActive
-                      ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                      : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
-                  }`}
-                  onClick={(e) => handleNavClick(e, '/terminal', 'terminal')}
-                >
-                  Helios Terminal
-                </a>
-                <a
-                  href="/members"
-                  className={`px-3 py-3 rounded-xl text-[18px] font-medium transition-colors ${
-                    isMembersActive
-                      ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                      : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
-                  }`}
-                  onClick={(e) => handleNavClick(e, '/members', 'members')}
-                >
-                  Ecosystem Directory
-                </a>
-                <a
-                  href="/about"
-                  className={`px-3 py-3 rounded-xl text-[18px] font-medium transition-colors ${
-                    isAboutActive
-                      ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
-                      : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
-                  }`}
-                  onClick={(e) => handleNavClick(e, '/about', 'about')}
-                >
-                  About Energeia
-                </a>
-              </nav>
+              {/* Federated Ecosystem Surfaces Group */}
+              <div className="mb-6">
+                <span className="block text-[11px] font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-3">
+                  Ecosystem Surfaces
+                </span>
+                <nav className="flex flex-col gap-1.5" aria-label="Mobile Ecosystem Surfaces">
+                  <a
+                    href="/"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      effectiveSurface === 'cluster' && activeTab !== 'about'
+                        ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
+                        : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                    }`}
+                    onClick={(e) => handleSurfaceClick(e, 'cluster', '/')}
+                  >
+                    <Building2 className="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8]" />
+                    <span>Energeia Cluster</span>
+                  </a>
+
+                  <a
+                    href="/research"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      effectiveSurface === 'research'
+                        ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
+                        : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                    }`}
+                    onClick={(e) => handleSurfaceClick(e, 'research', '/research')}
+                  >
+                    <Compass className="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8]" />
+                    <span>Research &amp; Intelligence</span>
+                  </a>
+
+                  <a
+                    href="/helios"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      effectiveSurface === 'helios'
+                        ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
+                        : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                    }`}
+                    onClick={(e) => handleSurfaceClick(e, 'helios', '/helios')}
+                  >
+                    <Zap className="w-4 h-4 text-[#D46200] dark:text-[#FFA726]" />
+                    <span>Helios Terminal</span>
+                  </a>
+
+                  <a
+                    href="/members"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      effectiveSurface === 'members'
+                        ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
+                        : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                    }`}
+                    onClick={(e) => handleSurfaceClick(e, 'members', '/members')}
+                  >
+                    <Users className="w-4 h-4 text-[#137333] dark:text-[#81C995]" />
+                    <span>Ecosystem Directory</span>
+                  </a>
+
+                  <a
+                    href="/academy"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      effectiveSurface === 'academy'
+                        ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
+                        : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                    }`}
+                    onClick={(e) => handleSurfaceClick(e, 'academy', '/academy')}
+                  >
+                    <GraduationCap className="w-4 h-4 text-[#7B1FA2] dark:text-[#D7AEFB]" />
+                    <span>Energeia Academy</span>
+                  </a>
+                </nav>
+              </div>
+
+              {/* Institutional Links */}
+              <div>
+                <span className="block text-[11px] font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-3">
+                  Institutional
+                </span>
+                <nav className="flex flex-col gap-1" aria-label="Mobile Institutional Links">
+                  <a
+                    href="/about"
+                    className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                      activeTab === 'about'
+                        ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
+                        : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                    }`}
+                    onClick={(e) => handleSurfaceClick(e, 'cluster', '/about')}
+                  >
+                    About Energeia
+                  </a>
+                  <a
+                    href="/register"
+                    className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                      activeTab === 'register'
+                        ? 'text-[#1A73E8] dark:text-[#8AB4F8] bg-[#E8F0FE] dark:bg-[#0842A0]/40 font-semibold'
+                        : 'text-[#1F1F1F] dark:text-[#E3E3E3] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C]'
+                    }`}
+                    onClick={(e) => handleSurfaceClick(e, 'cluster', '/register')}
+                  >
+                    Join the Network
+                  </a>
+                </nav>
+              </div>
             </div>
 
             {/* Bottom: Language Matrix, Theme Switcher, and Statutory Details */}

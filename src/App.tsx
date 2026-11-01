@@ -4,16 +4,27 @@ import type { Session } from '@supabase/supabase-js';
 import { useWebMCP } from './hooks/useWebMCP';
 import { TopAppBar } from './components/TopAppBar';
 import { Footer } from './components/Footer';
-import { NewsFeedScreen } from './components/NewsFeedScreen';
-import { TerminalScreen } from './components/TerminalScreen';
-import { DirectoryScreen } from './components/DirectoryScreen';
-import { AboutScreen } from './components/AboutScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ScrollToTop from './components/navigation/ScrollToTop';
 import { useTranslation } from 'react-i18next';
 import { loadLanguageBundle } from './lib/i18n';
 import { FEATURES } from './config/features';
 import { InitialDataProvider, InitialData } from './context/InitialDataContext';
+import { 
+  detectCurrentSurface, 
+  EcosystemSurface, 
+  ECOSYSTEM_SURFACES, 
+  getSurfaceUrl,
+  isLocalOrPreviewEnvironment 
+} from './utils/ecosystemRouting';
+import {
+  ClusterPortalLayout,
+  ResearchFeedLayout,
+  HeliosTerminalLayout,
+  DirectoryLayout,
+  AcademyLayout
+} from './layouts';
+import { AboutScreen } from './components/AboutScreen';
 
 function lazyWithRetry<T extends { default: React.ComponentType<any> }>(
   factory: () => Promise<T>,
@@ -106,7 +117,6 @@ const ScreenSkeleton = () => (
 );
 
 const MagazineScreen = lazyWithRetry(() => import('./components/MagazineScreen').then(m => ({ default: m.MagazineScreen })));
-const AcademyScreen = lazyWithRetry(() => import('./components/AcademyScreen').then(m => ({ default: m.AcademyScreen })));
 const RegisterScreen = lazyWithRetry(() => import('./components/RegisterScreen').then(m => ({ default: m.RegisterScreen })));
 const TermsScreen = lazyWithRetry(() => import('./components/legal/TermsScreen').then(m => ({ default: m.TermsScreen })));
 const PrivacyScreen = lazyWithRetry(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
@@ -118,7 +128,7 @@ const PWAInstallPrompt = React.lazy(() => import('./components/PWAInstallPrompt'
 const AdminPanel = lazyWithRetry(loadAdminPanel);
 const LoginScreen = lazyWithRetry(loadLoginScreen);
 
-const NAV_SECTIONS = ['news', 'terminal', 'members', 'magazine', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
+const NAV_SECTIONS = ['cluster', 'research', 'helios', 'members', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
 
 const NAVIGATE_SECTION_SCHEMA = {
   type: 'object',
@@ -126,17 +136,29 @@ const NAVIGATE_SECTION_SCHEMA = {
     section: {
       type: 'string',
       enum: NAV_SECTIONS,
-      default: 'news',
-      description: 'Portal section to navigate to.',
+      default: 'cluster',
+      description: 'Portal surface or section to navigate to.',
     },
   },
   required: ['section'],
 };
 
 const ROUTE_META: Record<string, { title: string; description: string }> = {
+  cluster: {
+    title: 'Energeia - Cyprus National Energy Industry Cluster',
+    description: 'The national energy industry cluster uniting solar developers, grid operators, storage pioneers, and policymakers in Cyprus.',
+  },
+  research: {
+    title: 'Energeia Research - Cyprus Energy News & Market Intelligence',
+    description: 'Cyprus energy intelligence stream: CERA regulatory decisions, TSOC grid telemetry, solar analytics, and M&A filings.',
+  },
   news: {
-    title: 'Energeia - Cyprus Energy News & Market Intelligence',
-    description: 'Cyprus energy news, renewable market intelligence, regulatory policy updates, and clean energy analytics.',
+    title: 'Energeia Research - Cyprus Energy News & Market Intelligence',
+    description: 'Cyprus energy intelligence stream: CERA regulatory decisions, TSOC grid telemetry, solar analytics, and M&A filings.',
+  },
+  helios: {
+    title: 'Helios Eye — Cyprus National Energy Terminal | Energeia',
+    description: 'Interactive 3D GIS platform monitoring Cyprus renewable infrastructure, 520+ power plants, transmission substations, and live ENTSO-E market telemetry.',
   },
   terminal: {
     title: 'Helios Eye — Cyprus National Energy Terminal | Energeia',
@@ -146,6 +168,10 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
     title: 'Directory - Cyprus Energy Professionals & Companies | Energeia',
     description: 'Explore verified energy sector members, solar installers, ESG auditors, and clean tech companies in Cyprus.',
   },
+  academy: {
+    title: 'Academy - Clean Energy Courses & Training | Energeia',
+    description: 'Specialized professional courses, PV certifications, and educational training for the Cyprus energy transition and renewables market.',
+  },
   about: {
     title: 'About Energeia - Cyprus All-Energy Network',
     description: 'Energeia is the central information hub and intelligence platform for Cyprus clean energy transition.',
@@ -153,10 +179,6 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
   magazine: {
     title: 'Magazine - Print & Digital Energy Issues | Energeia',
     description: 'Access exclusive Cyprus energy market issue digests, regulatory reports, and interview archives.',
-  },
-  academy: {
-    title: 'Academy - Clean Energy Courses & Training | Energeia',
-    description: 'Specialized professional courses and educational training for the Cyprus energy transition and renewables market.',
   },
   register: {
     title: 'Join the Network - Membership Registration | Energeia',
@@ -183,9 +205,10 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
 export interface AppProps {
   path?: string;
   initialData?: InitialData;
+  hostname?: string;
 }
 
-export default function App({ path: propPath, initialData }: AppProps) {
+export default function App({ path: propPath, initialData, hostname }: AppProps) {
   const { i18n } = useTranslation();
   const [session, setSession] = useState<Session | null>(null);
   const [authChecking, setAuthChecking] = useState<boolean>(() => {
@@ -193,25 +216,28 @@ export default function App({ path: propPath, initialData }: AppProps) {
   });
 
   const currentPath = propPath ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
+  const currentHost = hostname ?? (typeof window !== 'undefined' ? window.location.hostname : '');
+
+  // Detect active surface based on federated subdomain or path fallback
+  const initialSurface = detectCurrentSurface(currentHost, currentPath);
+  const [surface, setSurface] = useState<EcosystemSurface>(initialSurface);
 
   const [activeTab, setActiveTab] = useState<string>(() => {
     const path = currentPath;
-    if ((path === '/members' || path === '/directory') && FEATURES.enableMembers) return 'members';
-    if (path === '/terminal' && FEATURES.enableTerminal) return 'terminal';
-    if (path === '/magazine' && FEATURES.enableMagazine) return 'magazine';
-    if (path === '/academy' && FEATURES.enableAcademy) return 'academy';
     if (path === '/about' && FEATURES.enableAbout) return 'about';
     if (path === '/register' && FEATURES.enableRegister) return 'register';
+    if (path === '/magazine' && FEATURES.enableMagazine) return 'magazine';
     if (path === '/terms') return 'terms';
     if (path === '/privacy') return 'privacy';
     if (path === '/cookies') return 'cookies';
     if (path === '/disclosures') return 'disclosures';
     
-    // Redirect unreleased/disabled URLs back to homepage (/)
-    if (typeof window !== 'undefined' && path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news') && !path.startsWith('/articles') && !['/terms', '/privacy', '/cookies', '/disclosures'].includes(path)) {
-      window.history.replaceState({}, '', '/');
-    }
-    return 'news';
+    if (initialSurface === 'research') return 'research';
+    if (initialSurface === 'helios') return 'helios';
+    if (initialSurface === 'members') return 'members';
+    if (initialSurface === 'academy') return 'academy';
+
+    return 'cluster';
   });
 
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(() => {
@@ -231,14 +257,12 @@ export default function App({ path: propPath, initialData }: AppProps) {
     const supportedLangs = ['en', 'el', 'ru', 'he'];
     
     if (typeof window !== 'undefined') {
-      // Priority 1: Check manual choice in app_lang or fallback energeia_language
       const saved = localStorage.getItem('app_lang') || localStorage.getItem('energeia_language');
       if (saved && supportedLangs.includes(saved)) {
         if (saved !== 'en') loadLanguageBundle(saved);
         return saved;
       }
 
-      // Priority 2: Check system languages with iw -> he mappings
       const userLangs = navigator.languages || [navigator.language || 'en'];
       for (const lang of userLangs) {
         const code = lang.toLowerCase().split('-')[0];
@@ -253,7 +277,6 @@ export default function App({ path: propPath, initialData }: AppProps) {
       }
     }
 
-    // Priority 3: Fallback default ('en' is already active in i18n)
     return 'en';
   });
 
@@ -261,12 +284,11 @@ export default function App({ path: propPath, initialData }: AppProps) {
     setLanguage(lang);
     if (typeof window !== 'undefined') {
       localStorage.setItem('app_lang', lang);
-      localStorage.setItem('energeia_language', lang); // compatibility backup
+      localStorage.setItem('energeia_language', lang);
     }
     loadLanguageBundle(lang);
   };
 
-  // Synchronize HTML attributes (RTL dir and lang locale) only when changed to avoid full-document style invalidation
   useEffect(() => {
     if (typeof document !== 'undefined') {
       const targetDir = language === 'he' ? 'rtl' : 'ltr';
@@ -280,22 +302,17 @@ export default function App({ path: propPath, initialData }: AppProps) {
     }
   }, [language]);
 
-  // Client mount detection log
-  useEffect(() => {
-    console.log('App successfully mounted on client');
-  }, []);
-
-  // Synchronize browser tab document.title and meta description dynamically based on active route
+  // Synchronize browser tab document.title and meta description dynamically based on active surface/tab
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
-    // Do not override if user is viewing a deep news article (managed by SEOManager)
     const pathname = window.location.pathname;
     if (pathname.startsWith('/news/') && pathname !== '/news') {
       return;
     }
 
-    const meta = ROUTE_META[activeTab] || ROUTE_META['news'];
+    const metaKey = activeTab || surface || 'cluster';
+    const meta = ROUTE_META[metaKey] || ROUTE_META['cluster'];
     if (document.title !== meta.title) {
       document.title = meta.title;
     }
@@ -316,7 +333,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
     updateMetaTag('property', 'og:description', meta.description);
     updateMetaTag('name', 'twitter:title', meta.title);
     updateMetaTag('name', 'twitter:description', meta.description);
-  }, [activeTab]);
+  }, [activeTab, surface]);
 
   // App Badging API Manager: Clear home screen icon badge on App Open & Visibility Change
   useEffect(() => {
@@ -362,7 +379,6 @@ export default function App({ path: propPath, initialData }: AppProps) {
 
     let isSubscribed = true;
 
-    // Failsafe timer: prevent hanging forever in authChecking state if getSession() stalls
     const authTimeout = setTimeout(() => {
       if (isSubscribed) {
         setAuthChecking(false);
@@ -402,42 +418,46 @@ export default function App({ path: propPath, initialData }: AppProps) {
     };
   }, [isAdminRoute]);
 
-  // Monitor browser history state changes for SPA routing fallback
-  useEffect(() => {
+  // Handle location and popstate changes
+  const handleLocationChange = () => {
     if (typeof window === 'undefined') return;
 
-    const handleLocationChange = () => {
-      const path = window.location.pathname;
-      setIsAdminRoute(path === '/admin' || path.startsWith('/admin'));
-      
-      if ((path === '/members' || path === '/directory') && FEATURES.enableMembers) {
-        setActiveTab('members');
-      } else if (path === '/terminal' && FEATURES.enableTerminal) {
-        setActiveTab('terminal');
-      } else if (path === '/magazine' && FEATURES.enableMagazine) {
-        setActiveTab('magazine');
-      } else if (path === '/academy' && FEATURES.enableAcademy) {
-        setActiveTab('academy');
-      } else if (path === '/about' && FEATURES.enableAbout) {
-        setActiveTab('about');
-      } else if (path === '/register' && FEATURES.enableRegister) {
-        setActiveTab('register');
-      } else if (path === '/terms') {
-        setActiveTab('terms');
-      } else if (path === '/privacy') {
-        setActiveTab('privacy');
-      } else if (path === '/cookies') {
-        setActiveTab('cookies');
-      } else if (path === '/disclosures') {
-        setActiveTab('disclosures');
-      } else {
-        // If path is not root / or /admin or /news or /articles, redirect back to /
-        if (path !== '/' && !path.startsWith('/admin') && !path.startsWith('/news') && !path.startsWith('/articles')) {
-          window.history.replaceState({}, '', '/');
-        }
-        setActiveTab('news');
-      }
-    };
+    const host = window.location.hostname;
+    const path = window.location.pathname;
+    setIsAdminRoute(path === '/admin' || path.startsWith('/admin'));
+    
+    const detected = detectCurrentSurface(host, path);
+    setSurface(detected);
+
+    if (path === '/about') {
+      setActiveTab('about');
+    } else if (path === '/register') {
+      setActiveTab('register');
+    } else if (path === '/magazine') {
+      setActiveTab('magazine');
+    } else if (path === '/terms') {
+      setActiveTab('terms');
+    } else if (path === '/privacy') {
+      setActiveTab('privacy');
+    } else if (path === '/cookies') {
+      setActiveTab('cookies');
+    } else if (path === '/disclosures') {
+      setActiveTab('disclosures');
+    } else if (detected === 'research') {
+      setActiveTab('research');
+    } else if (detected === 'helios') {
+      setActiveTab('helios');
+    } else if (detected === 'members') {
+      setActiveTab('members');
+    } else if (detected === 'academy') {
+      setActiveTab('academy');
+    } else {
+      setActiveTab('cluster');
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
     const handleLinkClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -461,12 +481,46 @@ export default function App({ path: propPath, initialData }: AppProps) {
     };
   }, []);
 
+  const handleSurfaceChange = (targetSurface: EcosystemSurface, targetPath = '') => {
+    setSurface(targetSurface);
+    const path = targetPath || ECOSYSTEM_SURFACES[targetSurface].path;
+    
+    if (typeof window !== 'undefined') {
+      const isPreview = isLocalOrPreviewEnvironment();
+      if (isPreview || !window.location.hostname.includes('energeia.cy')) {
+        window.history.pushState({}, '', path);
+        handleLocationChange();
+      } else {
+        const targetUrl = getSurfaceUrl(targetSurface, targetPath);
+        if (targetUrl.startsWith('http') && !targetUrl.includes(window.location.hostname)) {
+          window.location.href = targetUrl;
+        } else {
+          window.history.pushState({}, '', path);
+          handleLocationChange();
+        }
+      }
+    }
+  };
+
   const handleTabChange = (tab: string) => {
     const updateView = () => {
       setActiveTab(tab);
       if (typeof window !== 'undefined') {
-        if (tab === 'news') {
+        if (tab === 'cluster') {
+          setSurface('cluster');
           window.history.pushState({}, '', '/');
+        } else if (tab === 'research' || tab === 'news') {
+          setSurface('research');
+          window.history.pushState({}, '', '/research');
+        } else if (tab === 'helios' || tab === 'terminal') {
+          setSurface('helios');
+          window.history.pushState({}, '', '/helios');
+        } else if (tab === 'members' || tab === 'directory') {
+          setSurface('members');
+          window.history.pushState({}, '', '/members');
+        } else if (tab === 'academy') {
+          setSurface('academy');
+          window.history.pushState({}, '', '/academy');
         } else {
           window.history.pushState({}, '', `/${tab}`);
         }
@@ -486,12 +540,13 @@ export default function App({ path: propPath, initialData }: AppProps) {
     }
   };
 
+  // WebMCP Integration
   useWebMCP<{ section?: string }, unknown>({
     name: 'navigate_energeia_section',
-    description: 'Navigates the Energeia Cyprus energy portal to a target section.',
+    description: 'Navigates the Energeia Cyprus energy portal to a target surface or section.',
     inputSchema: NAVIGATE_SECTION_SCHEMA,
     annotations: { readOnlyHint: true },
-    execute({ section = 'news' }) {
+    execute({ section = 'cluster' }) {
       if (typeof section !== 'string' || !NAV_SECTIONS.includes(section as any)) {
         return { error: 'Unsupported section name.', supportedSections: NAV_SECTIONS };
       }
@@ -522,7 +577,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
           title: n.title,
           category: n.category,
           publishedAt: n.publishedAt,
-          url: n.slug ? `/news/${n.slug}` : '/',
+          url: n.slug ? `/news/${n.slug}` : '/research',
         })),
       };
     },
@@ -587,7 +642,7 @@ export default function App({ path: propPath, initialData }: AppProps) {
       window.history.pushState({}, '', '/');
       window.dispatchEvent(new Event('popstate'));
     }
-    setRefreshKey(prev => prev + 1); // reload news
+    setRefreshKey(prev => prev + 1);
   };
 
   if (isAdminRoute) {
@@ -632,31 +687,33 @@ export default function App({ path: propPath, initialData }: AppProps) {
   }
 
   const renderActiveScreen = () => {
-    switch (activeTab) {
-      case 'news':
-        return <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
-      case 'terminal':
-        return FEATURES.enableTerminal ? <TerminalScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
+    // Priority 1: Institutional & Legal subpages
+    if (activeTab === 'about') return <AboutScreen />;
+    if (activeTab === 'register') return <RegisterScreen />;
+    if (activeTab === 'magazine') return <MagazineScreen />;
+    if (activeTab === 'terms') return <TermsScreen />;
+    if (activeTab === 'privacy') return <PrivacyScreen />;
+    if (activeTab === 'cookies') return <CookieScreen />;
+    if (activeTab === 'disclosures') return <CorporateDisclosuresScreen />;
+
+    // Priority 2: Federated Ecosystem Surfaces
+    switch (surface) {
+      case 'research':
+        return <ResearchFeedLayout key={refreshKey} language={language} path={currentPath} />;
+      case 'helios':
+        return <HeliosTerminalLayout />;
       case 'members':
-        return FEATURES.enableMembers ? <DirectoryScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
-      case 'magazine':
-        return FEATURES.enableMagazine ? <MagazineScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
+        return <DirectoryLayout />;
       case 'academy':
-        return FEATURES.enableAcademy ? <AcademyScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
-      case 'about':
-        return FEATURES.enableAbout ? <AboutScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
-      case 'register':
-        return FEATURES.enableRegister ? <RegisterScreen /> : <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
-      case 'terms':
-        return <TermsScreen />;
-      case 'privacy':
-        return <PrivacyScreen />;
-      case 'cookies':
-        return <CookieScreen />;
-      case 'disclosures':
-        return <CorporateDisclosuresScreen />;
+        return <AcademyLayout />;
+      case 'cluster':
       default:
-        return <NewsFeedScreen key={refreshKey} language={language} path={currentPath} />;
+        return (
+          <ClusterPortalLayout 
+            onNavigateSurface={handleSurfaceChange} 
+            language={language} 
+          />
+        );
     }
   };
 
@@ -669,13 +726,16 @@ export default function App({ path: propPath, initialData }: AppProps) {
         >
           Skip to main content
         </a>
-        <ScrollToTop trigger={activeTab} />
-        {/* Sticky Top App Bar */}
+        <ScrollToTop trigger={`${surface}-${activeTab}`} />
+
+        {/* Sticky Top App Bar with Google 9-Dots App Launcher */}
         <TopAppBar
           activeTab={activeTab}
           onTabChange={handleTabChange}
           language={language}
           onLanguageChange={handleLanguageChange}
+          currentSurface={surface}
+          onSelectSurface={handleSurfaceChange}
         />
 
         {/* Main View Area */}
@@ -687,8 +747,8 @@ export default function App({ path: propPath, initialData }: AppProps) {
           </ErrorBoundary>
         </main>
 
-        {/* Global Footer */}
-        {activeTab !== 'terminal' && <Footer />}
+        {/* Global Footer (Hidden in Helios full-screen Terminal mode) */}
+        {surface !== 'helios' && activeTab !== 'terminal' && <Footer />}
 
         {/* PWA Home Screen Onboarding Prompt */}
         {mountDeferredUI && (
