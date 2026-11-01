@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="text-xs text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] font-mono">
-          <span>M3J2 LTD • HE 438859 • VAT CY10438859X</span>
+          <span>Energeia is operated by M3J2 LTD • HE 438859 • VAT CY10438859X • Limassol, Cyprus</span>
         </div>
       </div>
 
@@ -85,15 +85,30 @@ export const Footer: React.FC = () => {
           </ul>
         </div>
 
-        {/* Column 3: Statutory Legal & Disclosures */}
+        {/* Column 3: Institutional Governance & Ethics */}
         <div className="space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-[var(--md-sys-color-on-surface,#1F1F1F)] dark:text-white">
-            Statutory Legal
+            Governance &amp; Statutory
           </div>
           <ul className="space-y-2 text-xs">
             <li>
-              <a href="/terms" className="text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors">
-                {t('terms.title', 'Terms & Conditions')}
+              <a href="/about#manifesto" className="text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors">
+                Manifesto
+              </a>
+            </li>
+            <li>
+              <a href="/about#governance" className="text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors">
+                Governance &amp; Bylaws
+              </a>
+            </li>
+            <li>
+              <a href="/about#working-groups" className="text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors">
+                Working Groups
+              </a>
+            </li>
+            <li>
+              <a href="/research" className="text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors">
+                Research &amp; Filings
               </a>
             </li>
             <li>
@@ -102,13 +117,8 @@ export const Footer: React.FC = () => {
               </a>
             </li>
             <li>
-              <a href="/cookies" className="text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors">
-                {t('cookies.title', 'Cookie Policy')}
-              </a>
-            </li>
-            <li>
-              <a href="/disclosures" className="text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors">
-                {t('disclosures.title', 'Corporate Disclosures')}
+              <a href="/terms#ethics" className="text-[var(--md-sys-color-secondary-text,#5F6368)] dark:text-[#9AA0A6] hover:text-[var(--md-sys-color-primary,#1A73E8)] dark:hover:text-[var(--md-sys-color-primary,#8AB4F8)] transition-colors">
+                Code of Ethics
               </a>
             </li>
           </ul>

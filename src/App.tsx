@@ -764,8 +764,8 @@ export default function App({ path: propPath, initialData, hostname }: AppProps)
           </ErrorBoundary>
         </main>
 
-        {/* Global Footer (Hidden in Helios full-screen Terminal mode) */}
-        {surface !== 'helios' && activeTab !== 'terminal' && <Footer />}
+        {/* Global Footer (Hidden in Helios terminal and on Cluster Portal homepage where Section 8 is built-in) */}
+        {surface !== 'helios' && (surface !== 'cluster' || activeTab !== 'cluster') && activeTab !== 'terminal' && <Footer />}
 
         {/* PWA Home Screen Onboarding Prompt */}
         {mountDeferredUI && (

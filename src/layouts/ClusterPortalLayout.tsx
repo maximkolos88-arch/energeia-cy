@@ -15,145 +15,41 @@ import {
   Award, 
   Layers, 
   CheckCircle2, 
-  Radio, 
-  SlidersHorizontal,
-  ChevronRight,
-  TrendingUp,
-  Cpu,
   Clock,
-  ExternalLink
+  ExternalLink,
+  BatteryCharging,
+  Scale,
+  Network,
+  TrendingUp,
+  ChevronRight,
+  Sparkles,
+  FileCheck2,
+  Check
 } from 'lucide-react';
 import { useInitialData } from '../context/InitialDataContext';
-import { NewsRepository } from '../services/repositories/NewsRepository';
-import { NewsItem } from '../models/types';
+import { NewsItem, DirectoryMember } from '../models/types';
 import { getOptimizedImageUrl } from '../utils/imageProxy';
 import { EcosystemSurface, getSurfaceUrl } from '../utils/ecosystemRouting';
 import { MembershipIntakeModal } from '../components/membership/MembershipIntakeModal';
+import { CompanyDossierModal } from '../components/directory/CompanyDossierModal';
+import { ArticleDetailView } from '../components/research/ArticleDetailView';
+import { EnergeiaLogo } from '../components/EnergeiaLogo';
+import { 
+  NATIONAL_METRICS,
+  STRATEGIC_PILLARS,
+  MEMBER_TIERS,
+  MemberTierKey,
+  CLUSTER_PORTAL_MEMBERS,
+  PortalMemberEntry,
+  CLUSTER_SURFACES,
+  STATUTORY_CYPRUS_RESOURCES,
+  CLUSTER_EDITORIAL_BRIEFS
+} from '../data/clusterPortalData';
 
 export interface ClusterPortalLayoutProps {
   onNavigateSurface?: (surface: EcosystemSurface, path?: string) => void;
   language?: string;
 }
-
-interface WorkingGroup {
-  id: string;
-  number: string;
-  title: string;
-  focus: string;
-  initiatives: string[];
-  chair: string;
-}
-
-const WORKING_GROUPS: WorkingGroup[] = [
-  {
-    id: 'bess-grid',
-    number: 'WG 01',
-    title: 'Grid Modernization & BESS Storage',
-    focus: 'Overcoming TSOC grid curtailment, co-located battery tenders (150MW+), and fast-frequency reserve market design.',
-    initiatives: ['Curtailment Reduction Framework', 'Centralized BESS Tender Rules', 'Fast Frequency Response Standards'],
-    chair: 'Technical Grid Committee',
-  },
-  {
-    id: 'utility-solar',
-    number: 'WG 02',
-    title: 'Solar PV & Utility Generation',
-    focus: 'Accelerating spatial licensing, agricultural land zoning standards, and private bilateral corporate PPA structures.',
-    initiatives: ['Licensing Bottleneck Reduction', 'Agri-PV Technical Guidance', 'Corporate PPA Standard Contracts'],
-    chair: 'Renewables Working Group',
-  },
-  {
-    id: 'regulatory-cera',
-    number: 'WG 03',
-    title: 'Regulatory Modernization & CERA Sandbox',
-    focus: 'Advocating for full wholesale electricity market opening, net-billing evolution, and smart meter data interoperability.',
-    initiatives: ['Target Market Transitional Rules', 'Net-Billing Tariff Evolution', 'Open Grid Data Access'],
-    chair: 'Policy & Regulatory Affairs',
-  },
-  {
-    id: 'interconnector',
-    number: 'WG 04',
-    title: 'Regional Interconnection & Offshore Wind',
-    focus: 'Great Sea Interconnector (500kV HVDC) integration, cross-border trading readiness, and Cyprus EEZ marine spatial planning.',
-    initiatives: ['EuroAsia HVDC Market Coupling', 'Offshore Wind Feasibility in EEZ', 'Regional Subsea Transmission'],
-    chair: 'Cross-Border Taskforce',
-  },
-  {
-    id: 'green-h2',
-    number: 'WG 05',
-    title: 'Green Hydrogen & Industrial Decarbonization',
-    focus: 'Industrial clean fuels roadmap for the Vasilikos and Dhekelia industrial corridors and heavy transport decarbonization.',
-    initiatives: ['Vasilikos Hydrogen Hub Study', 'Port Decarbonization Framework', 'Renewable Fuels of Non-Biological Origin (RFNBO)'],
-    chair: 'Decarbonization Council',
-  },
-];
-
-const NATIONAL_KPIS = [
-  {
-    label: 'Installed Solar PV Capacity',
-    value: '850+ MWp',
-    subtext: 'Over 35,000 residential & utility systems',
-    trend: '+22% YoY Growth',
-    badge: 'Operational',
-    badgeColor: 'text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300',
-  },
-  {
-    label: 'Utility BESS Pipeline',
-    value: '320 MWh',
-    subtext: 'Fast-track storage tenders in progress',
-    trend: 'Allocation Q1 2027',
-    badge: 'Tender Stage',
-    badgeColor: 'text-blue-700 bg-blue-50 dark:bg-blue-950/40 dark:text-blue-300',
-  },
-  {
-    label: 'RES Grid Penetration',
-    value: '19.8%',
-    subtext: 'Annual generation share target: 33% by 2030',
-    trend: 'NECP 2030 Roadmap',
-    badge: 'Target Metric',
-    badgeColor: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300',
-  },
-  {
-    label: 'Great Sea Interconnector (GSI)',
-    value: '€1.9B / 1,000 MW',
-    subtext: 'Subsea HVDC Crete–Cyprus link under execution',
-    trend: 'Nexans Subsea Cable',
-    badge: 'Under Execution',
-    badgeColor: 'text-purple-700 bg-purple-50 dark:bg-purple-950/40 dark:text-purple-300',
-  },
-];
-
-const STRATEGIC_INITIATIVES = [
-  {
-    title: 'Great Sea Interconnector (EuroAsia Subsea HVDC)',
-    status: 'In Progress',
-    statusColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300',
-    description: '1,208 km subsea 500kV HVDC interconnection connecting Cyprus to Crete and mainland Europe, terminating the island’s energy isolation.',
-    timeline: 'Target Commercial Ops: 2029',
-  },
-  {
-    title: '150MW+ Battery Energy Storage (BESS) Fast-Track Tender',
-    status: 'Consultation',
-    statusColor: 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300',
-    description: 'Ministry of Energy and CERA framework to deploy centralized and co-located storage to stem rising renewable curtailment (>25%).',
-    timeline: 'Allocation Window: Q1 2027',
-  },
-  {
-    title: 'Full Liberalized Wholesale Market Opening (CERA/TSOC)',
-    status: 'Final Staging',
-    statusColor: 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300',
-    description: 'Transition from the interim bilateral contract regime to the European Target Model with Day-Ahead and Balancing Markets.',
-    timeline: 'Go-Live Readiness 2027',
-  },
-];
-
-const ACCREDITED_PARTNERS = [
-  { name: 'Electricity Authority of Cyprus (EAC)', role: 'National Power Producer & DSO', category: 'Grid Operator' },
-  { name: 'Transmission System Operator (TSOC)', role: 'Transmission & Market Operator', category: 'System Operator' },
-  { name: 'Cyprus Energy Regulatory Authority (CERA)', role: 'Independent Energy Regulator', category: 'Statutory Regulator' },
-  { name: 'Bioland Energy Group', role: 'Utility-Scale Solar & BESS Developer', category: 'Producer & EPC' },
-  { name: 'Muskita Energy', role: 'Renewable Power Producer', category: 'Producer' },
-  { name: 'Green Energy Group', role: 'EPC & Grid Integration Specialist', category: 'EPC Contractor' },
-];
 
 export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
   onNavigateSurface,
@@ -161,36 +57,22 @@ export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
 }) => {
   const { t } = useTranslation();
   const initialData = useInitialData();
-  const [news, setNews] = useState<NewsItem[]>([]);
+
+  // Modals & Active Overlays
   const [isIntakeModalOpen, setIsIntakeModalOpen] = useState(false);
   const [selectedTier, setSelectedTier] = useState<'Strategic Partner' | 'Corporate Member' | 'Associate / Academic'>('Corporate Member');
+  const [selectedDossierMember, setSelectedDossierMember] = useState<DirectoryMember | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
 
-  // Dynamic Telemetry State
+  // Member Showcase Active Tab
+  const [activeTierKey, setActiveTierKey] = useState<MemberTierKey>('Strategic Partners');
+
+  // Dynamic Telemetry State (TSOC / ENTSO-E)
   const [gridFrequency, setGridFrequency] = useState('50.02');
   const [lastSyncTime, setLastSyncTime] = useState<string>('Just now');
   const [systemLoadMw, setSystemLoadMw] = useState<number>(592.4);
 
-  useEffect(() => {
-    let isMounted = true;
-    if (initialData?.newsItems && initialData.newsItems.length > 0) {
-      setNews(initialData.newsItems.slice(0, 3));
-      return;
-    }
-
-    NewsRepository.getPublishedNews('All Updates')
-      .then((items) => {
-        if (isMounted) {
-          setNews(items.slice(0, 3));
-        }
-      })
-      .catch(() => {});
-
-    return () => {
-      isMounted = false;
-    };
-  }, [initialData]);
-
-  // Live Telemetry simulation & real fetch
+  // Live Telemetry Simulation & Telemetry API sync
   useEffect(() => {
     let timer: any;
     const fetchTelemetry = async () => {
@@ -203,11 +85,11 @@ export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
           }
         }
       } catch {}
-      
-      // Dynamic frequency fluctuation around 50.00 Hz
+
+      // Stable micro-jitter around 50.00 Hz
       const jitter = (50.00 + (Math.random() * 0.04 - 0.02)).toFixed(2);
       setGridFrequency(jitter);
-      
+
       const now = new Date();
       setLastSyncTime(now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     };
@@ -229,36 +111,66 @@ export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
     setIsIntakeModalOpen(true);
   };
 
+  const handleOpenDossier = (member: DirectoryMember) => {
+    setSelectedDossierMember(member);
+  };
+
+  const handleClaimProfileFromDossier = (member: DirectoryMember) => {
+    setSelectedDossierMember(null);
+    openIntake('Corporate Member');
+  };
+
+  // If viewing an article, render the Google Research Whitepaper reader
+  if (selectedArticle) {
+    return (
+      <ArticleDetailView
+        article={selectedArticle}
+        onBack={() => setSelectedArticle(null)}
+        language={language}
+      />
+    );
+  }
+
+  // Filter members for active tier
+  const displayedMembers = CLUSTER_PORTAL_MEMBERS.filter(
+    (m) => m.tierCategory === activeTierKey
+  );
+
   return (
-    <div className="w-full bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] transition-colors">
-      
-      {/* 1. INSTITUTIONAL MASTHEAD SECTION (Google & TechIsland Model) */}
-      <section className="relative w-full max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-16 pb-10 sm:pb-16 border-b border-[#F1F3F4] dark:border-[#282A2C]">
+    <div className="w-full bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] transition-colors selection:bg-[#E8F0FE] dark:selection:bg-[#0842A0]/40">
+
+      {/* ==================================================================== */}
+      {/* SECTION 1: HERO & ASSOCIATION MISSION (TECHISLAND MODEL)             */}
+      {/* ==================================================================== */}
+      <section className="relative w-full max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-20 pb-16 sm:pb-24 border-b border-[#F1F3F4] dark:border-[#282A2C]">
         
-        {/* Subtle Decorative Flag Area Gradient Dot Pill */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8F9FA] dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] mb-6">
-          <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#FFFFFF] via-[#D46200] to-[#3C4E1C] ring-1 ring-black/10 dark:ring-white/20" />
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6]">
-            Cyprus National Energy Cluster • M3J2 LTD HE 438859
+        {/* Cyprus Flag Gradient Dot Pill Badge */}
+        <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#F8F9FA] dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] mb-6">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D46200] opacity-40"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-r from-[#FFFFFF] via-[#D46200] to-[#3C4E1C] ring-1 ring-black/10 dark:ring-white/20"></span>
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6]">
+            Republic of Cyprus Energy Cluster
           </span>
         </div>
 
-        {/* Headline */}
-        <h1 className="text-[34px] sm:text-[56px] font-normal tracking-tight text-[#1F1F1F] dark:text-[#E3E3E3] leading-[1.12] max-w-4xl mb-6">
-          The national energy industry cluster of Cyprus
+        {/* Main Headline (Google Sans, 500 weight) */}
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-[#1F1F1F] dark:text-[#E3E3E3] leading-[1.12] max-w-4xl mb-6">
+          Unifying the Leaders Powering Cyprus’s Clean Energy Future
         </h1>
 
-        {/* Subhead */}
-        <p className="text-lg sm:text-xl text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed max-w-3xl mb-8">
-          Convening utility-scale solar developers, battery storage operators, network engineers, institutional capital, and policymakers to accelerate the Cyprus energy transition, Mediterranean interconnectivity, and market modernization.
+        {/* Institutional Subheadline */}
+        <p className="text-base sm:text-xl text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed max-w-3xl mb-10">
+          Energeia is the apex non-profit industry association bringing together solar operators, storage developers, grid engineers, and institutional partners to accelerate the island's energy independence and regulatory modernization.
         </p>
 
-        {/* Primary Action Buttons */}
+        {/* Primary Call-to-Actions */}
         <div className="flex flex-wrap items-center gap-4 pt-2">
           <button
             type="button"
             onClick={() => openIntake('Corporate Member')}
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#062E6F] font-medium text-sm transition-all shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#062E6F] font-medium text-sm transition-all shadow-xs hover:shadow-md cursor-pointer"
           >
             <Building2 className="w-4 h-4" />
             <span>Join the Cluster</span>
@@ -266,42 +178,54 @@ export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
           </button>
 
           <a
-            href={getSurfaceUrl('research')}
-            onClick={(e) => handleSurfaceNavigate(e, 'research', '/research')}
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#F1F3F4] dark:bg-[#282A2C] hover:bg-[#E8EAED] dark:hover:bg-[#333537] text-[#1F1F1F] dark:text-[#E3E3E3] font-medium text-sm transition-all border border-[#DADCE0] dark:border-[#444746] cursor-pointer"
+            href={getSurfaceUrl('members')}
+            onClick={(e) => handleSurfaceNavigate(e, 'members', '/members')}
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white dark:bg-[#1E1F20] hover:bg-[#F8F9FA] dark:hover:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3] font-medium text-sm transition-all border border-[#DADCE0] dark:border-[#444746] cursor-pointer shadow-2xs"
           >
-            <Compass className="w-4 h-4 text-[#1A73E8]" />
-            <span>Explore Intelligence Feed</span>
+            <Users className="w-4 h-4 text-[#1A73E8] dark:text-[#8AB4F8]" />
+            <span>Explore Member Directory →</span>
           </a>
 
           <a
             href={getSurfaceUrl('helios')}
             onClick={(e) => handleSurfaceNavigate(e, 'helios', '/helios')}
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[#D46200] dark:text-[#FFA726] hover:bg-[#FEF7E0] dark:hover:bg-[#FFA726]/10 font-medium text-sm transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full text-[#D46200] dark:text-[#FFA726] hover:bg-[#FEF7E0] dark:hover:bg-[#FFA726]/10 font-medium text-sm transition-all cursor-pointer"
           >
             <Zap className="w-4 h-4" />
-            <span>Launch Helios 3D GIS</span>
+            <span>Helios 3D GIS Terminal</span>
             <ArrowUpRight className="w-4 h-4" />
           </a>
         </div>
 
-        {/* Institutional Authority / Follow Bar */}
-        <div className="pt-10 flex flex-wrap items-center justify-between gap-6 text-xs text-[#5F6368] dark:text-[#9AA0A6]">
-          <div className="flex items-center gap-3">
+        {/* Institutional Authority / Channels Strip */}
+        <div className="mt-12 pt-8 border-t border-[#F1F3F4] dark:border-[#282A2C] flex flex-col md:flex-row md:items-center justify-between gap-6 text-xs text-[#5F6368] dark:text-[#9AA0A6]">
+          <div className="flex flex-wrap items-center gap-3">
             <span className="font-semibold uppercase tracking-wider text-[#1F1F1F] dark:text-white">
-              Institutional Pillars:
+              Institutional Agenda:
             </span>
-            <span>Policy Advocacy</span>
+            <span className="inline-flex items-center gap-1.5 font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1A73E8]"></span>
+              Policy Advocacy
+            </span>
             <span>•</span>
-            <span>Grid Telemetry</span>
+            <span className="inline-flex items-center gap-1.5 font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D46200]"></span>
+              Grid Telemetry
+            </span>
             <span>•</span>
-            <span>Accredited B2B Registry</span>
+            <span className="inline-flex items-center gap-1.5 font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#137333]"></span>
+              Accredited B2B Registry
+            </span>
             <span>•</span>
-            <span>Workforce Certification</span>
+            <span className="inline-flex items-center gap-1.5 font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7B1FA2]"></span>
+              Workforce Certification
+            </span>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="uppercase tracking-wider font-semibold">Channels:</span>
+            <span className="uppercase tracking-wider font-semibold text-[#80868B] dark:text-[#5F6368]">Channels:</span>
             <a href="https://x.com/energeiacy" target="_blank" rel="noopener noreferrer" className="hover:text-[#1A73E8] transition-colors">
               X / Twitter ↗
             </a>
@@ -315,24 +239,26 @@ export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
         </div>
       </section>
 
-      {/* 2. DYNAMIC NATIONAL ENERGY KPI & TELEMETRY STRIP */}
-      <section className="w-full bg-[#F8F9FA] dark:bg-[#18191A] py-10 border-b border-[#F1F3F4] dark:border-[#282A2C]">
+      {/* ==================================================================== */}
+      {/* SECTION 2: NATIONAL IMPACT & TELEMETRY STRIP (CERA / TSOC STATS)     */}
+      {/* ==================================================================== */}
+      <section className="w-full bg-[#F8F9FA] dark:bg-[#18191A] py-12 sm:py-16 border-b border-[#F1F3F4] dark:border-[#282A2C]">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           
-          {/* Live Telemetry Status Bar */}
-          <div className="mb-6 p-4 rounded-2xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
+          {/* Sub-bar: Real-time TSOC Telemetry Indicator */}
+          <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
             <div className="flex flex-wrap items-center gap-3">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
               <span className="text-xs font-semibold text-[#1F1F1F] dark:text-white uppercase tracking-wider">
-                TSOC Live Grid Data Synced
+                TSOC Grid Telemetry Synced
               </span>
-              <span className="hidden sm:inline text-xs text-[#80868B] dark:text-[#5F6368]">•</span>
+              <span className="hidden sm:inline text-xs text-[#DADCE0] dark:text-[#3C4043]">|</span>
               <span className="text-xs font-mono text-[#5F6368] dark:text-[#9AA0A6] flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5" />
-                <span>System Status: Balanced · {gridFrequency} Hz · Load: {systemLoadMw} MW ({lastSyncTime})</span>
+                <span>TSOC Grid Frequency: <strong className="text-[#1F1F1F] dark:text-white font-semibold">{gridFrequency} Hz</strong> · Balanced · Load: {systemLoadMw} MW ({lastSyncTime})</span>
               </span>
             </div>
 
@@ -340,36 +266,26 @@ export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
               <a
                 href={getSurfaceUrl('helios')}
                 onClick={(e) => handleSurfaceNavigate(e, 'helios', '/helios')}
-                className="text-[#D46200] dark:text-[#FFA726] hover:underline flex items-center gap-1"
+                className="inline-flex items-center gap-1 text-[#D46200] dark:text-[#FFA726] hover:underline cursor-pointer"
               >
-                <span>Explore 3D Grid Map</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
-              <span className="text-[#80868B] dark:text-[#5F6368]">•</span>
-              <a
-                href={getSurfaceUrl('research')}
-                onClick={(e) => handleSurfaceNavigate(e, 'research', '/research')}
-                className="text-[#1A73E8] dark:text-[#8AB4F8] hover:underline flex items-center gap-1"
-              >
-                <span>Read Market Curtailment Analysis</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span>Open Helios 3D GIS Terminal →</span>
               </a>
             </div>
           </div>
 
-          {/* 4 Core KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {NATIONAL_KPIS.map((kpi, idx) => (
+          {/* 4 Core National Impact Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {NATIONAL_METRICS.map((kpi) => (
               <div 
-                key={idx} 
+                key={kpi.id} 
                 className="bg-white dark:bg-[#1E1F20] p-6 rounded-3xl border border-[#DADCE0] dark:border-[#3C4043] flex flex-col justify-between shadow-2xs hover:shadow-xs transition-shadow"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${kpi.badgeColor}`}>
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${kpi.badgeColor}`}>
                       {kpi.badge}
                     </span>
-                    <span className="text-xs font-medium text-[#5F6368] dark:text-[#9AA0A6]">
+                    <span className="text-[11px] font-medium text-[#5F6368] dark:text-[#9AA0A6]">
                       {kpi.trend}
                     </span>
                   </div>
@@ -385,6 +301,9 @@ export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
                   <div className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1 leading-relaxed">
                     {kpi.subtext}
                   </div>
+                  <div className="text-[10px] font-mono text-[#80868B] dark:text-[#5F6368] mt-2">
+                    Source: {kpi.source}
+                  </div>
                 </div>
               </div>
             ))}
@@ -392,407 +311,658 @@ export const ClusterPortalLayout: React.FC<ClusterPortalLayoutProps> = ({
         </div>
       </section>
 
-      {/* 3. FEDERATED ECOSYSTEM SURFACES (Interactive Architectural Navigator) */}
+      {/* ==================================================================== */}
+      {/* SECTION 3: THE 4 STRATEGIC PILLARS (STRUCTURED 2x2 GRID)            */}
+      {/* ==================================================================== */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24 border-b border-[#F1F3F4] dark:border-[#282A2C]">
         <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8F0FE] dark:bg-[#0842A0]/30 text-[#1A73E8] dark:text-[#8AB4F8] text-[11px] font-semibold uppercase tracking-wider mb-3">
-            Federated Architecture
-          </div>
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8] block mb-2">
+            Strategic Roadmap
+          </span>
           <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
-            Specialized surfaces powering the national energy network
+            The 4 Strategic Working Pillars
           </h2>
           <p className="text-sm sm:text-base text-[#5F6368] dark:text-[#9AA0A6] mt-3 leading-relaxed">
-            From high-frequency regulatory briefings to real-time 3D GIS grid telemetry and accredited B2B partner directories, each surface is purpose-built for clean execution.
+            Representing the core operational agenda of the cluster to resolve structural bottlenecks, unlock commercial battery storage, and connect Cyprus to the European energy market.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
-          {/* Surface 1: Research & Intelligence */}
-          <a
-            href={getSurfaceUrl('research')}
-            onClick={(e) => handleSurfaceNavigate(e, 'research', '/research')}
-            className="group p-6 rounded-3xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] hover:border-[#1A73E8] dark:hover:border-[#8AB4F8] transition-all flex flex-col justify-between shadow-2xs hover:shadow-md cursor-pointer"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#E8F0FE] dark:bg-[#0842A0]/30 flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] mb-6 group-hover:scale-105 transition-transform">
-                <Compass className="w-6 h-6" />
-              </div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8] mb-1">
-                research.energeia.cy
-              </div>
-              <h3 className="text-xl font-medium text-[#1F1F1F] dark:text-white group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
-                Research &amp; Intelligence
-              </h3>
-              <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-2.5 leading-relaxed">
-                Editorial publication stream: CERA regulatory filings, TSOC curtailment reports, and wholesale market analytics.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between text-xs font-medium text-[#1A73E8] dark:text-[#8AB4F8]">
-              <span>Enter Feed</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </a>
+        {/* 2x2 Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {STRATEGIC_PILLARS.map((pillar) => {
+            const getIcon = () => {
+              switch (pillar.iconKey) {
+                case 'battery':
+                  return <BatteryCharging className="w-6 h-6 text-amber-600 dark:text-amber-400" />;
+                case 'scale':
+                  return <Scale className="w-6 h-6 text-blue-600 dark:text-blue-400" />;
+                case 'network':
+                  return <Network className="w-6 h-6 text-purple-600 dark:text-purple-400" />;
+                case 'shield':
+                default:
+                  return <Award className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />;
+              }
+            };
 
-          {/* Surface 2: Helios Terminal */}
-          <a
-            href={getSurfaceUrl('helios')}
-            onClick={(e) => handleSurfaceNavigate(e, 'helios', '/helios')}
-            className="group p-6 rounded-3xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] hover:border-[#D46200] dark:hover:border-[#FFA726] transition-all flex flex-col justify-between shadow-2xs hover:shadow-md cursor-pointer"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#FEF7E0] dark:bg-[#FFA726]/20 flex items-center justify-center text-[#D46200] dark:text-[#FFA726] mb-6 group-hover:scale-105 transition-transform">
-                <Zap className="w-6 h-6" />
-              </div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-[#D46200] dark:text-[#FFA726] mb-1">
-                helios.energeia.cy
-              </div>
-              <h3 className="text-xl font-medium text-[#1F1F1F] dark:text-white group-hover:text-[#D46200] dark:group-hover:text-[#FFA726] transition-colors">
-                Helios 3D Terminal
-              </h3>
-              <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-2.5 leading-relaxed">
-                Full-screen dark geospatial terminal mapping 520+ power stations, transmission lines, and live ENTSO-E market telemetry.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between text-xs font-medium text-[#D46200] dark:text-[#FFA726]">
-              <span>Launch Terminal</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </a>
+            const getBg = () => {
+              switch (pillar.accentColor) {
+                case 'amber':
+                  return 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/40';
+                case 'blue':
+                  return 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/40';
+                case 'purple':
+                  return 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800/40';
+                case 'emerald':
+                default:
+                  return 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/40';
+              }
+            };
 
-          {/* Surface 3: Members Directory */}
-          <a
-            href={getSurfaceUrl('members')}
-            onClick={(e) => handleSurfaceNavigate(e, 'members', '/members')}
-            className="group p-6 rounded-3xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] hover:border-[#137333] dark:hover:border-[#81C995] transition-all flex flex-col justify-between shadow-2xs hover:shadow-md cursor-pointer"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#E6F4EA] dark:bg-[#137333]/20 flex items-center justify-center text-[#137333] dark:text-[#81C995] mb-6 group-hover:scale-105 transition-transform">
-                <Users className="w-6 h-6" />
-              </div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-[#137333] dark:text-[#81C995] mb-1">
-                members.energeia.cy
-              </div>
-              <h3 className="text-xl font-medium text-[#1F1F1F] dark:text-white group-hover:text-[#137333] dark:group-hover:text-[#81C995] transition-colors">
-                Ecosystem Directory
-              </h3>
-              <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-2.5 leading-relaxed">
-                Accredited B2B registry of verified solar developers, EPC contractors, battery storage operators, and ESG consultants.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between text-xs font-medium text-[#137333] dark:text-[#81C995]">
-              <span>Browse Registry</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </a>
+            return (
+              <div
+                key={pillar.id}
+                className="p-8 rounded-3xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] hover:border-[#1A73E8] dark:hover:border-[#8AB4F8] transition-all flex flex-col justify-between shadow-2xs hover:shadow-xs"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-[#F8F9FA] dark:bg-[#131314] border border-[#DADCE0] dark:border-[#3C4043] text-[#5F6368] dark:text-[#9AA0A6]">
+                      PILLAR {pillar.number}
+                    </span>
+                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border ${getBg()}`}>
+                      {getIcon()}
+                    </div>
+                  </div>
 
-          {/* Surface 4: Academy */}
-          <a
-            href={getSurfaceUrl('academy')}
-            onClick={(e) => handleSurfaceNavigate(e, 'academy', '/academy')}
-            className="group p-6 rounded-3xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] hover:border-[#7B1FA2] dark:hover:border-[#D7AEFB] transition-all flex flex-col justify-between shadow-2xs hover:shadow-md cursor-pointer"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-[#F3E8FD] dark:bg-[#7B1FA2]/20 flex items-center justify-center text-[#7B1FA2] dark:text-[#D7AEFB] mb-6 group-hover:scale-105 transition-transform">
-                <GraduationCap className="w-6 h-6" />
-              </div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-[#7B1FA2] dark:text-[#D7AEFB] mb-1">
-                academy.energeia.cy
-              </div>
-              <h3 className="text-xl font-medium text-[#1F1F1F] dark:text-white group-hover:text-[#7B1FA2] dark:group-hover:text-[#D7AEFB] transition-colors">
-                Energeia Academy
-              </h3>
-              <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-2.5 leading-relaxed">
-                Workforce upskilling, PV certification standards, and technical masterclasses empowering the Mediterranean green transition.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between text-xs font-medium text-[#7B1FA2] dark:text-[#D7AEFB]">
-              <span>Explore Courses</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </a>
+                  <h3 className="text-xl sm:text-2xl font-medium text-[#1F1F1F] dark:text-white leading-snug">
+                    {pillar.title}
+                  </h3>
 
+                  <p className="text-xs font-medium text-[#1A73E8] dark:text-[#8AB4F8] mt-1.5 uppercase tracking-wide">
+                    {pillar.headline}
+                  </p>
+
+                  <p className="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-3 leading-relaxed">
+                    {pillar.description}
+                  </p>
+                </div>
+
+                <div className="mt-6 pt-5 border-t border-[#F1F3F4] dark:border-[#282A2C]">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1F1F1F] dark:text-white block mb-2.5">
+                    Key Cluster Initiatives:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {pillar.keyInitiatives.map((init, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 rounded-full text-xs font-medium bg-[#F8F9FA] dark:bg-[#131314] text-[#444746] dark:text-[#C4C7C5] border border-[#DADCE0] dark:border-[#3C4043]"
+                      >
+                        {init}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* 4. CLUSTER WORKING GROUPS (TechIsland Pillar Model) */}
+      {/* ==================================================================== */}
+      {/* SECTION 4: MEMBERS & STRATEGIC PARTNERS (TECHISLAND SHOWCASE)       */}
+      {/* ==================================================================== */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24 border-b border-[#F1F3F4] dark:border-[#282A2C]">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div className="max-w-2xl">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8]">
-              Institutional Working Groups
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#137333] dark:text-[#81C995] block mb-2">
+              Accredited Industry Network
             </span>
-            <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight mt-1">
-              Driving national policy reform &amp; grid execution
+            <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+              Accredited Members &amp; Institutional Partners
             </h2>
-            <p className="text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-3">
-              Modeled after leading industry associations, Energeia working groups bring together market operators, legal minds, and engineers to draft concrete regulatory proposals.
+            <p className="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-2 leading-relaxed">
+              From sovereign utility operators to agile B2B contractors, our members represent over 75% of Cyprus's installed private energy pipeline.
+            </p>
+          </div>
+
+          <a
+            href={getSurfaceUrl('members')}
+            onClick={(e) => handleSurfaceNavigate(e, 'members', '/members')}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1A73E8] dark:text-[#8AB4F8] hover:underline cursor-pointer flex-shrink-0"
+          >
+            <span>View Full Directory (50+ Companies)</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+
+        {/* Categorized Tier Navigation Tabs (Google Pill Tabs) */}
+        <div className="flex flex-wrap items-center gap-2 mb-8 pb-2 border-b border-[#F1F3F4] dark:border-[#282A2C]">
+          {MEMBER_TIERS.map((tier) => {
+            const isActive = activeTierKey === tier.key;
+            return (
+              <button
+                key={tier.key}
+                type="button"
+                onClick={() => setActiveTierKey(tier.key)}
+                className={`px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer inline-flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-[#1A73E8] text-white dark:bg-[#8AB4F8] dark:text-[#062E6F] shadow-2xs font-semibold'
+                    : 'bg-[#F8F9FA] dark:bg-[#1E1F20] text-[#5F6368] dark:text-[#9AA0A6] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] border border-[#DADCE0] dark:border-[#3C4043]'
+                }`}
+              >
+                <span>{tier.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  isActive 
+                    ? 'bg-white/20 text-white dark:bg-[#062E6F]/20 dark:text-[#062E6F]' 
+                    : 'bg-[#DADCE0] dark:bg-[#3C4043] text-[#5F6368] dark:text-[#C4C7C5]'
+                }`}>
+                  {tier.badgeCount}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active Tier Description */}
+        <div className="mb-6 text-xs text-[#5F6368] dark:text-[#9AA0A6] italic">
+          {MEMBER_TIERS.find((t) => t.key === activeTierKey)?.description}
+        </div>
+
+        {/* Member Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayedMembers.map((member) => (
+            <div
+              key={member.id}
+              className="bg-white dark:bg-[#1E1F20] rounded-3xl border border-[#DADCE0] dark:border-[#3C4043] p-6 flex flex-col justify-between hover:border-[#1A73E8] dark:hover:border-[#8AB4F8] transition-all shadow-2xs hover:shadow-xs group"
+            >
+              <div>
+                {/* Header: Logo and Verified Badge */}
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F8F9FA] dark:bg-[#282A2C] border border-[#DADCE0] dark:border-[#3C4043] flex items-center justify-center p-2 flex-shrink-0 group-hover:scale-105 transition-transform">
+                    {member.logoSvgUrl ? (
+                      <img
+                        src={member.logoSvgUrl}
+                        alt={member.name}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          // Fallback to text monogram if logo fails
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <span className="text-sm font-bold text-[#1A73E8] dark:text-[#8AB4F8]">
+                        {member.name.substring(0, 2).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#E6F4EA] dark:bg-[#137333]/20 text-[#137333] dark:text-[#81C995] border border-[#CEEAD6] dark:border-[#137333]/40">
+                    <ShieldCheck className="w-3 h-3" />
+                    <span>Verified Member</span>
+                  </span>
+                </div>
+
+                {/* Company Name & Role */}
+                <h3 className="text-base sm:text-lg font-medium text-[#1F1F1F] dark:text-white leading-snug group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
+                  {member.name}
+                </h3>
+                <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1 line-clamp-1">
+                  {member.roleOrCategory}
+                </p>
+
+                {/* Operational Capacity Pill */}
+                <div className="mt-4 px-3 py-2 rounded-xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#DADCE0] dark:border-[#3C4043] text-xs font-mono text-[#1F1F1F] dark:text-[#E3E3E3] flex items-center gap-2">
+                  <Zap className="w-3.5 h-3.5 text-[#D46200] dark:text-[#FFA726] flex-shrink-0" />
+                  <span className="truncate">{member.operationalCapacityText}</span>
+                </div>
+
+                {/* Expertise Tags */}
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {member.expertiseTags.slice(0, 3).map((tag, i) => (
+                    <span
+                      key={i}
+                      className="px-2 py-0.5 rounded-md text-[10px] bg-[#F1F3F4] dark:bg-[#282A2C] text-[#5F6368] dark:text-[#9AA0A6]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* View Dossier Button */}
+              <div className="mt-6 pt-4 border-t border-[#F1F3F4] dark:border-[#282A2C]">
+                <button
+                  type="button"
+                  onClick={() => handleOpenDossier(member)}
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#F1F3F4] hover:bg-[#E8EAED] dark:bg-[#282A2C] dark:hover:bg-[#333537] text-xs font-medium text-[#1F1F1F] dark:text-[#E3E3E3] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <span>View Dossier</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#1A73E8] dark:text-[#8AB4F8]" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Callout: Apply for Cluster Accreditation */}
+        <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-[#F8F9FA] dark:bg-[#18191A] border border-[#DADCE0] dark:border-[#3C4043] flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-2xs">
+          <div>
+            <h3 className="text-lg font-medium text-[#1F1F1F] dark:text-white">
+              Are you a licensed Cyprus energy business?
+            </h3>
+            <p className="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-1 max-w-2xl">
+              Join Cyprus's accredited energy association. Gain direct access to cluster working groups, regulatory consultation roundtables, B2B supply-chain partnerships, and international investor delegations.
             </p>
           </div>
           <button
             type="button"
             onClick={() => openIntake('Corporate Member')}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1A73E8] dark:text-[#8AB4F8] hover:underline cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#062E6F] text-xs sm:text-sm font-medium transition-all shadow-xs cursor-pointer flex-shrink-0"
           >
-            <span>Join a Working Group</span>
-            <ArrowUpRight className="w-4 h-4" />
+            <span>Apply for Cluster Accreditation →</span>
           </button>
         </div>
-
-        <div className="space-y-4">
-          {WORKING_GROUPS.map((wg) => (
-            <div
-              key={wg.id}
-              className="p-6 sm:p-8 rounded-3xl bg-[#F8F9FA] dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] transition-all hover:border-[#1A73E8] dark:hover:border-[#8AB4F8]"
-            >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div className="flex items-start gap-4">
-                  <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-white dark:bg-[#131314] border border-[#DADCE0] dark:border-[#444746] text-[#5F6368] dark:text-[#9AA0A6]">
-                    {wg.number}
-                  </span>
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-medium text-[#1F1F1F] dark:text-white">
-                      {wg.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-1.5 max-w-3xl leading-relaxed">
-                      {wg.focus}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-                  {wg.initiatives.map((init, i) => (
-                    <span 
-                      key={i} 
-                      className="px-3 py-1 rounded-full text-xs font-medium bg-white dark:bg-[#131314] text-[#444746] dark:text-[#C4C7C5] border border-[#DADCE0] dark:border-[#3C4043]"
-                    >
-                      {init}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
       </section>
 
-      {/* 5. STRATEGIC INITIATIVES & NATIONAL POLICY WATCH */}
-      <section className="w-full bg-[#F8F9FA] dark:bg-[#18191A] py-16 sm:py-24 border-b border-[#F1F3F4] dark:border-[#282A2C]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="max-w-2xl mb-12">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8]">
-              National Policy Watch
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight mt-1">
-              Strategic Cyprus Energy Milestones
-            </h2>
-            <p className="text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-3">
-              Independent oversight and tracking of major national infrastructure programs and legislative reforms.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {STRATEGIC_INITIATIVES.map((item, idx) => (
-              <div 
-                key={idx}
-                className="p-6 rounded-3xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] flex flex-col justify-between shadow-2xs"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${item.statusColor}`}>
-                      {item.status}
-                    </span>
-                    <span className="text-[11px] text-[#5F6368] dark:text-[#9AA0A6]">
-                      {item.timeline}
-                    </span>
-                  </div>
-                  <h3 className="text-base font-medium text-[#1F1F1F] dark:text-white leading-snug">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-3 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-[#F1F3F4] dark:border-[#282A2C]">
-                  <a
-                    href={getSurfaceUrl('research')}
-                    onClick={(e) => handleSurfaceNavigate(e, 'research', '/research')}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
-                  >
-                    <span>Read Policy Briefings</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 6. LATEST INTELLIGENCE BRIEFS (Research Feed Highlights) */}
-      {news.length > 0 && (
-        <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24 border-b border-[#F1F3F4] dark:border-[#282A2C]">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
-            <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8]">
-                Editorial Dispatch
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight mt-1">
-                Latest Energy Intelligence
-              </h2>
-            </div>
-            <a
-              href={getSurfaceUrl('research')}
-              onClick={(e) => handleSurfaceNavigate(e, 'research', '/research')}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
-            >
-              <span>View All Intelligence ({news.length}+ briefs)</span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {news.map((item) => {
-              const formattedDate = new Date(item.publishedAt || item.createdAt).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              }).toUpperCase();
-
-              const articleUrl = item.slug ? `/news/${item.slug}` : '/research';
-
-              return (
-                <article key={item.id} className="group flex flex-col justify-between">
-                  <div>
-                    {item.imageUrl && (
-                      <a
-                        href={articleUrl}
-                        className="relative block w-full aspect-[16/9] overflow-hidden rounded-2xl bg-[#F1F3F4] dark:bg-[#282A2C] mb-4"
-                      >
-                        <img
-                          src={getOptimizedImageUrl(item.imageUrl, 800, 450)}
-                          alt={item.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                          loading="lazy"
-                        />
-                      </a>
-                    )}
-                    <span className="text-[11px] font-medium tracking-wider text-[#5F6368] dark:text-[#9AA0A6] uppercase">
-                      {formattedDate}
-                    </span>
-                    <h3 className="text-lg font-medium text-[#1F1F1F] dark:text-[#E3E3E3] leading-snug mt-1.5 group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
-                      <a href={articleUrl}>{item.title}</a>
-                    </h3>
-                    <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-2 line-clamp-2 leading-relaxed">
-                      {item.summary}
-                    </p>
-                  </div>
-
-                  <div className="text-[12px] text-[#5F6368] dark:text-[#9AA0A6] flex items-center gap-2 mt-4 pt-3 border-t border-[#F1F3F4] dark:border-[#282A2C]">
-                    <span className="font-medium text-[#1F1F1F] dark:text-white">{item.category}</span>
-                    <span>•</span>
-                    <span>{item.readTimeMinutes || 3} min read</span>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* 7. ACCREDITED MEMBERS STRIP */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-20 border-b border-[#F1F3F4] dark:border-[#282A2C]">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#137333] dark:text-[#81C995]">
-            Accredited Ecosystem Registry
+      {/* ==================================================================== */}
+      {/* SECTION 5: ECOSYSTEM & AUTHORITATIVE LINKS (2-COLUMN BENTO GRID)     */}
+      {/* ==================================================================== */}
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24 border-b border-[#F1F3F4] dark:border-[#282A2C]">
+        <div className="max-w-3xl mb-12">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8] block mb-2">
+            Institutional Infrastructure
           </span>
-          <h2 className="text-2xl sm:text-3xl font-normal text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight mt-1">
-            Institutional Members &amp; Certified Operators
+          <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+            Ecosystem &amp; Authoritative Energy Links
           </h2>
-          <p className="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-2">
-            Connecting key public utilities, independent producers, and engineering consultancies across Cyprus.
+          <p className="text-sm sm:text-base text-[#5F6368] dark:text-[#9AA0A6] mt-3 leading-relaxed">
+            Bridging proprietary analytical platforms created by Energeia with the statutory governmental and regulatory bodies of the Republic of Cyprus.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {ACCREDITED_PARTNERS.map((partner, idx) => (
-            <div
-              key={idx}
-              className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] flex flex-col justify-between text-center"
-            >
-              <div>
-                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#131314] mx-auto flex items-center justify-center text-[#1A73E8] dark:text-[#8AB4F8] mb-3 shadow-2xs">
-                  <ShieldCheck className="w-5 h-5 text-[#137333] dark:text-[#81C995]" />
-                </div>
-                <div className="text-xs font-semibold text-[#1F1F1F] dark:text-white line-clamp-1">
-                  {partner.name}
-                </div>
-                <div className="text-[10px] text-[#5F6368] dark:text-[#9AA0A6] mt-1 line-clamp-2">
-                  {partner.role}
-                </div>
-              </div>
-              <span className="text-[9px] uppercase tracking-wider font-semibold text-[#137333] dark:text-[#81C995] mt-3">
-                {partner.category}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* Column 1: Cluster Ecosystem Surfaces */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#F1F3F4] dark:border-[#282A2C]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#1F1F1F] dark:text-white flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#1A73E8]"></span>
+                Cluster Ecosystem Surfaces
               </span>
+              <span className="text-[11px] text-[#5F6368] dark:text-[#9AA0A6] font-mono">4 Surfaces Active</span>
             </div>
-          ))}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {CLUSTER_SURFACES.map((surf) => (
+                <a
+                  key={surf.id}
+                  href={surf.path}
+                  onClick={(e) => handleSurfaceNavigate(e, surf.surfaceKey, surf.path)}
+                  className="p-5 rounded-2xl bg-white dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] hover:border-[#1A73E8] dark:hover:border-[#8AB4F8] transition-all flex flex-col justify-between shadow-2xs group cursor-pointer"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-mono font-semibold uppercase text-[#1A73E8] dark:text-[#8AB4F8]">
+                        {surf.subdomain}
+                      </span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#5F6368] group-hover:text-[#1A73E8] group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                    <h3 className="text-base font-medium text-[#1F1F1F] dark:text-white group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
+                      {surf.name}
+                    </h3>
+                    <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-1.5 leading-relaxed">
+                      {surf.description}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-medium text-[#80868B] dark:text-[#5F6368] mt-4 pt-2 border-t border-[#F1F3F4] dark:border-[#282A2C] block">
+                    {surf.badge}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Column 2: Official Cyprus Energy Resources */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#F1F3F4] dark:border-[#282A2C]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#1F1F1F] dark:text-white flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#D46200]"></span>
+                Official Cyprus Energy Resources
+              </span>
+              <span className="text-[11px] text-[#5F6368] dark:text-[#9AA0A6] font-mono">Governmental &amp; Regulatory</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {STATUTORY_CYPRUS_RESOURCES.map((res) => (
+                <a
+                  key={res.id}
+                  href={res.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-5 rounded-2xl bg-[#F8F9FA] dark:bg-[#1E1F20] border border-[#DADCE0] dark:border-[#3C4043] hover:border-[#D46200] dark:hover:border-[#FFA726] transition-all flex flex-col justify-between shadow-2xs group cursor-pointer"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-[#D46200] dark:text-[#FFA726]">
+                        {res.category}
+                      </span>
+                      <ExternalLink className="w-3.5 h-3.5 text-[#5F6368] group-hover:text-[#D46200] transition-colors" />
+                    </div>
+                    <h3 className="text-base font-medium text-[#1F1F1F] dark:text-white group-hover:text-[#D46200] dark:group-hover:text-[#FFA726] transition-colors">
+                      {res.name}
+                    </h3>
+                    <div className="text-[11px] text-[#80868B] dark:text-[#5F6368] italic mt-0.5 line-clamp-1">
+                      {res.greekName}
+                    </div>
+                    <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-2 leading-relaxed">
+                      {res.description}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-medium text-[#5F6368] dark:text-[#9AA0A6] mt-4 pt-2 border-t border-[#DADCE0] dark:border-[#282A2C] block">
+                    {res.roleBadge} ↗
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ==================================================================== */}
+      {/* SECTION 6: CLUSTER NEWS & POLICY BRIEFINGS (ASSOCIATION EDITORIAL)  */}
+      {/* ==================================================================== */}
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24 border-b border-[#F1F3F4] dark:border-[#282A2C]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8] block mb-2">
+              Association Press &amp; Policy
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-[#E3E3E3] tracking-tight">
+              Cluster Press, Policy Positions &amp; Working Group Updates
+            </h2>
+            <p className="text-xs sm:text-sm text-[#5F6368] dark:text-[#9AA0A6] mt-2">
+              Independent whitepapers, regulatory submissions to CERA, and major energy transition convening events.
+            </p>
+          </div>
+          <a
+            href={getSurfaceUrl('research')}
+            onClick={(e) => handleSurfaceNavigate(e, 'research', '/research')}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1A73E8] dark:text-[#8AB4F8] hover:underline flex-shrink-0 cursor-pointer"
+          >
+            <span>View All Research &amp; Position Papers →</span>
+          </a>
         </div>
 
-        <div className="text-center mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {CLUSTER_EDITORIAL_BRIEFS.map((item) => {
+            const formattedDate = new Date(item.publishedAt).toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            }).toUpperCase();
+
+            return (
+              <article 
+                key={item.id} 
+                className="group flex flex-col justify-between cursor-pointer"
+                onClick={() => setSelectedArticle(item)}
+              >
+                <div>
+                  {item.imageUrl && (
+                    <div className="relative block w-full aspect-[16/9] overflow-hidden rounded-2xl bg-[#F1F3F4] dark:bg-[#282A2C] mb-4">
+                      <img
+                        src={getOptimizedImageUrl(item.imageUrl, 800, 450)}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider text-[#5F6368] dark:text-[#9AA0A6] uppercase mb-1.5">
+                    <span>{formattedDate}</span>
+                    <span>•</span>
+                    <span className="text-[#1A73E8] dark:text-[#8AB4F8] font-semibold">{item.category}</span>
+                  </div>
+                  <h3 className="text-lg font-medium text-[#1F1F1F] dark:text-[#E3E3E3] leading-snug group-hover:text-[#1A73E8] dark:group-hover:text-[#8AB4F8] transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] mt-2.5 line-clamp-3 leading-relaxed">
+                    {item.summary}
+                  </p>
+                </div>
+
+                <div className="text-[12px] text-[#5F6368] dark:text-[#9AA0A6] flex items-center justify-between mt-5 pt-3 border-t border-[#F1F3F4] dark:border-[#282A2C]">
+                  <span className="font-medium text-[#1F1F1F] dark:text-white">
+                    {item.source || 'Cluster Secretariat'}
+                  </span>
+                  <span className="text-[#1A73E8] dark:text-[#8AB4F8] font-medium flex items-center gap-1 group-hover:underline">
+                    <span>Read Briefing</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        {/* Action Button Below */}
+        <div className="text-center mt-12">
           <a
-            href={getSurfaceUrl('members')}
-            onClick={(e) => handleSurfaceNavigate(e, 'members', '/members')}
-            className="inline-flex items-center gap-2 text-xs font-medium text-[#1A73E8] dark:text-[#8AB4F8] hover:underline"
+            href={getSurfaceUrl('research')}
+            onClick={(e) => handleSurfaceNavigate(e, 'research', '/research')}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#F1F3F4] dark:bg-[#282A2C] hover:bg-[#E8EAED] dark:hover:bg-[#333537] text-xs sm:text-sm font-medium text-[#1F1F1F] dark:text-[#E3E3E3] transition-colors border border-[#DADCE0] dark:border-[#444746]"
           >
-            <span>Search full 50+ accredited company directory</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>View All Research &amp; Position Papers →</span>
           </a>
         </div>
       </section>
 
-      {/* 8. MEMBERSHIP INTAKE CTA (TechIsland Model) */}
-      <section className="w-full bg-[#F8F9FA] dark:bg-[#18191A] py-16 sm:py-24">
+      {/* ==================================================================== */}
+      {/* SECTION 7: INSTITUTIONAL MEMBERSHIP INTAKE (CONVERSION BLOCK)        */}
+      {/* ==================================================================== */}
+      <section className="w-full bg-[#F8F9FA] dark:bg-[#18191A] py-16 sm:py-24 border-b border-[#F1F3F4] dark:border-[#282A2C]">
         <div className="max-w-5xl mx-auto px-4 sm:px-8">
-          <div className="bg-white dark:bg-[#1E1F20] rounded-3xl border border-[#DADCE0] dark:border-[#3C4043] p-8 sm:p-14 text-center shadow-xs">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1A73E8] dark:text-[#8AB4F8] block mb-2">
-              Join the Cyprus All-Energy Network
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-white tracking-tight max-w-2xl mx-auto">
-              Become an accredited member of the Cyprus Energy Cluster
-            </h2>
-            <p className="text-sm text-[#5F6368] dark:text-[#9AA0A6] max-w-xl mx-auto mt-4 leading-relaxed">
-              Gain institutional advocacy representation, participate in CERA regulatory working groups, list in the accredited directory, and access verified market intelligence.
-            </p>
+          <div className="bg-white dark:bg-[#1E1F20] rounded-3xl border border-[#DADCE0] dark:border-[#3C4043] p-8 sm:p-14 shadow-xs relative overflow-hidden">
+            
+            {/* Background Subtle Gradient Accent */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-[#1A73E8]/10 to-[#D46200]/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-              <button
-                type="button"
-                onClick={() => openIntake('Corporate Member')}
-                className="px-8 py-3.5 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#062E6F] font-medium text-sm transition-all shadow-xs cursor-pointer inline-flex items-center gap-2"
-              >
-                <span>Submit Membership Application</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+            <div className="relative z-10 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8F0FE] dark:bg-[#0842A0]/30 text-[#1A73E8] dark:text-[#8AB4F8] text-[11px] font-semibold uppercase tracking-wider mb-4">
+                Institutional Membership Drive
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-normal text-[#1F1F1F] dark:text-white tracking-tight leading-tight">
+                Shape the Energy Architecture of Cyprus
+              </h2>
+              <p className="text-sm sm:text-base text-[#5F6368] dark:text-[#9AA0A6] mt-4 leading-relaxed">
+                Join Cyprus's accredited energy association. Gain direct access to cluster working groups, regulatory consultation roundtables, B2B supply-chain partnerships, and international investor delegations.
+              </p>
 
-              <a
-                href="/about"
+              {/* 4 TechIsland-Style Value Props */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-8 mb-8 text-xs sm:text-sm text-[#444746] dark:text-[#C4C7C5]">
+                <div className="flex items-start gap-2.5">
+                  <Check className="w-4 h-4 text-[#137333] dark:text-[#81C995] flex-shrink-0 mt-0.5" />
+                  <span>Direct participation in CERA &amp; TSOC regulatory consultation working groups</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <Check className="w-4 h-4 text-[#137333] dark:text-[#81C995] flex-shrink-0 mt-0.5" />
+                  <span>Accredited listing in the verified Cyprus B2B Energy Directory</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <Check className="w-4 h-4 text-[#137333] dark:text-[#81C995] flex-shrink-0 mt-0.5" />
+                  <span>Access to closed-door institutional roundtables with MED-TSO &amp; EU delegates</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <Check className="w-4 h-4 text-[#137333] dark:text-[#81C995] flex-shrink-0 mt-0.5" />
+                  <span>High-priority dispatch and publication of company research briefs</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => openIntake('Corporate Member')}
+                  className="px-8 py-3.5 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#062E6F] font-medium text-sm transition-all shadow-xs hover:shadow-md cursor-pointer inline-flex items-center gap-2"
+                >
+                  <span>Submit Membership Application</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <a
+                  href="/about"
+                  onClick={(e) => {
+                    if (onNavigateSurface) {
+                      e.preventDefault();
+                      onNavigateSurface('cluster', '/about');
+                    }
+                  }}
+                  className="px-6 py-3.5 rounded-full text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-white font-medium text-sm transition-colors cursor-pointer"
+                >
+                  <span>Learn about Governance &amp; Bylaws →</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ==================================================================== */}
+      {/* SECTION 8: STATUTORY & TRANSPARENCY FOOTER                          */}
+      {/* ==================================================================== */}
+      <footer className="w-full bg-[#F8F9FA] dark:bg-[#131314] py-14 px-4 sm:px-8 border-t border-[#F1F3F4] dark:border-[#282A2C]">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Top Row: Logo & Statutory Registration Notice */}
+          <div className="pb-8 mb-8 border-b border-[#DADCE0] dark:border-[#282A2C] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <EnergeiaLogo
+                className="text-[#5F6368] dark:text-[#9AA0A6]"
+                descriptor="Cyprus"
+                variant="monochrome"
+              />
+            </div>
+
+            <div className="text-xs text-[#5F6368] dark:text-[#9AA0A6] font-mono leading-relaxed max-w-xl md:text-right">
+              Energeia is the independent energy industry cluster of Cyprus, operated by M3J2 LTD (Registration: HE 438859), Limassol, Cyprus.
+            </div>
+          </div>
+
+          {/* Institutional Navigation Links */}
+          <div className="flex flex-wrap items-center justify-between gap-6 pb-8 border-b border-[#DADCE0] dark:border-[#282A2C] text-xs">
+            <nav className="flex flex-wrap items-center gap-x-6 gap-y-3 font-medium text-[#444746] dark:text-[#C4C7C5]">
+              <a 
+                href="/about#manifesto" 
                 onClick={(e) => {
                   if (onNavigateSurface) {
                     e.preventDefault();
                     onNavigateSurface('cluster', '/about');
                   }
                 }}
-                className="px-6 py-3.5 rounded-full text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-white font-medium text-sm transition-colors cursor-pointer"
+                className="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors"
               >
-                <span>Learn about Governance &amp; Bylaws</span>
+                Manifesto
+              </a>
+              <a 
+                href="/about#governance" 
+                onClick={(e) => {
+                  if (onNavigateSurface) {
+                    e.preventDefault();
+                    onNavigateSurface('cluster', '/about');
+                  }
+                }}
+                className="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors"
+              >
+                Governance &amp; Bylaws
+              </a>
+              <a 
+                href="/about#working-groups" 
+                onClick={(e) => {
+                  if (onNavigateSurface) {
+                    e.preventDefault();
+                    onNavigateSurface('cluster', '/about');
+                  }
+                }}
+                className="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors"
+              >
+                Working Groups
+              </a>
+              <a 
+                href={getSurfaceUrl('research')} 
+                onClick={(e) => handleSurfaceNavigate(e, 'research', '/research')}
+                className="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors"
+              >
+                Research &amp; Filings
+              </a>
+              <a 
+                href="/privacy" 
+                onClick={(e) => {
+                  if (onNavigateSurface) {
+                    e.preventDefault();
+                    onNavigateSurface('cluster', '/privacy');
+                  }
+                }}
+                className="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors"
+              >
+                Privacy Policy
+              </a>
+              <a 
+                href="/terms" 
+                onClick={(e) => {
+                  if (onNavigateSurface) {
+                    e.preventDefault();
+                    onNavigateSurface('cluster', '/terms');
+                  }
+                }}
+                className="hover:text-[#1A73E8] dark:hover:text-[#8AB4F8] transition-colors"
+              >
+                Code of Ethics
+              </a>
+            </nav>
+
+            <div className="flex items-center gap-3 text-[11px] font-mono text-[#5F6368] dark:text-[#9AA0A6]">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Operational · {gridFrequency} Hz Synced</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom Copyright & Address */}
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[#5F6368] dark:text-[#9AA0A6] gap-4">
+            <p>© {new Date().getFullYear()} Energeia Cyprus (M3J2 LTD HE 438859). All rights reserved.</p>
+            <div className="flex items-center gap-4">
+              <span>Leoforos Panioti, 20, Germasogeia, 4044, Lemesos, Cyprus</span>
+              <span>•</span>
+              <a href="mailto:admin@energeia.cy" className="hover:underline text-[#1A73E8] dark:text-[#8AB4F8]">
+                admin@energeia.cy
               </a>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Institutional Membership Intake Modal */}
+        </div>
+      </footer>
+
+      {/* ==================================================================== */}
+      {/* MODAL DIALOGS                                                        */}
+      {/* ==================================================================== */}
+
+      {/* 1. TechIsland Company Dossier Modal */}
+      {selectedDossierMember && (
+        <CompanyDossierModal
+          member={selectedDossierMember}
+          onClose={() => setSelectedDossierMember(null)}
+          onClaimProfile={handleClaimProfileFromDossier}
+          onSelectArticle={(article) => {
+            setSelectedDossierMember(null);
+            setSelectedArticle(article);
+          }}
+          newsItems={initialData?.newsItems}
+        />
+      )}
+
+      {/* 2. Institutional Membership Intake Modal */}
       <MembershipIntakeModal
         isOpen={isIntakeModalOpen}
         onClose={() => setIsIntakeModalOpen(false)}
