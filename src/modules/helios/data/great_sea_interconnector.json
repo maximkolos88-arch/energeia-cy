@@ -1,0 +1,81 @@
+{
+  "type": "FeatureCollection",
+  "name": "Great_Sea_Interconnector_GSI",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "gsi-subsea-cable",
+      "properties": {
+        "id": "gsi-subsea-cable",
+        "name": "Great Sea Interconnector (Crete–Cyprus Subsea HVDC)",
+        "type": "interconnector",
+        "subtype": "525 kV Monopolar / Bipolar VSC-HVDC Subsea Link",
+        "operator": "Independent Power Transmission Operator (IPTO / ADMIE) & GSI Ltd",
+        "capacityMw": 1000,
+        "voltageKv": 525,
+        "status": "construction",
+        "lengthKm": 1208,
+        "maxDepthMeters": -3000,
+        "budgetEur": "€1.94 Billion",
+        "pciDesignation": "European Project of Common Interest (PCI 3.10.1)",
+        "converterTech": "Modular Multilevel Converter (MMC) Voltage Source Converter",
+        "pccSubstation": "Kofinou 400kV/132kV Converter Terminal",
+        "landfallPoint": "Zygi Coastal Landfall Station (Cyprus)",
+        "description": "Historic subsea HVDC interconnector ending Cyprus's absolute electrical isolation from the continental European grid (ENTSO-E). Enables bidirectional export of Cyprus solar energy and import of European firm balancing capacity."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [31.2000, 33.6000],
+          [31.8500, 34.0500],
+          [32.3500, 34.3500],
+          [32.7500, 34.5200],
+          [33.0500, 34.6200],
+          [33.2400, 34.6800],
+          [33.3250, 34.7180],
+          [33.3400, 34.7300],
+          [33.3650, 34.7900],
+          [33.3885, 34.8620]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gsi-converter-kofinou",
+      "properties": {
+        "id": "gsi-converter-kofinou",
+        "name": "GSI Kofinou VSC-HVDC Converter Terminal",
+        "type": "interconnector",
+        "subtype": "High Voltage Direct Current Converter Station",
+        "operator": "IPTO / Siemens Energy Consortium",
+        "capacityMw": 1000,
+        "voltageKv": 525,
+        "status": "construction",
+        "pccSubstation": "Kofinou Central Dispatch Substation",
+        "description": "State-of-the-art Voltage Source Converter (VSC) station transforming 525 kV DC from the Mediterranean subsea cable into 132/400 kV AC for synchronization with the Cyprus national grid."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3885, 34.8620]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gsi-landfall-zygi",
+      "properties": {
+        "id": "gsi-landfall-zygi",
+        "name": "GSI Zygi Sea-Ground Interface & Transition Pit",
+        "type": "interconnector",
+        "subtype": "Subsea Landfall & Transition Chamber",
+        "operator": "Nexans / Great Sea Interconnector",
+        "voltageKv": 525,
+        "status": "construction",
+        "description": "Deepwater subsea armored cable touchdown point and underground transition vault directing HVDC land cables to Kofinou."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3400, 34.7300]
+      }
+    }
+  ]
+}

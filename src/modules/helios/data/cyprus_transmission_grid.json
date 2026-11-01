@@ -1,0 +1,488 @@
+{
+  "type": "FeatureCollection",
+  "name": "Cyprus_Transmission_Grid_TSOC",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "sub-vasilikos",
+      "properties": {
+        "id": "sub-vasilikos",
+        "name": "Vasilikos Transmission Substation",
+        "type": "substation",
+        "operator": "Transmission System Operator Cyprus (TSOC) / EAC",
+        "voltageKv": 132,
+        "feedersCount": 8,
+        "transformerMva": 600,
+        "status": "operational",
+        "commissioningYear": 1999,
+        "description": "Primary high-voltage transmission hub connected to the Vasilikos Power Station generation busbar and the industrial southern coastal corridor.",
+        "connectedLines": ["Vasilikos–Kofinou 132kV", "Vasilikos–Moni 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3214, 34.7212]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-kofinou",
+      "properties": {
+        "id": "sub-kofinou",
+        "name": "Kofinou Central Dispatch Substation",
+        "type": "substation",
+        "operator": "Transmission System Operator Cyprus (TSOC)",
+        "voltageKv": 132,
+        "feedersCount": 10,
+        "transformerMva": 750,
+        "status": "operational",
+        "commissioningYear": 1986,
+        "description": "Strategic central dispatch interchange. Designated landfall converter station terminal for the 525 kV Great Sea Interconnector (Crete–Cyprus HVDC link).",
+        "connectedLines": ["Vasilikos–Kofinou 132kV", "Kofinou–Alambra 132kV", "Kofinou–Anarita 132kV", "Kofinou–Kiti 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3885, 34.8620]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-alambra",
+      "properties": {
+        "id": "sub-alambra",
+        "name": "Alambra Bulk Supply Substation",
+        "type": "substation",
+        "operator": "TSOC / EAC",
+        "voltageKv": 132,
+        "feedersCount": 6,
+        "transformerMva": 320,
+        "status": "operational",
+        "commissioningYear": 1994,
+        "description": "High-voltage intertie connecting the central transmission spine with Nicosia's southern utility solar cluster (Nisou & Geri PV parks).",
+        "connectedLines": ["Kofinou–Alambra 132kV", "Alambra–Athalassa 132kV", "Alambra–Anageia 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3920, 34.9850]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-athalassa",
+      "properties": {
+        "id": "sub-athalassa",
+        "name": "Athalassa Metropolitan Substation",
+        "type": "substation",
+        "operator": "TSOC / EAC",
+        "voltageKv": 132,
+        "feedersCount": 8,
+        "transformerMva": 450,
+        "status": "operational",
+        "commissioningYear": 1982,
+        "description": "Primary transmission gateway supplying the greater Nicosia metropolitan grid and key governmental infrastructure.",
+        "connectedLines": ["Alambra–Athalassa 132kV", "Athalassa–Strovolos 132kV", "Athalassa–Dhekelia 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3980, 35.1325]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-strovolos",
+      "properties": {
+        "id": "sub-strovolos",
+        "name": "Strovolos Urban Substation",
+        "type": "substation",
+        "operator": "EAC Distribution",
+        "voltageKv": 132,
+        "feedersCount": 6,
+        "transformerMva": 240,
+        "status": "operational",
+        "commissioningYear": 1988,
+        "description": "Inner-city stepping substation feeding central Nicosia distribution feeders (11 kV).",
+        "connectedLines": ["Athalassa–Strovolos 132kV", "Strovolos–Latsia 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3510, 35.1480]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-latsia",
+      "properties": {
+        "id": "sub-latsia",
+        "name": "Latsia Industrial Substation",
+        "type": "substation",
+        "operator": "EAC Distribution",
+        "voltageKv": 132,
+        "feedersCount": 6,
+        "transformerMva": 200,
+        "status": "operational",
+        "commissioningYear": 1991,
+        "description": "Feeds the southern capital industrial zone and commercial commercial corridors.",
+        "connectedLines": ["Strovolos–Latsia 132kV", "Latsia–Alambra 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3750, 35.1010]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-dhekelia",
+      "properties": {
+        "id": "sub-dhekelia",
+        "name": "Dhekelia Transmission Substation",
+        "type": "substation",
+        "operator": "TSOC / EAC",
+        "voltageKv": 132,
+        "feedersCount": 8,
+        "transformerMva": 500,
+        "status": "operational",
+        "commissioningYear": 1982,
+        "description": "Eastern generation node co-located with Dhekelia Power Station, supplying the Larnaca and Famagusta district grids.",
+        "connectedLines": ["Athalassa–Dhekelia 132kV", "Dhekelia–Moni 132kV", "Dhekelia–Famagusta 66kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.7428, 34.9815]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-moni",
+      "properties": {
+        "id": "sub-moni",
+        "name": "Moni Transmission Substation",
+        "type": "substation",
+        "operator": "TSOC / EAC",
+        "voltageKv": 132,
+        "feedersCount": 6,
+        "transformerMva": 350,
+        "status": "operational",
+        "commissioningYear": 1966,
+        "description": "Limassol eastern perimeter transmission node, interfacing the Moni peaking turbines with the southern industrial ring.",
+        "connectedLines": ["Dhekelia–Moni 132kV", "Vasilikos–Moni 132kV", "Moni–Limassol 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.2012, 34.7325]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-kiti",
+      "properties": {
+        "id": "sub-kiti",
+        "name": "Kiti Regional Substation",
+        "type": "substation",
+        "operator": "EAC Distribution",
+        "voltageKv": 132,
+        "feedersCount": 4,
+        "transformerMva": 160,
+        "status": "operational",
+        "commissioningYear": 2004,
+        "description": "Supports coastal Larnaca solar PV integration and Larnaca International Airport critical supply.",
+        "connectedLines": ["Kofinou–Kiti 132kV", "Kiti–Dhekelia 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.5680, 34.8490]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-anageia",
+      "properties": {
+        "id": "sub-anageia",
+        "name": "Anageia Renewable Gateway Substation",
+        "type": "substation",
+        "operator": "TSOC",
+        "voltageKv": 132,
+        "feedersCount": 6,
+        "transformerMva": 250,
+        "status": "operational",
+        "commissioningYear": 2018,
+        "description": "Modern specialized transmission gateway evacuating over 60 MWp of Agro-PV and utility solar from the Arediou and Agrokipia plains.",
+        "connectedLines": ["Alambra–Anageia 132kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.2730, 35.0740]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-anarita",
+      "properties": {
+        "id": "sub-anarita",
+        "name": "Anarita Paphos Gateway Substation",
+        "type": "substation",
+        "operator": "TSOC / EAC",
+        "voltageKv": 132,
+        "feedersCount": 6,
+        "transformerMva": 320,
+        "status": "operational",
+        "commissioningYear": 1993,
+        "description": "Main western transmission terminal evacuating Orites Wind Farm (82 MWp) and feeding Paphos district.",
+        "connectedLines": ["Kofinou–Anarita 132kV", "Anarita–Polis 66kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [32.5360, 34.7450]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sub-polis",
+      "properties": {
+        "id": "sub-polis",
+        "name": "Polis Chrysochous Sub-Transmission Station",
+        "type": "substation",
+        "operator": "EAC Distribution",
+        "voltageKv": 66,
+        "feedersCount": 4,
+        "transformerMva": 80,
+        "status": "operational",
+        "commissioningYear": 1978,
+        "description": "North-western sub-transmission anchor serving the Akamas and Chrysochous bay rural grids.",
+        "connectedLines": ["Anarita–Polis 66kV"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [32.4270, 35.0340]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-vasilikos-kofinou",
+      "properties": {
+        "id": "line-vasilikos-kofinou",
+        "name": "Vasilikos – Kofinou 132kV Circuit 1 & 2",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "Double-circuit ACSR Drake 795 MCM",
+        "ratingMva": 350,
+        "status": "operational",
+        "description": "Primary generation evacuation corridor from Vasilikos thermal station to central dispatch hub."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.3214, 34.7212],
+          [33.3450, 34.7650],
+          [33.3680, 34.8100],
+          [33.3885, 34.8620]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-kofinou-alambra",
+      "properties": {
+        "id": "line-kofinou-alambra",
+        "name": "Kofinou – Alambra 132kV Circuit",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "Double-circuit ACSR Drake",
+        "ratingMva": 280,
+        "status": "operational",
+        "description": "Central north-south transit spine feeding the Nicosia capital region."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.3885, 34.8620],
+          [33.3890, 34.9150],
+          [33.3910, 34.9520],
+          [33.3920, 34.9850]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-alambra-athalassa",
+      "properties": {
+        "id": "line-alambra-athalassa",
+        "name": "Alambra – Athalassa 132kV Circuit",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "Double-circuit ACSR",
+        "ratingMva": 280,
+        "status": "operational",
+        "description": "Approaches Nicosia metropolitan perimeter from the south."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.3920, 34.9850],
+          [33.3850, 35.0400],
+          [33.3900, 35.0850],
+          [33.3980, 35.1325]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-athalassa-dhekelia",
+      "properties": {
+        "id": "line-athalassa-dhekelia",
+        "name": "Athalassa – Dhekelia 132kV Intertie",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "Single-circuit overhead 132kV",
+        "ratingMva": 220,
+        "status": "operational",
+        "description": "Eastern transmission loop tying Nicosia with Dhekelia Power Station."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.3980, 35.1325],
+          [33.4800, 35.1050],
+          [33.5900, 35.0500],
+          [33.6900, 35.0100],
+          [33.7428, 34.9815]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-dhekelia-kiti",
+      "properties": {
+        "id": "line-dhekelia-kiti",
+        "name": "Dhekelia – Kiti 132kV Coastal Tie",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "Single-circuit 132kV",
+        "ratingMva": 200,
+        "status": "operational",
+        "description": "Larnaca bay transmission loop."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.7428, 34.9815],
+          [33.6700, 34.9400],
+          [33.6150, 34.8900],
+          [33.5680, 34.8490]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-kiti-kofinou",
+      "properties": {
+        "id": "line-kiti-kofinou",
+        "name": "Kiti – Kofinou 132kV Line",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "Double-circuit ACSR",
+        "ratingMva": 240,
+        "status": "operational",
+        "description": "Completes the south-eastern 132kV ring into Kofinou."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.5680, 34.8490],
+          [33.4800, 34.8520],
+          [33.3885, 34.8620]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-vasilikos-moni",
+      "properties": {
+        "id": "line-vasilikos-moni",
+        "name": "Vasilikos – Moni 132kV Coastal Trunk",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "Double-circuit ACSR Drake",
+        "ratingMva": 320,
+        "status": "operational",
+        "description": "Heavy industrial coastal intertie between the two generation centers."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.3214, 34.7212],
+          [33.2650, 34.7250],
+          [33.2012, 34.7325]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-kofinou-anarita",
+      "properties": {
+        "id": "line-kofinou-anarita",
+        "name": "Kofinou – Anarita 132kV Western Trunk",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "High-capacity single-circuit 132kV",
+        "ratingMva": 240,
+        "status": "operational",
+        "description": "Crucial 70-km transmission lifeline linking the western island (Paphos district) to the national grid."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.3885, 34.8620],
+          [33.2200, 34.7600],
+          [33.0500, 34.7000],
+          [32.8500, 34.6800],
+          [32.7000, 34.7100],
+          [32.5360, 34.7450]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-anarita-polis",
+      "properties": {
+        "id": "line-anarita-polis",
+        "name": "Anarita – Polis Chrysochous 66kV Branch",
+        "type": "transmission_line",
+        "voltageKv": 66,
+        "conductor": "Wood-pole & lattice 66kV sub-transmission",
+        "ratingMva": 90,
+        "status": "operational",
+        "description": "Radial sub-transmission line through western mountain valleys."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [32.5360, 34.7450],
+          [32.4900, 34.8200],
+          [32.4600, 34.9200],
+          [32.4270, 35.0340]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "line-alambra-anageia",
+      "properties": {
+        "id": "line-alambra-anageia",
+        "name": "Alambra – Anageia 132kV Solar Evacuation Line",
+        "type": "transmission_line",
+        "voltageKv": 132,
+        "conductor": "Compact tower 132kV",
+        "ratingMva": 180,
+        "status": "operational",
+        "description": "Dedicated line evacuating utility-scale solar generation from the central farming plain."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [33.3920, 34.9850],
+          [33.3300, 35.0250],
+          [33.2730, 35.0740]
+        ]
+      }
+    }
+  ]
+}

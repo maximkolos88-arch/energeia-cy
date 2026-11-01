@@ -1,0 +1,102 @@
+{
+  "type": "FeatureCollection",
+  "name": "Cyprus_BESS_Storage_Pipeline",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "bess-kofinou",
+      "properties": {
+        "id": "bess-kofinou",
+        "name": "Kofinou Centralized Utility BESS Hub",
+        "type": "storage",
+        "subtype": "Grid-Scale Centralized Battery Energy Storage System",
+        "operator": "CERA Fast-Track Centralized Storage Program",
+        "capacityMw": 50,
+        "capacityMwh": 200,
+        "chemistry": "Lithium Iron Phosphate (LFP) Containerized Cells",
+        "durationHours": 4,
+        "voltageKv": 132,
+        "status": "construction",
+        "commissioningYear": 2026,
+        "pccSubstation": "Kofinou 132kV",
+        "description": "Cyprus's premier utility-scale centralized battery storage system awarded under CERA's fast-track scheme. Provides rapid synthetic inertia, primary frequency containment reserves (FCR), and absorbs midday solar curtailment for evening peak injection."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3820, 34.8680]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "bess-vasilikos",
+      "properties": {
+        "id": "bess-vasilikos",
+        "name": "Vasilikos Industrial BESS & Frequency Anchor",
+        "type": "storage",
+        "subtype": "Industrial High-Response Grid Firming BESS",
+        "operator": "Electricity Authority of Cyprus (EAC) / Private IPP",
+        "capacityMw": 40,
+        "capacityMwh": 160,
+        "chemistry": "Tier-1 LFP Liquid-Cooled Systems",
+        "durationHours": 4,
+        "voltageKv": 132,
+        "status": "planned",
+        "commissioningYear": 2027,
+        "pccSubstation": "Vasilikos 132kV",
+        "description": "High-voltage grid firming installation adjacent to the Vasilikos generation complex. Designed to supply automatic secondary frequency restoration (aFRR) and black-start backup."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3150, 34.7290]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "bess-dhekelia",
+      "properties": {
+        "id": "bess-dhekelia",
+        "name": "Dhekelia Hybrid Transition Storage Project",
+        "type": "storage",
+        "subtype": "Thermal Power Plant Hybrid Storage Conversion",
+        "operator": "Electricity Authority of Cyprus (EAC)",
+        "capacityMw": 25,
+        "capacityMwh": 100,
+        "chemistry": "LFP Utility Enclosure Units",
+        "durationHours": 4,
+        "voltageKv": 132,
+        "status": "planned",
+        "commissioningYear": 2027,
+        "pccSubstation": "Dhekelia 132kV",
+        "description": "Part of the green transition roadmap for the Dhekelia site. Replaces spinning reserve from aging fuel-oil combustion engines with instantaneous battery response."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.7380, 34.9780]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "bess-geri-bioland",
+      "properties": {
+        "id": "bess-geri-bioland",
+        "name": "Geri Co-Located Solar + Storage Project",
+        "type": "storage",
+        "subtype": "Co-located Solar-Plus-Storage Aggregator",
+        "operator": "Bioland Energy Storage Division",
+        "capacityMw": 20,
+        "capacityMwh": 80,
+        "chemistry": "LFP Battery Racks with Bi-directional Inverters",
+        "durationHours": 4,
+        "voltageKv": 132,
+        "status": "construction",
+        "commissioningYear": 2026,
+        "pccSubstation": "Alambra 132kV",
+        "description": "Co-located directly alongside the 45 MWp Geri solar farm. Eliminates renewable energy curtailment during peak midday solar generation hours by storing excess solar megawatts for evening discharge."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.4100, 35.0580]
+      }
+    }
+  ]
+}

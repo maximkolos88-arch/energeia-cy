@@ -1,0 +1,261 @@
+{
+  "type": "FeatureCollection",
+  "name": "Cyprus_Generation_Assets",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "gen-vasilikos",
+      "properties": {
+        "id": "gen-vasilikos",
+        "name": "Vasilikos Power Station (EAC)",
+        "type": "thermal",
+        "subtype": "Combined Cycle (CCGT) & Steam Units",
+        "operator": "Electricity Authority of Cyprus (EAC)",
+        "capacityMw": 868,
+        "fuelType": "Heavy Fuel Oil (HFO) / Gas-Oil / Natural Gas Ready",
+        "status": "operational",
+        "commissioningYear": 2000,
+        "pccSubstation": "Vasilikos 132kV",
+        "description": "Cyprus's largest baseload power generation facility. Houses 3x 130 MW steam turbine units, CCGT Unit 4 (220 MW), CCGT Unit 5 (220 MW), and emergency aero-derivative gas turbines.",
+        "environmentalCompliance": "Industrial Emissions Directive (IED) compliant with De-SOx scrubbers."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3214, 34.7212]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gen-dhekelia",
+      "properties": {
+        "id": "gen-dhekelia",
+        "name": "Dhekelia Power Station (EAC)",
+        "type": "thermal",
+        "subtype": "Internal Combustion & Steam Turbines",
+        "operator": "Electricity Authority of Cyprus (EAC)",
+        "capacityMw": 460,
+        "fuelType": "Heavy Fuel Oil / Low Sulfur Diesel",
+        "status": "operational",
+        "commissioningYear": 1982,
+        "pccSubstation": "Dhekelia 132kV",
+        "description": "Eastern generation pillar providing essential voltage support and inertia for the eastern transmission loop. Operates under CERA phase-out and storage conversion roadmap.",
+        "environmentalCompliance": "Operating under EU derogation mechanisms with scheduled transition to hybrid BESS."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.7428, 34.9815]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gen-moni",
+      "properties": {
+        "id": "gen-moni",
+        "name": "Moni Peaking Power Station (EAC)",
+        "type": "thermal",
+        "subtype": "Open Cycle Gas Turbines (OCGT)",
+        "operator": "Electricity Authority of Cyprus (EAC)",
+        "capacityMw": 150,
+        "fuelType": "Light Gas-Oil / Diesel",
+        "status": "standby",
+        "commissioningYear": 1966,
+        "pccSubstation": "Moni 132kV",
+        "description": "Strategic black-start and peak-load support facility deployed during severe grid contingencies or extreme summer demand spikes.",
+        "environmentalCompliance": "Fast-response peaking reserve."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.2012, 34.7325]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pv-geri-nisou",
+      "properties": {
+        "id": "pv-geri-nisou",
+        "name": "Geri – Nisou Utility PV Cluster",
+        "type": "solar",
+        "subtype": "Utility-Scale Single-Axis Tracking Solar PV",
+        "operator": "Bioland Energy / CyPV Consortium",
+        "capacityMw": 45.0,
+        "technology": "Tier-1 N-Type TOPCon Monocrystalline",
+        "status": "operational",
+        "commissioningYear": 2021,
+        "pccSubstation": "Alambra 132kV",
+        "description": "Cyprus's premier utility-scale solar generation cluster spanning over 65 hectares along the central farming plains. Features computerized smart inverter curtailment controls."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.4150, 35.0650]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pv-arediou-agrokipia",
+      "properties": {
+        "id": "pv-arediou-agrokipia",
+        "name": "Arediou – Agrokipia Solar Park",
+        "type": "solar",
+        "subtype": "Ground-Mount Fixed-Tilt & Agro-PV",
+        "operator": "Lanitis Energy / Muskita Renewable",
+        "capacityMw": 30.0,
+        "technology": "Bifacial Glass-Glass Modules",
+        "status": "operational",
+        "commissioningYear": 2022,
+        "pccSubstation": "Anageia 132kV",
+        "description": "Large-scale utility PV park evacuating power through the dedicated 132kV Anageia substation. Pioneered commercial PPA off-take contracts in Cyprus."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.1950, 35.0380]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pv-marki-kotchatis",
+      "properties": {
+        "id": "pv-marki-kotchatis",
+        "name": "Marki – Kotchatis Utility Solar",
+        "type": "solar",
+        "subtype": "Ground-Mount Utility Solar PV",
+        "operator": "Green Energy Group (GEG)",
+        "capacityMw": 20.0,
+        "technology": "Monocrystalline Half-Cell Modules",
+        "status": "operational",
+        "commissioningYear": 2020,
+        "pccSubstation": "Alambra 132kV",
+        "description": "Utility solar development integrated with automated SCADA telemetry linked directly to TSOC dispatching algorithms."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3280, 35.0120]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pv-frenaros-sotira",
+      "properties": {
+        "id": "pv-frenaros-sotira",
+        "name": "Frenaros – Sotira Regional Solar Cluster",
+        "type": "solar",
+        "subtype": "Distributed Utility Clusters",
+        "operator": "Conercon Energy (Petrolina) & Regional IPPs",
+        "capacityMw": 25.0,
+        "technology": "High-Efficiency Solar PV",
+        "status": "operational",
+        "commissioningYear": 2023,
+        "pccSubstation": "Dhekelia 132kV",
+        "description": "Famagusta regional solar cluster providing green energy to eastern coastal tourism zones and municipal desalination plants."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.9180, 35.0350]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pv-aradippou",
+      "properties": {
+        "id": "pv-aradippou",
+        "name": "Bioland Aradippou Solar Park",
+        "type": "solar",
+        "subtype": "Utility PV Farm",
+        "operator": "Bioland Energy",
+        "capacityMw": 18.0,
+        "technology": "Bifacial Solar Trackers",
+        "status": "operational",
+        "commissioningYear": 2022,
+        "pccSubstation": "Kiti 132kV",
+        "description": "High-yield facility located outside Larnaca. Features remote robotic dry-cleaning system for arid conditions."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.5850, 34.9450]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pv-vassiliko-cement",
+      "properties": {
+        "id": "pv-vassiliko-cement",
+        "name": "Vassiliko Industrial Autoproduction PV",
+        "type": "solar",
+        "subtype": "Industrial Self-Consumption & Net Billing",
+        "operator": "Vassiliko Cement Works Public Co.",
+        "capacityMw": 12.0,
+        "technology": "Industrial Ground Mount",
+        "status": "operational",
+        "commissioningYear": 2020,
+        "pccSubstation": "Vasilikos 132kV",
+        "description": "Direct behind-the-meter industrial solar park powering cement clinker manufacturing, significantly cutting industrial heavy fuel consumption."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.3100, 34.7450]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "wind-orites",
+      "properties": {
+        "id": "wind-orites",
+        "name": "Orites Wind Farm (Kouklia, Paphos)",
+        "type": "wind",
+        "subtype": "Utility Wind Turbine Farm",
+        "operator": "DK Wind Supply Ltd",
+        "capacityMw": 82.0,
+        "technology": "41x Vestas V90 2.0 MW Wind Turbines",
+        "status": "operational",
+        "commissioningYear": 2010,
+        "pccSubstation": "Anarita 132kV",
+        "description": "Cyprus's largest utility wind energy installation spanning across the southern Paphos coastal mountain ridges. Generates essential night-time renewable baseload for the national grid."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [32.6120, 34.7580]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "wind-alexigros",
+      "properties": {
+        "id": "wind-alexigros",
+        "name": "Alexigros Wind Farm (Klavdia, Larnaca)",
+        "type": "wind",
+        "subtype": "Utility Wind Farm",
+        "operator": "Ketonis Developments / Wincon",
+        "capacityMw": 31.5,
+        "technology": "21x Gamesa G87 1.5 MW Turbines",
+        "status": "operational",
+        "commissioningYear": 2011,
+        "pccSubstation": "Kofinou 132kV",
+        "description": "Located on the dry hilltops of southern Larnaca district. Features specialized low-wind micro-siting to maximize afternoon thermal sea breezes."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.5020, 34.8850]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "wind-agia-anna",
+      "properties": {
+        "id": "wind-agia-anna",
+        "name": "Agia Anna Wind Farm",
+        "type": "wind",
+        "subtype": "Utility Wind Farm",
+        "operator": "Rokas Aeoliki Cyprus (Iberdrola)",
+        "capacityMw": 20.0,
+        "technology": "10x Gamesa 2.0 MW Turbines",
+        "status": "operational",
+        "commissioningYear": 2012,
+        "pccSubstation": "Kofinou 132kV",
+        "description": "Central ridge wind farm delivering consistent green megawatts into the Kofinou transmission substation."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [33.4810, 34.9350]
+      }
+    }
+  ]
+}
