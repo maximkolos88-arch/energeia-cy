@@ -17,13 +17,6 @@ import {
   getSurfaceUrl,
   isLocalOrPreviewEnvironment 
 } from './utils/ecosystemRouting';
-import {
-  ClusterPortalLayout,
-  ResearchFeedLayout,
-  HeliosTerminalLayout,
-  DirectoryLayout,
-  AcademyLayout
-} from './layouts';
 import { AboutScreen } from './components/AboutScreen';
 
 function lazyWithRetry<T extends { default: React.ComponentType<any> }>(
@@ -48,6 +41,23 @@ function lazyWithRetry<T extends { default: React.ComponentType<any> }>(
     })
   );
 }
+
+// Dynamically code-split all 5 major federated layouts
+export const ClusterPortalLayout = lazyWithRetry(() => 
+  import('./layouts/ClusterPortalLayout').then(m => ({ default: m.ClusterPortalLayout }))
+);
+export const ResearchFeedLayout = lazyWithRetry(() => 
+  import('./layouts/ResearchFeedLayout').then(m => ({ default: m.ResearchFeedLayout }))
+);
+export const HeliosTerminalLayout = lazyWithRetry(() => 
+  import('./layouts/HeliosTerminalLayout').then(m => ({ default: m.HeliosTerminalLayout }))
+);
+export const DirectoryLayout = lazyWithRetry(() => 
+  import('./layouts/DirectoryLayout').then(m => ({ default: m.DirectoryLayout }))
+);
+export const AcademyLayout = lazyWithRetry(() => 
+  import('./layouts/AcademyLayout').then(m => ({ default: m.AcademyLayout }))
+);
 
 const loadAdminPanel = () => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel }));
 const loadLoginScreen = () => import('./components/LoginScreen').then(m => ({ default: m.LoginScreen }));
@@ -104,29 +114,36 @@ class AdminErrorBoundary extends React.Component<AdminErrorBoundaryProps, AdminE
   }
 }
 
-const ScreenSkeleton = () => (
-  <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-8 animate-pulse space-y-6">
-    <div className="h-10 w-64 bg-neutral-200/80 dark:bg-neutral-800 rounded-2xl"></div>
-    <div className="h-6 w-96 max-w-full bg-neutral-100 dark:bg-neutral-850 rounded-xl"></div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-      <div className="h-48 bg-neutral-100 dark:bg-neutral-800 rounded-3xl"></div>
-      <div className="h-48 bg-neutral-100 dark:bg-neutral-800 rounded-3xl"></div>
-      <div className="h-48 bg-neutral-100 dark:bg-neutral-800 rounded-3xl"></div>
+// Minimal Google-style indeterminate linear progress bar along top of viewport
+export const SurfaceTransitionProgress = () => (
+  <>
+    <div className="fixed top-0 left-0 right-0 z-[100] h-[2px] bg-transparent overflow-hidden pointer-events-none">
+      <div className="w-full h-full bg-[#1A73E8] dark:bg-[#8AB4F8] animate-pulse" />
     </div>
-  </div>
+    <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-8 animate-pulse space-y-6">
+      <div className="h-10 w-64 bg-neutral-200/60 dark:bg-neutral-800 rounded-2xl" />
+      <div className="h-6 w-96 max-w-full bg-neutral-100 dark:bg-neutral-850 rounded-xl" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4">
+        <div className="h-44 bg-neutral-100 dark:bg-neutral-800 rounded-3xl" />
+        <div className="h-44 bg-neutral-100 dark:bg-neutral-800 rounded-3xl" />
+        <div className="h-44 bg-neutral-100 dark:bg-neutral-800 rounded-3xl" />
+        <div className="h-44 bg-neutral-100 dark:bg-neutral-800 rounded-3xl" />
+      </div>
+    </div>
+  </>
 );
 
-const MagazineScreen = lazyWithRetry(() => import('./components/MagazineScreen').then(m => ({ default: m.MagazineScreen })));
-const RegisterScreen = lazyWithRetry(() => import('./components/RegisterScreen').then(m => ({ default: m.RegisterScreen })));
-const TermsScreen = lazyWithRetry(() => import('./components/legal/TermsScreen').then(m => ({ default: m.TermsScreen })));
-const PrivacyScreen = lazyWithRetry(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
-const CookieScreen = lazyWithRetry(() => import('./components/legal/CookieScreen').then(m => ({ default: m.CookieScreen })));
-const CorporateDisclosuresScreen = lazyWithRetry(() => import('./components/legal/CorporateDisclosuresScreen').then(m => ({ default: m.CorporateDisclosuresScreen })));
-const CookieConsentBanner = React.lazy(() => import('./components/legal/CookieConsentBanner').then(m => ({ default: m.CookieConsentBanner })));
+export const MagazineScreen = lazyWithRetry(() => import('./components/MagazineScreen').then(m => ({ default: m.MagazineScreen })));
+export const RegisterScreen = lazyWithRetry(() => import('./components/RegisterScreen').then(m => ({ default: m.RegisterScreen })));
+export const TermsScreen = lazyWithRetry(() => import('./components/legal/TermsScreen').then(m => ({ default: m.TermsScreen })));
+export const PrivacyScreen = lazyWithRetry(() => import('./components/legal/PrivacyScreen').then(m => ({ default: m.PrivacyScreen })));
+export const CookieScreen = lazyWithRetry(() => import('./components/legal/CookieScreen').then(m => ({ default: m.CookieScreen })));
+export const CorporateDisclosuresScreen = lazyWithRetry(() => import('./components/legal/CorporateDisclosuresScreen').then(m => ({ default: m.CorporateDisclosuresScreen })));
+export const CookieConsentBanner = React.lazy(() => import('./components/legal/CookieConsentBanner').then(m => ({ default: m.CookieConsentBanner })));
 
-const PWAInstallPrompt = React.lazy(() => import('./components/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt })));
-const AdminPanel = lazyWithRetry(loadAdminPanel);
-const LoginScreen = lazyWithRetry(loadLoginScreen);
+export const PWAInstallPrompt = React.lazy(() => import('./components/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt })));
+export const AdminPanel = lazyWithRetry(loadAdminPanel);
+export const LoginScreen = lazyWithRetry(loadLoginScreen);
 
 const NAV_SECTIONS = ['cluster', 'research', 'helios', 'members', 'academy', 'about', 'register', 'terms', 'privacy', 'cookies', 'disclosures'] as const;
 
@@ -696,7 +713,7 @@ export default function App({ path: propPath, initialData, hostname }: AppProps)
     if (activeTab === 'cookies') return <CookieScreen />;
     if (activeTab === 'disclosures') return <CorporateDisclosuresScreen />;
 
-    // Priority 2: Federated Ecosystem Surfaces
+    // Priority 2: Federated Ecosystem Surfaces (Lazy Loaded Chunks)
     switch (surface) {
       case 'research':
         return <ResearchFeedLayout key={refreshKey} language={language} path={currentPath} />;
@@ -738,10 +755,10 @@ export default function App({ path: propPath, initialData, hostname }: AppProps)
           onSelectSurface={handleSurfaceChange}
         />
 
-        {/* Main View Area */}
+        {/* Main View Area with Suspense Linear Progress Fallback */}
         <main id="main-content" tabIndex={-1} role="main" className="google-main flex-1 w-full flex flex-col main-content focus:outline-none">
           <ErrorBoundary>
-            <Suspense fallback={<ScreenSkeleton />}>
+            <Suspense fallback={<SurfaceTransitionProgress />}>
               {renderActiveScreen()}
             </Suspense>
           </ErrorBoundary>

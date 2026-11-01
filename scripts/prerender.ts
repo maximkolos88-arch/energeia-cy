@@ -466,7 +466,7 @@ async function prerender() {
 
     console.log(`Pre-rendering route: ${route}`);
 
-    const { html: appHtml } = render(route, initialData);
+    const { html: appHtml } = await render(route, initialData);
 
     let finalHtml = indexTemplate.replace(
       '<div id="root"></div>',

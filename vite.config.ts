@@ -29,6 +29,15 @@ export default defineConfig(({ isSsrBuild }) => {
                   if (id.includes('lucide-react')) return 'vendor-icons';
                   if (id.includes('i18next')) return 'vendor-i18n';
                   if (
+                    id.includes('maplibre') ||
+                    id.includes('mapbox') ||
+                    id.includes('three') ||
+                    id.includes('deck.gl') ||
+                    id.includes('chart.js')
+                  ) {
+                    return 'vendor-gis';
+                  }
+                  if (
                     id.includes('react-markdown') ||
                     id.includes('remark') ||
                     id.includes('micromark') ||
