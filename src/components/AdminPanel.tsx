@@ -498,7 +498,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     directory: 'Directory Members',
     magazine: 'Digital Magazines',
     academy: 'Academy Catalog',
-    applications: 'Lead Proposals'
+    applications: 'Cluster Applications & Leads'
   };
 
   return (

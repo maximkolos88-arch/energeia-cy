@@ -7,6 +7,7 @@ import { useNewsController } from '../controllers/useNewsController';
 import { NewsItem, NewsCategory } from '../models/types';
 import { NewsRepository } from '../services/repositories/NewsRepository';
 import { SEOManager } from './seo/SEOManager';
+import { ArticleDetailView } from './research/ArticleDetailView';
 import { useInitialData } from '../context/InitialDataContext';
 import { getOptimizedImageUrl } from '../utils/imageProxy';
 import { 
@@ -154,8 +155,8 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     }
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      if (path.startsWith('/news/')) {
-        const slug = path.replace('/news/', '').trim();
+      if (path.startsWith('/news/') || path.startsWith('/research/')) {
+        const slug = path.replace('/news/', '').replace('/research/', '').trim();
         if (slug) {
           const found = newsItems.find(item => item.slug === slug || item.id === slug);
           if (found) return found;
@@ -169,8 +170,8 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
-      if (path.startsWith('/news/')) {
-        const slug = path.replace('/news/', '').trim();
+      if (path.startsWith('/news/') || path.startsWith('/research/')) {
+        const slug = path.replace('/news/', '').replace('/research/', '').trim();
         if (slug) {
           const found = newsItems.find(item => item.slug === slug || item.id === slug);
           if (found) {
@@ -300,9 +301,30 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
     }));
   }, [newsItems, language]);
 
+  if (selectedArticle) {
+    return (
+      <div className="w-full bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] transition-colors min-h-[85vh]">
+        <SEOManager article={selectedArticle} />
+        <ArticleDetailView
+          article={selectedArticle}
+          language={language}
+          onBack={() => {
+            setSelectedArticle(null);
+            if (typeof window !== 'undefined') {
+              if (window.location.pathname.startsWith('/news/') || window.location.pathname.startsWith('/research/')) {
+                window.history.pushState({}, '', '/research');
+              }
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full bg-white dark:bg-[#131314] text-[#1F1F1F] dark:text-[#E3E3E3] transition-colors">
-      <SEOManager article={selectedArticle} />
+      <SEOManager article={null} />
 
       {/* 1. Masthead & Social Strip (Section 1) */}
       <section aria-labelledby="masthead-heading" className="masthead-container max-w-[1280px] mx-auto px-6 pt-10 pb-8">
@@ -588,106 +610,6 @@ export const NewsFeedScreen: React.FC<NewsFeedScreenProps> = ({ language = 'en' 
           )}
         </section>
       </div>
-
-      {/* Full Article Bottom Sheet / Modal Reader */}
-      {selectedArticle && (
-        <div
-          onClick={(e) => { 
-            if (e.target === e.currentTarget) {
-              setSelectedArticle(null);
-              if (typeof window !== 'undefined' && window.location.pathname.startsWith('/news/')) {
-                window.history.pushState({}, '', '/');
-              }
-            }
-          }}
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4"
-        >
-          <article className="bg-white dark:bg-[#1E1F20] rounded-t-3xl md:rounded-[24px] border-t md:border border-[#E0E2E0] dark:border-[#444746] max-w-3xl w-full h-[92vh] md:h-auto md:max-h-[90vh] overflow-y-auto p-6 md:p-8 relative shadow-2xl space-y-5 animate-scale-up">
-            
-            {/* Header: Close Button */}
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedArticle(null);
-                if (typeof window !== 'undefined' && window.location.pathname.startsWith('/news/')) {
-                  window.history.pushState({}, '', '/');
-                }
-              }}
-              aria-label="Close article"
-              className="sticky top-0 z-50 ms-auto float-end p-2 text-[#5F6368] dark:text-[#9AA0A6] hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] bg-white/90 dark:bg-[#1E1F20]/90 backdrop-blur-xs rounded-full border border-[#E0E2E0] dark:border-[#444746] cursor-pointer"
-            >
-              <X className="w-5 h-5" aria-hidden="true" />
-            </button>
-
-            {/* Article Image */}
-            {getOptimizedImageUrl(selectedArticle.imageUrl || selectedArticle.image_url, 960, 540) && (
-              <div className="w-full h-56 md:h-80 rounded-[20px] overflow-hidden bg-[#F1F3F4] dark:bg-[#282A2C]">
-                <img
-                  src={getOptimizedImageUrl(selectedArticle.imageUrl || selectedArticle.image_url, 960, 540)}
-                  alt={getLocalizedValue(selectedArticle, 'title', language)}
-                  width={960}
-                  height={540}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-
-            {/* Article Meta */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 text-[13px] text-[#5F6368] dark:text-[#9AA0A6]">
-                {selectedArticle.category && (
-                  <span className="font-medium text-[#1F1F1F] dark:text-[#E3E3E3]">
-                    {getLocalizedCategory(selectedArticle.category)}
-                  </span>
-                )}
-                <span>·</span>
-                <time dateTime={selectedArticle.publishedAt} className="font-mono uppercase text-xs">
-                  {formatDate(selectedArticle.publishedAt)}
-                </time>
-              </div>
-
-              <h1 id="article-modal-heading" tabIndex={-1} className="text-xl md:text-3xl font-medium text-[#1F1F1F] dark:text-white leading-tight mb-3 [text-wrap:balance] focus:outline-none">
-                {getLocalizedValue(selectedArticle, 'title', language)}
-              </h1>
-            </div>
-
-            {/* Executive Summary Box */}
-            <div className="p-4 bg-[#F8F9FA] dark:bg-[#131314] border-s-4 border-[#1A73E8] dark:border-[#8AB4F8] rounded-e-xl">
-              <p className="text-xs md:text-sm text-[#1F1F1F] dark:text-neutral-200 italic font-medium leading-relaxed">
-                "{getLocalizedValue(selectedArticle, 'summary', language) || 'No summary available for this story.'}"
-              </p>
-            </div>
-
-            {/* Markdown Content */}
-            <div className="prose prose-sm dark:prose-invert max-w-none text-[#444746] dark:text-neutral-300 leading-relaxed space-y-4 pt-2">
-              <Suspense fallback={<p className="text-xs text-neutral-500">{getLocalizedValue(selectedArticle, 'summary', language)}</p>}>
-                <ReactMarkdown>
-                  {getLocalizedValue(selectedArticle, 'content', language) || getLocalizedValue(selectedArticle, 'summary', language) || 'Full article text is being prepared for this publication.'}
-                </ReactMarkdown>
-              </Suspense>
-            </div>
-
-            {/* Source Filing Attribution */}
-            {selectedArticle.sourceUrl && (
-              <div className="pt-4 border-t border-[#E0E2E0] dark:border-[#444746] flex justify-between items-center flex-wrap gap-2">
-                <span className="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
-                  EU Directive 2019/790 Article 15 Attribution
-                </span>
-                <a
-                  href={selectedArticle.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-2.5 bg-[#1A73E8] dark:bg-[#8AB4F8] text-white dark:text-[#062E6F] rounded-full font-medium text-xs inline-flex items-center gap-1.5 hover:bg-[#1557B0] dark:hover:bg-[#AECBFA] transition-colors cursor-pointer"
-                >
-                  <span>{t('news.viewFiling', 'Original Source Document')}</span>
-                  <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
-                </a>
-              </div>
-            )}
-
-          </article>
-        </div>
-      )}
     </div>
   );
 };

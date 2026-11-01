@@ -39,7 +39,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'directory', label: 'Directory', icon: <Users className="w-4 h-4" />, badge: counts.directory },
     { id: 'magazine', label: 'Magazines', icon: <BookOpen className="w-4 h-4" />, badge: counts.magazine },
     { id: 'academy', label: 'Academy', icon: <GraduationCap className="w-4 h-4" />, badge: counts.academy },
-    { id: 'applications', label: 'Lead Inquiries', icon: <Inbox className="w-4 h-4" />, badge: counts.applications },
+    { id: 'applications', label: 'Applications & Leads', icon: <Inbox className="w-4 h-4" />, badge: counts.applications },
   ];
 
   const sidebarContent = (

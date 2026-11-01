@@ -26,6 +26,7 @@ import { DirectoryMember } from '../models/types';
 import { DirectoryRepository, INITIAL_DIRECTORY_MEMBERS } from '../services/repositories/DirectoryRepository';
 import { useInitialData } from '../context/InitialDataContext';
 import { MembershipIntakeModal } from '../components/membership/MembershipIntakeModal';
+import { CompanyDossierModal } from '../components/directory/CompanyDossierModal';
 
 const SECTOR_CHIPS = [
   'All Members',
@@ -454,168 +455,18 @@ export const DirectoryLayout: React.FC = () => {
         )}
       </section>
 
-      {/* 4. DOSSIER DETAIL MODAL */}
+      {/* 4. DOSSIER DETAIL MODAL (Institutional B2B Energy Passport) */}
       {dossierMember && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto"
-          onClick={() => setDossierMember(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div 
-            className="w-full sm:max-w-lg bg-white dark:bg-[#1E1F20] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-[#DADCE0] dark:border-[#3C4043] overflow-hidden flex flex-col max-h-[85vh] animate-scale-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header Stripe */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-[#FFFFFF] via-[#D46200] to-[#3C4E1C]" />
-
-            <div className="p-6 border-b border-[#F1F3F4] dark:border-[#282A2C] flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F8F9FA] to-[#E8EAED] dark:from-[#282A2C] dark:to-[#18191A] border border-[#DADCE0] dark:border-[#444746] flex items-center justify-center text-xl font-bold text-[#1A73E8] dark:text-[#8AB4F8] shrink-0">
-                  {getInitials(dossierMember.name)}
-                </div>
-                <div>
-                  <h3 className="text-xl font-medium text-[#1F1F1F] dark:text-white leading-snug">
-                    {dossierMember.name}
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-2 mt-1">
-                    <span className="text-xs text-[#5F6368] dark:text-[#9AA0A6]">
-                      {dossierMember.roleOrCategory}
-                    </span>
-                    <span className="text-xs text-[#80868B]">•</span>
-                    <span className="text-xs text-[#137333] dark:text-[#81C995] font-medium">
-                      {dossierMember.location || 'Cyprus'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setDossierMember(null)}
-                aria-label="Close dossier"
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F1F3F4] dark:hover:bg-[#282A2C] text-[#5F6368] dark:text-[#9AA0A6] cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-sm">
-              {/* Overview */}
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-2">
-                  Corporate Dossier
-                </h4>
-                <p className="text-xs sm:text-sm text-[#444746] dark:text-[#C4C7C5] leading-relaxed">
-                  {dossierMember.description || 'Active member organization contributing to utility-scale renewable generation and grid modernization in Cyprus.'}
-                </p>
-              </div>
-
-              {/* Key Services / Projects */}
-              {dossierMember.keyServices && (
-                <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-2">
-                    Key Capabilities &amp; Services
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {(Array.isArray(dossierMember.keyServices) ? dossierMember.keyServices : [dossierMember.keyServices]).map((srv, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 rounded-full text-xs font-medium bg-[#F1F3F4] dark:bg-[#282A2C] text-[#1F1F1F] dark:text-[#E3E3E3]"
-                      >
-                        {srv}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Notable Projects */}
-              {dossierMember.notableProjects && (
-                <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6] mb-1.5">
-                    Notable Installations &amp; Assets
-                  </h4>
-                  <p className="text-xs text-[#5F6368] dark:text-[#9AA0A6] leading-relaxed">
-                    {dossierMember.notableProjects}
-                  </p>
-                </div>
-              )}
-
-              {/* Official Contact Strip */}
-              <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#131314] border border-[#DADCE0] dark:border-[#3C4043] space-y-2.5">
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#5F6368] dark:text-[#9AA0A6]">
-                  Verified Contact Channels
-                </h4>
-                <div className="space-y-1.5 text-xs">
-                  {dossierMember.email && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-[#444746] dark:text-[#C4C7C5]">
-                        <Mail className="w-3.5 h-3.5 text-[#5F6368]" />
-                        <a href={`mailto:${dossierMember.email}`} className="hover:underline">{dossierMember.email}</a>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(dossierMember.email, 'email')}
-                        className="text-[10px] text-[#1A73E8] dark:text-[#8AB4F8] hover:underline cursor-pointer"
-                      >
-                        {copiedField === 'email' ? 'Copied' : 'Copy'}
-                      </button>
-                    </div>
-                  )}
-
-                  {dossierMember.phone && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-[#444746] dark:text-[#C4C7C5]">
-                        <Phone className="w-3.5 h-3.5 text-[#5F6368]" />
-                        <a href={`tel:${dossierMember.phone}`} className="hover:underline">{dossierMember.phone}</a>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(dossierMember.phone || '', 'phone')}
-                        className="text-[10px] text-[#1A73E8] dark:text-[#8AB4F8] hover:underline cursor-pointer"
-                      >
-                        {copiedField === 'phone' ? 'Copied' : 'Copy'}
-                      </button>
-                    </div>
-                  )}
-
-                  {dossierMember.website && (
-                    <div className="flex items-center gap-2 text-[#1A73E8] dark:text-[#8AB4F8] pt-1">
-                      <Globe className="w-3.5 h-3.5" />
-                      <a href={dossierMember.website} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                        <span>{dossierMember.website.replace(/^https?:\/\//, '')}</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 bg-[#F8F9FA] dark:bg-[#18191A] border-t border-[#F1F3F4] dark:border-[#282A2C] flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => {
-                  setClaimMember(dossierMember);
-                  setDossierMember(null);
-                  setClaimSubmitted(false);
-                }}
-                className="text-xs font-medium text-[#5F6368] dark:text-[#9AA0A6] hover:text-[#1F1F1F] dark:hover:text-white cursor-pointer"
-              >
-                Claim or Update Profile
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setDossierMember(null)}
-                className="px-5 py-2 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] dark:bg-[#8AB4F8] dark:hover:bg-[#AECBFA] text-white dark:text-[#062E6F] text-xs font-medium cursor-pointer shadow-xs"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
+        <CompanyDossierModal
+          member={dossierMember}
+          onClose={() => setDossierMember(null)}
+          onClaimProfile={(m) => {
+            setClaimMember(m);
+            setDossierMember(null);
+            setClaimSubmitted(false);
+          }}
+          newsItems={initialData?.newsItems}
+        />
       )}
 
       {/* 5. CLAIM PROFILE MODAL */}
